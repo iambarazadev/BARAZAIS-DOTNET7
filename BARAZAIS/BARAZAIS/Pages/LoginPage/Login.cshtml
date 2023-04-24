@@ -1,11 +1,11 @@
 ﻿@page
-@namespace BARAZAIS.Pages.LoginPage
 @model LoginModel
+
 @{
     ViewData["Title"] = "Login";
 }
 
-<div class="container">
+<div class="container py-3">
     <div class="row">
         <div class="col-12">
             <h2>Login Local</h2>
@@ -33,9 +33,18 @@
                                 </label>
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
-                            <button class="btn btn-md btn-primary rounded mt-2 border-0">
-                                Log In
-                            </button>
+                            <div>
+                                <ul class="d-flex flex-row m-0 p-0 justify-content-between list-unstyled">
+                                    <li class="p-0 m-0">
+                                        <button class="btn btn-md btn-primary rounded mt-2 border-0">
+                                            Log In
+                                        </button>
+                                    </li>
+                                    <li class="p-0 m-0">
+                                        <a class="text-muted btn btn-md mt-2 fst-italic" href="Register">New User, Register here.</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
