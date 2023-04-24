@@ -1,0 +1,458 @@
+﻿@page "/Counter/{PendingBillId:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<PageTitle>Point of Sale</PageTitle>
+
+<div class="row shadow-sm rounded bg-white mt-3">
+    <div class="col-md-5 col-12">
+        <div class="row">
+            <div class="col-12 p-3 pt-0">
+                <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
+                    <li class="fs-5 text-muted py-0 me-2 text-capitalize"><i class=" fs-5 fw-bolder bi-columns-gap me-2"></i>@(Available.Length > 20 ? Available.Substring(0, 17) + ".." : Available)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-12 px-3" style="">
+            <div class="row">
+                @{
+                    foreach (var Cat in TheseCategories)
+                    {
+                        if (Cat.Product.Any())
+                        {
+                            <button @onclick=@(()=> GetAllProducts(Cat)) class="col-3 rounded-0 bg-unique text-unique text-center border fs-6 py-3 text-capitalize fw-bolder">
+                                @(Cat.Caption.Length > 9 ? Cat.Caption.Substring(0, 7) + ".." : Cat.Caption)
+                            </button>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="col-12 p-3" style=" max-height:55vh; overflow-y : scroll;">
+            <div class="row">
+                @{
+                    foreach (var Prod in TheseProducts)
+                    {
+                        if (Prod.ProductPrice.Any())
+                        {
+                            <button @onclick=@(()=> FetchThisProduct(Prod.Id)) class="col-3 py-4 rounded-0 bg-success border text-white text-capitalize fw-bolder">
+                                @(Prod.Caption.Length > 15 ? Prod.Caption.Substring(0, 13) + ".." : Prod.Caption)
+                            </button>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 col-12">
+        <div class="row mt-2">
+            <div class="col-md-2 col-3 text-center">
+                <button @onclick=@(()=>HoldThisBill()) class="btn btn-sm btn-outline-info py-3 px-3 rounded border fw-bold">
+                    <span class="" style="font-size:.8rem!important;">HOLD</span>
+                </button>
+            </div>
+            <div class="col-md-8 col-6 text-center">
+                <input @bind=@Pid @onfocusout=@(()=> FetchThisProduct(Pid)) @onpaste=@(()=> FetchThisProduct(Pid)) type="text" class="form-control bg-xss border-0 py-3  rounded text-center text-unique " placeholder="SCAN OR TYPE PRODUCT" />
+            </div>
+            <div class="col-md-2 col-3">
+                <ul class="d-flex flex-row justify-content-start p-0 m-0 text-end">
+                    <button @onclick=@(()=> RemoveAllBills()) class="btn btn-sm btn-light px-3 py-2 ">
+                        <span class="bi bi-brush" style="font-size:1.5rem!important;"></span>
+                    </button>
+                </ul>
+            </div>
+        </div>
+        <div class="row mt-3 rounded">
+            <div class="col-12 px-4 py-0 rounded" style="overflow-y : scroll; height:55vh;">
+                @{
+                    foreach (var item in TheseBills)
+                    {
+                        <div class="row border-bottom bg-unique rounded">
+                            <div class="col-1 py-3 text-center opacity-75 fw-bolder ">
+                                @(TheseBills.IndexOf(item) + 1)
+                            </div>
+                            <div class="col-md-4 col-3 py-2 ">
+                                <ul class="d-flex flex-column p-0 m-0">
+                                    <li class="text-white fw-bolder text-capitalize d-lg-block d-none">@(item.Caption.Length < 20 ? item.Caption : item.Caption.Substring(0, 15) + "..")</li>
+                                    <li class="text-white fw-bolder text-capitalize d-lg-none d-block">@(item.Caption.Length > 11 ? item.Caption.Substring(0, 9) + ".." : item.Caption)</li>
+                                    <li class="opacity-75 ">@(item.Code + item.ProductId)</li>
+                                </ul>
+                            </div>
+                            <div class="col-2 py-2 ">
+                                <input @bind=@item.Qty @bind:event="oninput" type="number" min="1" @onchange=@(()=> SubTotal()) class="form-control py-2 border-0 rounded-0 text-center fw-bolder text-black bg-xss" />
+                            </div>
+                            <div class="col-4 py-2 ">
+                                <ul class="d-flex flex-column p-0 m-0">
+                                    <li class="opacity-75 text-white">&#64; @((item.Price).ToString("n0"))</li>
+                                    <li class="text-white fw-bolder">&sum; @((item.Price * item.Qty).ToString("n0"))</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-1 col-2 bg-xs">
+                                <ul class="d-flex flex-row justify-content-center px-0 pt-2 m-0 text-end">
+                                    <button @onclick=@(()=> this.RemoveBill(item)) class="btn p-3  btn-close me-2"></button>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 px-4 pb-3">
+                <div class="row text-unique bg-xss py-3 rounded">
+                    <div class="col-md-5 col-7 ps-md-4">
+                        <div class="row text-start">
+                            <div class="col-6 border-bottom py-2">
+                                <ul class="d-flex flex-column p-0 m-0">
+                                    <li class="fw-bolder"> ITEMS</li>
+                                    <li class="opacity-75" style="font-size:0.8rem;">&sum;PCS</li>
+                                </ul>
+                            </div>
+                            <div class="col-6 border-bottom py-2">
+                                <ul class="d-flex flex-column p-0 m-0">
+                                    <li class="fw-bolder"> AMOUNT</li>
+                                    <li class="opacity-75" style="font-size:0.8rem;">V.A.T (18%)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row fs-5 text-dark text-start">
+                            <div class="col-6 py-2">
+                                <ul class="d-flex flex-column p-0 m-0">
+                                    <li class="fw-bolder" style="font-size:1rem;">@Records</li>
+                                    <li class="opacity-75" style="font-size:0.8rem;">&sum; @Qty</li>
+                                </ul>
+                            </div>
+                            <div class="col-6 py-2">
+                                <ul class="d-flex flex-column p-0 m-0">
+                                    <li class="fw-bolder" style="font-size:1rem;"> @((TotalAmount - ((decimal)((double)TotalAmount * (0.18)))).ToString("n0"))</li>
+                                    <li class="opacity-75" style="font-size:0.8rem;">@((((decimal)((double)TotalAmount * (0.18)))).ToString("n0"))</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-5 ">
+                        <div class="row text-start">
+                            <div class="col-12 border-bottom py-2">
+                                <ul class="d-flex flex-column p-0 m-0">
+                                    <li class="fw-bolder"> TOTAL</li>
+                                    <li class="opacity-75" style="font-size:0.8rem;">WITH V.A.T</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row text-start text-dark fs-5 fw-bolder">
+                            <div class="col-12 py-2">
+                                @TotalAmount.ToString("n0")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12 text-md-end text-center pt-4">
+                        <button @onclick=@(()=> Shop()) class="btn btn-success btn-lg rounded border-0 fw-bolder mb-0 mt-1">
+                            <i class="bi bi-cart4 me-3 text-white"> </i>SHOP
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    //Data
+    [Parameter]
+    public int PendingBillId { get; set; } = 0;
+
+    private List<CategoryModel> TheseCategories = new();
+    private List<ProductModel> TheseProducts = new();
+
+    //GLOBAL CLASSES
+    private GlobalStock GS = new();
+    private GlobalRetail GR = new();
+    private GlobalCost GC = new();
+
+    private string Available = "";
+    private int? Pid = null;
+    private PosPoccoModel ThisBill = new();
+    private List<PosPoccoModel> TheseBills = new();
+    private BillModel ApprovedBill = new();
+    private ProductBill Pb = new();
+    private List<ProductBill> PbList = new();
+    private ProductModel ApprovedProduct = new();
+
+    //Hold Bill Variables
+    private HoldModel ApprovedHold = new();
+    private ProductHold Ph = new();
+    private List<ProductHold> PhList = new();
+
+    private decimal TotalAmount = 0;
+    private int Qty = 0;
+    private int Records = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnInitializedAsync();
+        await GetAllCategories();
+        ApprovedProduct.ProductBill = new();
+        ApprovedBill.ProductBill = new();
+        await ReceiveHoldBill(PendingBillId);
+
+    }
+
+    private async Task FetchThisProduct(int? Id)
+    {
+        ThisBill = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+
+            if (Id != null)
+            {
+                var ThisProduct = await repo.Products.GetDetailedProductAsync((int)Id);
+                if (ThisProduct != null && ThisProduct.ProductPrice.Any())
+                {
+                    ThisBill.ProductId = ThisProduct.Id;
+                    ThisBill.Caption = ThisProduct.Caption;
+                    ThisBill.Code = ThisProduct.Code;
+                    ThisBill.Price = ThisProduct.ProductPrice.LastOrDefault().LatestPrice;
+                    ThisBill.Qty = 1;
+
+                    ThisBill.Cost = GC.GetCostOfThis(ThisProduct);
+
+                    var CheckRedundancy = TheseBills.Where(x => x.ProductId == ThisBill.ProductId).FirstOrDefault();
+                    if (CheckRedundancy != null)
+                    {
+                        CheckRedundancy.Qty += 1;
+                    }
+                    else
+                    {
+                        TheseBills.Add(ThisBill);
+                    }
+
+                    ThisBill = new();
+                    Pid = null;
+                    SubTotal();
+                }
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+
+    private async Task GetAllCategories()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseCategories = await repo.Categories.GetAllCategoriesDetailedAsync(1, repo.Categories.GetNoRecords());
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+
+    private async Task GetAllProducts(CategoryModel ThisCategory)
+    {
+        Available = ThisCategory.Caption;
+        if (ThisCategory.Product.Count > 0)
+        {
+            TheseProducts = ThisCategory.Product;
+        }
+        else
+        {
+            Available = $"No Item for {ThisCategory.Caption} Category";
+            TheseProducts = new();
+        }
+    }
+
+    private void RemoveBill(PosPoccoModel ToRemove)
+    {
+
+        TheseBills.Remove(ToRemove);
+        SubTotal();
+    }
+
+    private void RemoveAllBills()
+    {
+
+        TheseBills = new();
+        SubTotal();
+    }
+
+    private void SubTotal()
+    {
+        TotalAmount = 0;
+        Qty = 0;
+        Records = 0;
+
+        foreach (var Rec in TheseBills)
+        {
+            TotalAmount += (Rec.Qty * Rec.Price);
+            Qty += Rec.Qty;
+
+            Records += 1;
+        }
+    }
+
+    private async Task Shop()
+    {
+
+        ApprovedProduct = new();
+        ApprovedBill = new();
+        Pb = new();
+        PbList = new();
+
+        ApprovedBill.UserId = 1;
+        ApprovedBill.CompanyId = 1;
+
+        if (TheseBills.Count > 0)
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+
+                foreach (var data in TheseBills)
+                {
+                    ApprovedProduct = await repo.Products.GetDetailedProductAsync(data.ProductId);
+
+                    if (data.HoldId != null)
+                    {
+                        ApprovedBill.HoldId = data.HoldId;
+                    }
+
+                    Pb.Product = ApprovedProduct;
+                    Pb.Bill = ApprovedBill;
+                    Pb.Qty = data.Qty;
+                    Pb.Price = data.Price;
+                    Pb.Cost = data.Cost;
+                    Pb.OldStock = GS.GetStockOfThis(ApprovedProduct);
+
+                    PbList.Add(Pb);
+                    await repo.ProductBills.AddAsync(Pb);
+                    await repo.CompleteAsync();
+                }
+
+                if (ApprovedBill.HoldId > 0)
+                {
+                    var TempHoldFetch = await repo.Holds.GetDetailedHoldAsync((int)ApprovedBill.HoldId);
+                    TempHoldFetch.Status = "sold";
+                    repo.Holds.Update(TempHoldFetch);
+                }
+
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+
+            TheseBills = new();
+            ApprovedProduct = new();
+            ApprovedBill = new();
+            Pb = new();
+            PbList = new();
+
+            TotalAmount = 0;
+            Qty = 0;
+            Records = 0;
+        }
+        else
+        {
+            ApprovedProduct = new();
+            ApprovedBill = new();
+            Pb = new();
+            PbList = new();
+
+            TotalAmount = 0;
+            Qty = 0;
+            Records = 0;
+        }
+    }
+
+    private async Task HoldThisBill()
+    {
+
+        ApprovedProduct = new();
+        ApprovedHold = new();
+        Ph = new();
+        PhList = new();
+
+        ApprovedHold.UserId = 2;
+        ApprovedHold.CompanyId = 1;
+
+        if (TheseBills.Count > 0)
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+
+                foreach (var data in TheseBills)
+                {
+                    ApprovedProduct = await repo.Products.GetDetailedProductAsync(data.ProductId);
+
+                    Ph.Product = ApprovedProduct;
+                    Ph.Hold = ApprovedHold;
+                    Ph.Qty = data.Qty;
+                    Ph.Price = data.Price;
+                    Ph.Cost = data.Cost;
+
+                    PhList.Add(Ph);
+                    await repo.ProductHolds.AddAsync(Ph);
+                    await repo.CompleteAsync();
+                }
+
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+
+            TheseBills = new();
+            ApprovedProduct = new();
+            ApprovedHold = new();
+            Ph = new();
+            PhList = new();
+
+            TotalAmount = 0;
+            Qty = 0;
+            Records = 0;
+        }
+        else
+        {
+            ApprovedProduct = new();
+            ApprovedHold = new();
+            Ph = new();
+            PhList = new();
+
+            TotalAmount = 0;
+            Qty = 0;
+            Records = 0;
+        }
+
+    }
+
+    private async Task ReceiveHoldBill(int SomeHoldBillId)
+    {
+        if (SomeHoldBillId > 0)
+        {
+            PosPoccoModel TempoBill = new();
+            TheseBills = new();
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+
+                ApprovedHold = await repo.Holds.GetDetailedHoldAsync(SomeHoldBillId);
+                foreach (var Listed in ApprovedHold.ProductHold)
+                {
+                    TempoBill.ProductId = (int)Listed.ProductId;
+                    TempoBill.Code = Listed.Product.Code;
+                    TempoBill.Caption = Listed.Product.Caption;
+                    TempoBill.Price = Listed.Price;
+                    TempoBill.Qty = Listed.Qty;
+                    TempoBill.HoldId = Listed.HoldId;
+                    TheseBills.Add(TempoBill);
+                    TempoBill = new();
+                }
+
+                //repo.Holds.Remove(ApprovedHold);
+
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+            SubTotal();
+        }
+        StateHasChanged();
+    }
+}

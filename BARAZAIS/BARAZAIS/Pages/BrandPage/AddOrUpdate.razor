@@ -1,0 +1,137 @@
+@page "/Brands/New"
+@page "/Brands/Edit/{Sn:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<Header
+    Title=@Title
+    LineText=@LineText
+    ViewUrl=@ViewUrl
+    ViewUrlIcon=@ViewUrlIcon
+    />
+
+<EditForm Model="ThisBrand" OnValidSubmit="ProcessAndSave" autocomplete="off">
+    <div class="row text-unique mb-3 p-3 bg-white">
+        <div class="col-lg-3 col-md-2 col-12">
+            @{
+                if(ThisBrand.Id > 0){
+                    <div class="container pb-3">
+                        <p class="mt-3 p-3 border border-2">
+                            <i class="bi bi-upc-scan " style="font-size:0.75rem !important;"></i>  @(ThisBrand.Id > 0 ? ThisBrand.Id : "--:--")
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-lg-6 col-md-8 col-12 ps-md-0 pb-3 text-start">
+            <div class="container pt-2 pb-3">
+                <div class="form-floating my-2 rounded-0">
+                    <input type="text" required @bind="ThisBrand.Caption" class="form-control bg-xss border-0 text-unique fw-bolder rounded-0 text-capitalize " id="floatingInput" placeholder="Brand Name (Caption / Short Description)" />
+                    <label for="floatingInput">
+                        Brand Name
+                    </label>
+                    @*<ValidationMessage For=" () => Fx.BrandCaption " />*@
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-12 text-start pb-2 px-0">
+                        <div class="form-floating rounded-0">
+                            <textarea @bind="ThisBrand.Description" class="form-control rounded-0 border-0 w-100 fw-bolder text-unique text-capitalize bg-xss h-50" rows="3" placeholder="Add Description" required></textarea>
+                            <label for="floatingInput">
+                                Description [Note]
+                            </label>
+                            @*<ValidationMessage For=" () => Fx.Description " />*@
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-12 text-start pb-2 px-0 d-flex flex-row justify-content-between">
+                        <button class="btn btn-md btn-outline-light text-muted border-0 rounded-0" @onclick=@(()=> CancelEntry())>Cancel</button>
+                        <button class="btn btn-md btn-primary border-0 rounded-0">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-2 col-12">
+            @*Empty Div for centering*@
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    //Url Parameter Variables
+    [Parameter]
+    public int Sn { get; set; } = 0;
+
+    //Header Component
+    private string Title = "Brands";
+    private string LineText = "Add New";
+    private string ViewUrl = "Brands/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //Brand Model Variable
+    private BrandModel ThisBrand = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await Start(Sn);
+    }
+
+    private async Task Start(int TheKey)
+    {
+        if (TheKey < 1)
+        {
+            ThisBrand = new();
+        }
+        else
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                ThisBrand = await repo.Brands.GetDetailedBrandAsync(TheKey);
+                
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+            LineText = "Edit Brand";
+        }
+    }
+    
+    private async Task ProcessAndSave()
+    {
+        if (ThisBrand != null)
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                if (ThisBrand.Id > 0)
+                {
+                    ThisBrand.DateUpdated = DateTime.Now;
+                    await Task.Run(() => repo.Brands.Update(this.ThisBrand));
+                    await repo.CompleteAsync();
+                    repo.Dispose();
+
+                    Navigation.NavigateTo("Brands/ListView");
+                }
+                else
+                {
+                    ThisBrand.UserId = 1;
+                    ThisBrand.CompanyId = 1;
+
+                    await repo.Brands.AddAsync(ThisBrand);
+                    await repo.CompleteAsync();
+                    repo.Dispose();
+                }
+            }
+        }
+
+        ThisBrand = new();
+        StateHasChanged();
+    }
+
+    private void CancelEntry()
+    {
+        Navigation.NavigateTo("Brands/ListView");
+        //ThisBrand = new();
+    }
+}

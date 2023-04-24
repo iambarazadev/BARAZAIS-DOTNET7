@@ -1,0 +1,431 @@
+﻿@page "/Purchases/ListView"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+        
+<div class="row pb-3 mt-2 rounded bg-white shadow-sm">
+    <div class="col-12">
+        <Header Title=@Title
+        LineText=@LineText
+        NewUrl=@NewUrl
+        ViewUrl=@ViewUrl
+        ViewUrlIcon=@ViewUrlIcon />
+    </div>
+    <div class="col-12">
+        <hr class="text-muted" />
+    </div>
+    <div class="col-md-2 col-6  mt-md-0 mt-3">
+        <div class="form-floating rounded-3">
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <label for="floatingInput" class="">
+                From Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-6 mt-md-0 mt-3 ">
+        <div class="form-floating rounded-3">
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <label for="floatingInput" class="">
+                To Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-6 mt-md-0 mt-2 ">
+        <div class="form-floating rounded-0 py-0">
+            <select @bind=@SupplierId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var ThisSupplier in TheseSuppliers){
+                        <option value=@ThisSupplier.Id class="text-unique">@(ThisSupplier.Caption)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Suppliers</label>
+        </div>
+    </div>
+    <div class="col-md-2 col-6 mt-md-0 mt-2">
+        <div class="form-floating rounded-0 py-0">
+           <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var ThisUser in TheseUsers){
+                        <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Users</label>
+        </div>
+    </div>
+    <div class="col-md-1 col-4  mt-md-0 mt-3">
+        <ul class="p-0 m-0 text-md-center text-start">
+            <li class="p-0 m-0 text-unique" >
+                <button @onclick=@(()=>Filter()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+            <li class="p-0 m-0 text-unique mt-1" >
+                <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-3 col-12 mt-md-0 mt-2">
+        <div class="form-floating rounded-0">
+            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-xss border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
+            <label for="floatingInput">
+                <i class="bi bi-search txtshadow fs-6 me-2 "></i> <span class="text-muted opacity-75">GRN#</span>
+            </label>
+        </div>
+    </div>
+</div>
+<div class="row mt-3 bg-white rounded shadow-sm" style="font-size:0.8rem !important">
+    <div class="col-md-6 col-12 rounded-3 p-3">
+        <ul class="p-2 m-0 text-start bg-xss rounded">
+            <li class="p-2 m-0 text-unique" >
+                TOTAL PURCHASES
+            </li>
+            <li class="p-2 py-0 m-0 text-primary" >
+                &sum; @((TotalPurchases).ToString("n0"))
+            </li>
+            <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                @(NumOfPurchases) <i class="bi bi-dot txtshadow "></i> @(NumOfPurchases > 1 ? "Purchases" : "Purchase")
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row bg-white my-3 rounded shadow-sm">
+    <div class="col-12 px-3 bg-xs rounded-top shadow-sm">
+        <div class="row">
+            <div class="col-1 text-center py-3">
+                #
+            </div>
+            <div class="col-lg-1 col-2 text-start py-3">
+                Grn
+            </div>
+            <div class="d-none d-lg-block col-lg-2 text-start py-3">
+                Items
+            </div>
+            <div class="col-lg-2 col-3  text-md-start text-md-start text-center py-3">
+                Total Cost
+            </div>
+            <div class="col-lg-2 col-3 text-md-start text-center py-3">
+                Supplier
+            </div>
+            <div class=" col-lg-2 col-3 text-start py-3">
+                Date Time
+            </div>
+            <div class="d-none d-lg-block col-lg-2 text-start py-3">
+                By
+            </div>
+        </div>
+    </div>
+    <div class="col-12 px-3 pt-2">
+        @{
+            if (!ThesePurchases.Any())
+            {
+                <div class="container text-center">
+                    <p class="p-3  fs-4 text-unique fw-lighter opacity-75 text-capitalize">-- : --</p>
+                </div>
+            }
+            else
+            {
+                foreach (var item in ThesePurchases)
+                {
+                    FullCost = 0;
+                    GetFullPurchaseCost(item);
+
+                    <div class="row border-bottom bg-xss" style="font-size:0.8rem !important">
+                        <div class="col-1 text-center py-1">
+                            @(TheseTempPurchases.IndexOf(item) + 1)
+                        </div>
+                        <div class="col-lg-1 col-2  text-start py-1">
+                            <a href=@("Purchases/Details/"+(item.Id)) class="p-0 m-0">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                        @(item.Code + item.Id)
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        @(item.ReceiptCode)
+                                    </li>
+                                </ul>
+                            </a>
+                        </div>
+                        <div class="d-none d-lg-block col-lg-2 text-start py-1">
+                            <ul class="p-0 m-0 text-start">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    <span class="">@(item.ProductGrn.Count > 1 ? "Items" : "Item") : </span>@item.ProductGrn.Count
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                    <span>@(item.ProductGrn.Count > 1 ? "pcs" : "pc") : </span>@item.ProductGrn.Sum(x => x.QtyPurchased)
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-3  text-md-start text-md-start text-center  py-1">
+                            @FullCost.ToString("n0")
+                        </div>
+                        <div class="col-lg-2 col-3 text-md-start text-center py-1">
+                            <a href="Suppliers/Details/@item.SupplierId" class="p-0 m-0">
+                                <ul class="p-0 m-0 d-flex flex-column text-start" style="font-size:0.8rem !important">
+                                    <li class="  m-0 opacity-75 text-primary" style="font-size:0.8rem !important; width:fit-content;">@(item.Supplier.Code + item.Supplier.Id)</li>
+                                    <li class="p-0 m-0 text-muted text-capitalize">@(item.Supplier.Caption.Length > 17 ? item.Supplier.Caption.Substring(0, 15) + " .." : item.Supplier.Caption)</li>
+                                </ul>
+                            </a>
+                        </div>
+                        <div class=" col-lg-2 col-3 text-start py-1">
+                            <ul class="p-0 m-0 d-flex flex-column text-start" style="font-size:0.8rem !important">
+                                <li class="p-0 m-0 text-unique text-capitalize">@(item.DateCreated.ToString("dd MMM yy"))</li>
+                                <li class="  m-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;">@(item.DateCreated.ToString("ddd hh : mm"))</li>
+                            </ul>
+                        </div>
+                        <div class="d-none d-lg-block col-lg-2 text-start py-1">
+                            <ul class="p-0 m-0 d-flex flex-column text-center">
+                                <li class="p-0 m-0 text-start text-primary">@(item.User.Code + item.User.Id)</li>
+                                <li class=" m-0 opacity-75 text-capitalize" style="font-size:0.8rem !important; width:fit-content;">@(item.User.FirstName + " " + item.User.LastName)</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    TotalPages=@TotalPages
+                    CurrentPage=@CurrentPage />
+            }
+        }
+    </div>
+</div>
+
+@code {
+    //Header Component
+    private string Title = "Purchases";
+    private string LineText = "List view";
+    private string NewUrl = "Purchases/New";
+    private string ViewUrl = "Purchases/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+
+    //GrnModel Variables
+    private List<GrnModel> ThesePurchases = new();
+    private List<GrnModel> TheseTempPurchases = new();
+    
+    //filtering
+    private List<SupplierModel> TheseSuppliers = new();
+    private List<UserModel> TheseUsers = new();
+    private int SupplierId = 0;
+    private int UserId = 0;
+    private int? SearchId = null;
+    
+    private decimal TotalPurchases = 0;
+    private int NumOfPurchases = 0;
+    
+    private DateOnly FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+    private DateOnly ToDate = DateOnly.FromDateTime(DateTime.Now);
+
+    //Pagination Variables
+    private int PageSize = 20;
+    private int TotalPages = 1;
+    private int CurrentPage = 0;
+
+    //Variables
+    private double FullCost = 0.0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await Reset();
+    }
+
+    private async Task NextPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTempPurchases = await repo.Grns.GetAllGrnsDetailedAsync(FromDate, ToDate, true, UserId, SupplierId);
+            
+            double Num = (double)(TheseTempPurchases.Count()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            if(CurrentPage < TotalPages){
+                CurrentPage ++;
+            }else{
+                CurrentPage = TotalPages;
+            }
+            
+            ThesePurchases = TheseTempPurchases
+            .OrderBy(x=> x.Id)
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+            
+            PurchaseInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task PreviousPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTempPurchases = await repo.Grns.GetAllGrnsDetailedAsync(FromDate, ToDate, true, UserId, SupplierId);
+            
+            double Num = (double)(TheseTempPurchases.Count()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            if(CurrentPage > 1){
+                CurrentPage --;
+            }else{
+                CurrentPage = 1;
+            }
+            
+            ThesePurchases = TheseTempPurchases
+            .OrderBy(x=> x.Id)
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+            
+            PurchaseInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task FirstPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTempPurchases = await repo.Grns.GetAllGrnsDetailedAsync(FromDate, ToDate, true, UserId, SupplierId);
+            
+            double Num = (double)(TheseTempPurchases.Count()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            CurrentPage = 1;
+            
+            ThesePurchases = TheseTempPurchases
+            .OrderBy(x=> x.Id)
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+            
+            PurchaseInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LastPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTempPurchases = await repo.Grns.GetAllGrnsDetailedAsync(FromDate, ToDate, true, UserId, SupplierId);
+            
+            double Num = (double)(TheseTempPurchases.Count()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            CurrentPage = TotalPages;
+            
+            ThesePurchases = TheseTempPurchases
+            .OrderBy(x=> x.Id)
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+            
+            PurchaseInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private void GetFullPurchaseCost(GrnModel ThisData)
+    {
+        if (ThisData != null)
+        {
+            foreach (var xitem in ThisData.ProductGrn)
+            {
+                FullCost += (double)((xitem.QtyPurchased) * (xitem.Cost));
+            }
+        }
+    }
+    
+    private async Task Filter(){
+        if(ToDate >= FromDate){
+            CurrentPage = 0;
+            await NextPage();
+        }
+        else{
+            await Reset();
+        }
+    }
+    
+    private async Task InnerSearch(){ 
+        if(SearchId > 0){
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                TheseTempPurchases = new();
+                ThesePurchases = new();
+                TheseTempPurchases.Add(await repo.Grns.GetDetailedGrnAsync((int)SearchId));
+                ThesePurchases = TheseTempPurchases;
+                
+                if(ThesePurchases.Any()){
+                    UserId = (int)ThesePurchases.FirstOrDefault().UserId;
+                    SupplierId = (int)ThesePurchases.FirstOrDefault().SupplierId;
+                    FromDate = DateOnly.FromDateTime(ThesePurchases.FirstOrDefault().DateCreated);
+                    ToDate = DateOnly.FromDateTime(ThesePurchases.FirstOrDefault().DateCreated);
+                }
+                else{
+                    SupplierId = 0;
+                    UserId = 0;
+                    ThesePurchases = new();
+                }
+                
+                PurchaseInfo();
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }else{
+            await Reset();
+        }
+    }
+    
+    private void PurchaseInfo(){
+        NumOfPurchases = 0;
+        TotalPurchases = 0;
+        SearchId = null;
+        
+        if(TheseTempPurchases.Any()){
+            NumOfPurchases = TheseTempPurchases.Count();
+            foreach(var grns in TheseTempPurchases){
+                foreach(var prodgrn in grns.ProductGrn){
+                    TotalPurchases += ((prodgrn.QtyPurchased) * (prodgrn.Cost));
+                }
+            }
+        }
+    }
+    
+    private async Task Reset(){
+        SupplierId = 0;
+        UserId = 0;
+        SearchId = null;
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseSuppliers = await repo.Suppliers.GetAllRecords(repo.Suppliers.GetNoRecords(),1);
+            TheseUsers = await repo.Users.GetAllRecords(repo.Users.GetNoRecords(),1);
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        
+        StateHasChanged();
+        await NextPage();
+    }
+}

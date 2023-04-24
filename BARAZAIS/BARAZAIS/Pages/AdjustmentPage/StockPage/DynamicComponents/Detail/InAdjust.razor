@@ -1,0 +1,126 @@
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{  
+    foreach(var item in TheseProductAdjustments){
+        InnerCostPerEach = (double)item.Cost;
+        Colouring = item.QtyAdjusted < 0 ? "text-danger" : "text-success";
+        MoreVisual = (item.ProductId == MoreId) ? "bg-white border border-warning rounded-3" : "bg-xss";
+            <div class="row text-unique @MoreVisual border-bottom border-1">
+            <div class="col-1 text-center py-1 fw-bolder">@(StockAdjustmentToCheck.ProductAdjustment.IndexOf(item) + 1)</div>
+            <div class="col-lg-2 col-5 py-1 text-start">
+                <a class="p-0 m-0" href="Products/Details/@item.Product.Id">
+                    <ul class="d-flex flex-column justify-content-start p-0 m-0 text-capitalize">
+                    <li class=" m-0 text-primary opacity-75 " style="font-size:0.7rem !important; width:fit-content;">@(item.Product.Code + item.Product.Id)</li>
+                        <li class="text-muted">@(item.Product.Caption.Length > 14 ? item.Product.Caption.Substring(0,11) + " .." : item.Product.Caption)</li>
+                    </ul>
+                </a>
+            </div>
+            <div class="col-2 d-none d-lg-block py-1 text-stat ">
+                @item.OldStock
+            </div>
+            <div class="col-2 py-1 text-start @Colouring ">
+                @(item.QtyAdjusted > 0 ? "+" + item.QtyAdjusted : item.QtyAdjusted)
+            </div>
+            <div class="col-2 py-1 d-none d-lg-block text-start">
+                <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                    <li class="text-start text-danger">&#64; @InnerCostPerEach.ToString("n0")</li>
+                    <li class=" m-0 text-muted " style="font-size:0.7rem !important; width:fit-content;">
+                        &sum; @((((item.QtyAdjusted) * (InnerCostPerEach))).ToString("n0"))
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-4 py-1 text-md-start text-center ">
+                <ul class="d-flex flex-column justify-content-start  p-0 m-0">
+                    <li class="text-start text-success">&#64; @((item.Retail).ToString("n0"))</li>
+                    <li class=" m-0 text-muted" style="font-size:0.7rem !important; width:fit-content;">
+                        &sum; @(((item.Retail) * (item.QtyAdjusted)).ToString("n0"))
+                    </li>
+                </ul>
+            </div>
+            <div class="col-1 d-none d-lg-block py-1 text-center">
+                @( (item.OldStock) + (item.QtyAdjusted))
+            </div>
+        </div>
+    }
+    <InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+            />
+}
+
+
+@code{
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 1;
+    private int InnerPageSize = 50 ;
+        
+    // Parameter
+    [Parameter]
+    public AdjustmentModel StockAdjustmentToCheck {get;set;}
+    
+    [Parameter]
+    public int MoreId {get;set;}
+    
+    private string MoreVisual = "";
+    
+    private List<ProductAdjustment> TheseProductAdjustments = new();
+    private double InnerCostPerEach = 0.0;
+    private string Colouring = "text-success";
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await InnerNextPage();
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        
+        if(StockAdjustmentToCheck.ProductAdjustment.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((double)(StockAdjustmentToCheck.ProductAdjustment.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductAdjustments = StockAdjustmentToCheck.ProductAdjustment
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            StockAdjustmentToCheck.ProductAdjustment = new();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        if(StockAdjustmentToCheck.ProductAdjustment.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((double)(StockAdjustmentToCheck.ProductAdjustment.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductAdjustments = StockAdjustmentToCheck.ProductAdjustment
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            StockAdjustmentToCheck.ProductAdjustment = new();
+        }
+        StateHasChanged();
+    }
+}

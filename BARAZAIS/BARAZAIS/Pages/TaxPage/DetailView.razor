@@ -1,0 +1,273 @@
+﻿@page "/Taxes/Details"
+@page "/Taxes/Details/{Sn:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+    if (ThisTax.Id < 1)
+    {
+        <div class="row">
+            <div class="text-unique txtshadow fs-4">
+                --:--
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mt-2 bg-white shadow-sm rounded">
+            <div class="col-12">
+                <Header Title=@Title
+                LineText=@LineText
+                NewUrl=@NewUrl
+                EditUrl=@EditUrl
+                ViewUrl=@ViewUrl
+                ViewUrlIcon=@ViewUrlIcon />
+            </div>
+            <div class="col-12">
+                <hr class="text-muted"/>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <ul class="d-flex flex-column p-0 m-0">
+                    <li>
+                        <h3 class="txtshadow text-capitalize fw-bold fs-4">@ThisTax.Caption</h3>
+                    </li>
+                    <li>
+                        <ul class="m-0 p-0 d-flex flex-row justify-content-start">
+                            <li class="me-3">
+                                <p>Code : @(ThisTax.Code + ThisTax.Id)</p>
+                            </li>
+                            <li class="me-2">
+                                <p> <i class=" bi-dot"></i> </p>
+                            </li>
+                            <li class="me-2">
+                                <p>Value :  @ThisTax.Percentage %</p>
+                            </li>
+                            <li class="me-2">
+                                <p> <i class=" bi-dot"></i> </p>
+                            </li>
+                            <li class="me-2">
+                                <p><i class="bi bi-stack txtshadow me-2"></i> Products :  @ThisTax.Product.Count</p>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    CurrentPage=@CurrentPage
+                    TotalPages=@TotalPages />
+            </div>
+        </div>
+
+        @*End header*@
+
+        <div class="row mt-2 mb-3">
+            <div class="col-12">
+                <div class="row text-start mt-3 bg-white rounded shadow-sm">
+                    <div class="col-12 border-bottom py-3 bg-xs rounded-top">
+                        Description
+                    </div>
+                    <div class="col-12 py-3">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0 text-capitalize">
+                                <p>@(ThisTax.Description != null ? ThisTax.Description : "--:--") </p>
+                            </li>
+                            <li class="p-0 pt-3 m-0 text-muted mt-4 border-top" style="font-size:0.65rem !important">
+                                <ul class="p-0 m-0 d-flex flex-row justify-content-start">
+                                    <li class="p-0 m-0">
+                                        <p class="pb-0 ms-0 mb-0">Last Updated : @(ThisTax.DateUpdated.ToString("dd MMM yy, HH:mm"))</p>
+                                    </li>
+                                    <li class="mx-3">
+                                        <i class="bi bi-dot fs-6 txtshadow"></i>
+                                    </li>
+                                    <li class="p-0 m-0">
+                                        <p class="pb-0 ms-0 mb-0">DateCreated : @(ThisTax.DateCreated.ToString("dd MMM yy, HH:mm"))</p>
+                                        <p class="p-0 m-0">By : @ThisTax.User.FirstName (ID : @ThisTax.Id), @ThisTax.User.AccessLevel</p>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="row text-start mt-3 bg-white rounded shadow-sm">
+                    <div class="col-12  bg-xs shadow-sm py-3 rounded-top">
+                        Associated Data
+                    </div>
+                    <div class="col-12">
+                        <ul class="m-0 p-0">
+                            <li class=" m-0 p-2">
+                                <div class="row text-start text-unique ">
+                                    <div class="col-6 py-3 fs-6">
+                                        <i class=" fs-5 bi-stack  "></i> Products
+                                    </div>
+                                    <div class="col-6">
+                                        <ul class="d-flex flex-row justify-content-end p-0 m-0">
+                                            <li class="btn py-3 text-unique mx-3"><i class="fs-6 bi-stack "></i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-12">
+                        <ul class="m-0 p-0">
+                            <li class=" m-0 p-2">
+                                @* Start Dynamic Tabs for Products and Brands*@
+
+                                    @{
+                                        if (this.ThisTax.Product != null && this.ThisTax.Product.Count > 0)
+                                        {
+                                            <InTaxProduct TaxToCheck=@ThisTax/>
+                                        }
+                                        else
+                                        {
+                                            <p class="fs-6 text-center text-unique py-3 px-5  bg-xss my-3 " style="width:fit-content; margin:1px auto;">--:--</p>
+                                            ThisTax.Product = new();
+                                        }
+                                    }
+
+                                @* End Dynamic Tabs for Products and Brands*@
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    // Url product Id
+    [Parameter]
+    public int Sn { get; set; } = 0;
+
+    //Header Component
+    private string Title = "Taxes";
+    private string LineText = "Detail view";
+    private string NewUrl = "Taxes/New";
+    private string ViewUrl = "Taxes/ListView";
+    private string EditUrl = "Taxes/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //  Pagination
+    private int TotalPages = 1;
+    private int CurrentPage = 1;
+    private int PageSize = 1;
+
+    private int TheCount = 0;
+
+    //Data
+    private TaxModel ThisTax = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await Start((int)Sn);
+    }
+
+    private async Task Start(int cid = 0){
+        ThisTax.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Taxes.GetNoRecords();
+
+            if(cid < 1 && TotalPages > 0){
+                ThisTax = (await repo.Taxes.GetAllTaxesDetailedAsync(1,1)).SingleOrDefault();
+
+                CurrentPage = (repo.Taxes.GetIndexOf(ThisTax) + 1 );
+                EditUrl = "Taxes/Edit/" + ThisTax.Id ;
+            }
+            else if(cid > 0 && cid <= TotalPages){
+                ThisTax = await repo.Taxes.GetDetailedTaxAsync(cid);
+
+                CurrentPage = (repo.Taxes.GetIndexOf(ThisTax) + 1 );
+                EditUrl = "Taxes/Edit/" + ThisTax.Id ;
+            }
+            else{
+                ThisTax = new();
+                ThisTax.Product = new();
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task NextPage(){
+        ThisTax.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Taxes.GetNoRecords();
+
+            if(CurrentPage < TotalPages ){
+                CurrentPage ++ ;
+            }
+            else{
+                CurrentPage = TotalPages; 
+            }
+
+            ThisTax = (await repo.Taxes.GetAllTaxesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+
+    await repo.CompleteAsync();
+            EditUrl = "Taxes/Edit/" + ThisTax.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private async Task PreviousPage(){
+        ThisTax.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Taxes.GetNoRecords();
+
+            if(CurrentPage > 1 ){
+                CurrentPage -- ;
+            }
+            else{
+                CurrentPage = 1; 
+            }
+
+            ThisTax = (await repo.Taxes.GetAllTaxesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+
+    await repo.CompleteAsync();
+            EditUrl = "Taxes/Edit/" + ThisTax.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private async Task FirstPage(){
+        ThisTax.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Taxes.GetNoRecords();
+
+            CurrentPage = 1;
+
+            ThisTax = (await repo.Taxes.GetAllTaxesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+
+        await repo.CompleteAsync();
+            EditUrl = "Taxes/Edit/" + ThisTax.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private async Task LastPage(){
+        ThisTax.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Taxes.GetNoRecords();
+
+            CurrentPage = TotalPages;
+
+            ThisTax = (await repo.Taxes.GetAllTaxesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+
+            await repo.CompleteAsync();
+            EditUrl = "Taxes/Edit/" + ThisTax.Id ;
+            repo.Dispose(); 
+        }
+    }
+}

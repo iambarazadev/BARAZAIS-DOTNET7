@@ -1,0 +1,236 @@
+@page "/Adjustments/Stock/New"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<Header
+    Title=@Title
+    LineText=@LineText
+    ViewUrl=@ViewUrl
+    ViewUrlIcon=@ViewUrlIcon
+    />
+    
+    
+<EditForm Model="Fx" OnSubmit="ProcessAndSave" autocomplete="off">
+    <DataAnnotationsValidator />
+    <div class="row">
+        <div class="col-12">
+            <div class="row my-3">
+                <div class="col-lg-7 col-4  text-start ps-0">
+                    <div class="form-floating mt-2">
+                        <InputTextArea required @bind-Value="Fx.StockAdjumentsReasons" class="form-control border-0 bg-xss fw-bolder text-unique text-capitalize rounded-0" placeholder="Description" id="floatingTextarea2" ></InputTextArea>
+                        <label for="floatingTextarea2">Description[Note]</label>
+                        <ValidationMessage For="() => Fx.StockAdjumentsReasons"/>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-8 d-flex flex-row justify-content-end text-end pe-0">
+                    <ul class="p-0 m-0 d-flex flex-row justify-content-between">
+                        <li class="p-0 m-0">
+                            <button class="btn btn-md text-muted me-4 border rounded-0" @onclick=@(()=> CancelEntry())> <i class="bi bi-file-earmark-excel fs-6 txtshadow me-2"></i>Cancel</button>
+                        </li>
+                        <li class="py-2">
+                            <i class="bi bi-dot fs-6 txtshadow "></i>
+                        </li>
+                        <li class="p-0 m-0">
+                            <button class="btn btn-md px-3 btn-primary shadow-sm  border rounded-0 ms-4"><i class="bi bi-file-earmark-check fs-6 txtshadow me-2 text-white "></i> Create Grn</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row text-start my-3 @ErrorShow">
+                <div class="col-12">
+                    @Error --:--
+                </div>
+            </div>
+            <div class="row rounded-0 bg-xs text-white txtshadow">
+                <div class="col-1 py-3">#</div>
+                <div class="col-md-3 col-5 py-3 text-start">
+                    Product
+                </div>
+                <div class="col-2  py-3">OldStk</div>
+                <div class="col-2  py-3">NewStk</div>
+                <div class="col-md-3 d-md-block d-none py-3 text-start">
+                    Cost
+                </div>
+                <div class="col-md-1 col-2 d-md-block d-none py-3 px-0">Act</div>
+            </div>
+
+            @{
+                foreach(var item in FxList){
+                    <div class="row py-0 border-bottom rounded-0 bg-xss">
+                        <div class="col-1 py-2 text-center">@(FxList.IndexOf(item) + 1)</div>
+                        <div class="col-md-3 col-5 py-1">
+                            <a href="Products/Details/item.ProductId">
+                                <ul class="d-flex flex-column m-0 p-0">
+                                    <li class="fw-bolder text-primary text-start txtshadow text-capitalize">@(item.ProductCaption.Length > 16 ? item.ProductCaption.Substring(0,10)+" .." : item.ProductCaption)</li>
+                                    <li class="rounded-0 opacity-75 fw-bolder" style="font-size:0.7rem !important; width:fit-content;">@item.ProductCode</li>
+                                </ul>
+                            </a>
+                        </div>
+                        <div class="col-2 py-2">@((int)item.OldStock)</div>
+                        <div class="col-2 py-2">@((int)item.OldStock + item.QtyAdjusted)</div>
+                        <div class="col-md-3 d-none d-md-block py-1">
+                            <ul class="d-flex flex-column m-0 p-0">
+                                <li class="fw-bolder text-primary text-start txtshadow">@item.Cost.ToString("n0")</li>
+                                <li class="rounded-0 opacity-75 fw-bolder" style="font-size:0.7rem !important; width:fit-content;">@((((item.OldStock != null) ? (((int)item.OldStock + item.QtyAdjusted) * item.Cost).ToString("n0") : ((0 + item.QtyAdjusted) * item.Cost).ToString("n0"))))</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-1 col-2 py-2"><li @onclick=@(()=> this.FxList.Remove(item)) class=" btn btn-close"></li></div>
+                    </div>
+                }
+            }
+
+            <div class="row mt-2 rounded-0 border border-2 bg-xss">
+                <div class="col-md-2 col-12 py-md-1 py-3 ps-md-0">
+                    <input @bind=@Fx.ProductId  @onfocusout=@(()=> FindThisProduct(Fx.ProductId)) type="text" class="py-md-2 bg-white border-0 py-3 text-start rounded-0 text-unique form-control" placeholder="Scan item or id" style="font-size:0.9rem;" />
+                </div>
+                <div class="col-md-2 col-6 py-2 text-capitalize text-unique">
+                    @(Fx.ProductCaption.Length > 16 ? Fx.ProductCaption.Substring(0,10)+" .." : Fx.ProductCaption)
+                </div>
+                <div class="col-md-2 col-6 py-2">
+                    @(Fx.OldStock != null ? (int)Fx.OldStock : null)
+                </div>
+                <div class="col-md-2 col-12 py-md-1 py-3 ">
+                    <input @bind=@Fx.NewStock type="number" min="0" class="py-md-2 py-3 border-0 bg-light text-start rounded-0 text-unique form-control" placeholder="NewStk" style="font-size:0.9rem;" />
+                </div>
+                <div class="col-md-2 col-12  py-2">
+                
+                </div>
+                <div class="col-md-2 col-12 py-1 pb-3 pb-md-1 pe-0 text-md-end text-center"><li @onclick=@(()=> AddToFxList(Fx)) class=" btn btn-success rounded-0"><i class="bi bi-plus-circle text-white "></i> Add</li></div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+    
+@code {
+    //Url Parameter Variables
+    [Parameter]
+    public int Sn { get; set; } = 0;
+
+    //Header Component
+    private string Title = "Stock Adjustments";
+    private string LineText = "Add New";
+    private string ViewUrl = "Adjustments/Stock/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+    
+    
+    //Global
+    private GlobalStock GS = new();
+    private GlobalRetail GR = new();
+    private GlobalCost GC = new();
+    
+    //Data
+    private StockPoccoModel Fx = new();
+    private List<StockPoccoModel> FxList = new();
+    private ProductModel ThisProduct = new();
+    private AdjustmentModel Sa = new();
+    private ProductAdjustment Sap = new();
+    private int LinkedId = 0;
+    private string Error = "";
+    private string ErrorShow = "d-none";
+    
+    protected override async Task OnInitializedAsync(){
+        
+        await base.OnInitializedAsync();
+        Fx = new();
+        FxList = new();
+        ThisProduct = new();
+        ErrorShow = "d-none";
+    }
+    
+    private async Task FindThisProduct(int? sn){
+        if(sn != null && (int)sn > 0){
+            using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+                ThisProduct = await repo.Products.GetDetailedProductAsync((int)sn);
+                if(ThisProduct != null){
+                    if(ThisProduct.ProductGrn.Any() || ThisProduct.ProductOpen.Any()){
+                        Error = "";
+                        Fx.ProductId = ThisProduct.Id;
+                        Fx.ProductCode = ThisProduct.Code;
+                        Fx.ProductCaption = ThisProduct.Caption;
+                        Fx.Cost = GC.GetCostOfThis(ThisProduct);
+                        Fx.Retail = GR.GetRetailOfThis(ThisProduct);
+                        Fx.OldStock = GS.GetStockOfThis(ThisProduct);
+                        
+                    }else{
+                        Error = "Error : To Make Adjustment please add this item To Open Stock or Purchase(GRN) first.";
+                        ErrorShow = "d-block";
+                    }
+                }
+                else{
+                    Fx.ProductCaption = "No Item Found";
+            }
+                
+            await repo.CompleteAsync();
+            repo.Dispose();
+            }
+        }
+        else{
+            Fx.ProductCaption = "No Item Found";
+        }
+    }
+    
+    private void AddToFxList(StockPoccoModel ThisData){
+        if(Fx != null && 
+            Fx.ProductId != null && (int)Fx.ProductId > 0 && 
+            Fx.NewStock  != null && (int)Fx.NewStock >= 0 && 
+            Fx.StockAdjumentsReasons != ""){
+            
+            var CheckRedundancy = FxList.Where(x => x.ProductId == Fx.ProductId).FirstOrDefault();
+            if(CheckRedundancy != null){
+                CheckRedundancy.QtyAdjusted = ((int)Fx.NewStock - (int)Fx.OldStock);
+                Fx = new();
+            }
+            else{
+                Fx.QtyAdjusted = (int)Fx.NewStock - (int)Fx.OldStock ;
+                FxList.Add(Fx);
+                Fx = new();
+            }
+            
+            Fx.StockAdjumentsReasons = FxList.LastOrDefault().StockAdjumentsReasons;
+        }
+    }
+    
+    private async Task ProcessAndSave(){
+        ThisProduct = new();
+        Sap = new();
+
+        if(FxList.LastOrDefault().StockAdjumentsReasons != null || FxList.LastOrDefault().StockAdjumentsReasons != ""){
+            Sa.Description = FxList.LastOrDefault().StockAdjumentsReasons;
+        }
+        Sa.UserId = 1;
+        Sa.CompanyId = 1;
+        
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            foreach(var xx in FxList){
+                ThisProduct = await repo.Products.GetDetailedProductAsync((int)xx.ProductId);
+                Sap.Product = ThisProduct;
+                Sap.Adjustment = Sa;
+                Sap.QtyAdjusted = (int)xx.QtyAdjusted;
+                Sap.OldStock = (int)xx.OldStock;
+                Sap.Cost = xx.Cost;
+                Sap.Retail = xx.Retail;
+                
+                await repo.ProductAdjustments.AddAsync(Sap);
+                await repo.CompleteAsync();  
+            }
+            
+            await repo.CompleteAsync();  
+            LinkedId = Sa.Id;
+            repo.Dispose();
+        }
+        
+        ThisProduct = new();
+        Fx = new();
+        FxList = new();
+        
+        Navigation.NavigateTo("Adjustments/Stock/Details/" + LinkedId );  
+        StateHasChanged();
+    }
+    
+    private void CancelEntry()
+    {
+        Navigation.NavigateTo("Adjustments/Stock/ListView");
+    }
+}

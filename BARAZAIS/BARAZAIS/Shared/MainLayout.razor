@@ -1,21 +1,22 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
+@inject UserManager<UserModel> UserManager
+@inject SignInManager<UserModel> SignInManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>BARAZAIS</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <div class="page">
+        <div class="page" style="position:relative !important;">
             <div class="sidebar">
                 <NavMenu />
             </div>
-            <main>
-                <div class="top-row px-4 auth">
-                    <LoginDisplay />
-                </div>
-                <article class="content px-4">
+            <main class="">
+                 <LoginDisplay />
+                <div class="px-4">
                     @Body
-                </article>
+                </div>
             </main>
         </div>
     </Authorized>
@@ -23,3 +24,11 @@
         <LoginIndex/>
     </NotAuthorized>
 </AuthorizeView>  
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var User = HttpContextAccessor.HttpContext.User;
+    }
+}

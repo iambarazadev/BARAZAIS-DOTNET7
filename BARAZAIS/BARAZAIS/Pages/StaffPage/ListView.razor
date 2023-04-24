@@ -1,0 +1,241 @@
+@page "/Staffs/ListView"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<Header
+    Title=@Title
+    LineText=@LineText
+    NewUrl=@NewUrl
+    ViewUrl=@ViewUrl
+    ViewUrlIcon=@ViewUrlIcon
+    />
+
+<div class="row mt-2 bg-xs">
+    <div class="col-1 text-center py-3">
+        #
+    </div>
+    <div class="col-4 text-start py-3">
+        Staff
+    </div>
+    <div class="col-md-2 col-4 text-start py-3">
+        Contacts
+    </div>
+    <div class="col-md-2 col-3 text-start py-3">
+        Access
+    </div>
+    <div class="col-md-3 d-none d-md-block text-start py-3">
+        Address
+    </div>
+</div>
+
+@{
+    if (!TheseUsers.Any())
+    {
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique fw-lighter opacity-75 text-capitalize">-- : --</p>
+        </div>
+    }
+    else
+    {
+        foreach (var User in TheseUsers)
+        {
+            <div class="row border-bottom bg-xss" style="font-size:0.8rem !important">
+                <div class="col-1 text-center py-1">
+                    @(User.Id)
+                </div>
+                <div class="col-4 text-start py-1">
+                    <a href=@("Staffs/Details/"+(User.Id)) class="p-0 m-0">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0" style="font-size:0.8rem !important">
+                                @(User.Code + User.Id)
+                            </li>
+                            <li class="p-0 m-0 text-primary text-capitalize" style="font-size:0.8rem !important">
+                                @(User.FirstName + " " + User.LastName)
+                            </li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="col-md-2 col-4 text-start py-1">
+                    <ul class="p-0 m-0 text-start">
+                        <li class="p-0 m-0" style="font-size:0.8rem !important">
+                            @(User.Phone)
+                        </li>
+                        <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                            @(User.Email)
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-3 text-start py-1">
+                    <ul class="p-0 m-0 text-start">
+                        <li class="p-0 m-0 text-capitalize" style="font-size:0.8rem !important">
+                            @(User.AccessLevel)
+                        </li>
+                        <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                            @((User.DateCreated).ToString("dd MMM yy"))
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-3 d-none d-md-block text-start py-1 text-capitalize">
+                    @(User.Address)
+                </div>
+            </div>
+        }
+
+        <Pagination FirstPage=@FirstPage
+            LastPage=@LastPage
+            NextPage=@NextPage
+            PreviousPage=@PreviousPage
+            TotalPages=@TotalPages
+            CurrentPage=@CurrentPage
+            />
+    }
+}
+
+<div class="row">
+    <div class="col-12">
+        <button @onclick=@(()=> Export()) class="btn btn-md btn-success">Export</button>
+    </div>
+</div>
+
+@code {
+    //Header Component
+    private string Title = "Official Staffs";
+    private string LineText = "List view";
+    private string NewUrl = "Staffs/New";
+    private string ViewUrl = "Staffs/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+
+    //UserModel Variables
+    private List<UserModel> TheseUsers = new();
+
+    //Pagination Variables
+    private int PageSize = 50;
+    private int TotalPages = 1;
+    private int CurrentPage = 0;
+
+
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        TheseUsers = new();
+        await NextPage();
+    }
+
+    private async Task NextPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Users.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            if (CurrentPage < TotalPages)
+            {
+                CurrentPage ++;
+            }
+            else
+            {
+                CurrentPage = TotalPages;
+            }
+
+            TheseUsers = await repo.Users. GetAllUsersAsync(CurrentPage, PageSize);
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task PreviousPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Users.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            if (CurrentPage > 1)
+            {
+                CurrentPage --;
+            }
+            else
+            {
+                CurrentPage = 1;
+            }
+
+            TheseUsers = await repo.Users. GetAllUsersAsync(CurrentPage, PageSize);
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task FirstPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Users.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            CurrentPage = 1;
+
+            TheseUsers = await repo.Users. GetAllUsersAsync(CurrentPage, PageSize);
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LastPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Users.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            CurrentPage = TotalPages;
+
+            TheseUsers = await repo.Users. GetAllUsersAsync(CurrentPage, PageSize);
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async void FetchData(){
+        CurrentPage = 0;
+        await NextPage();
+    }
+
+    private async Task Export()
+    {
+        XLWorkbook wb = new();
+
+        wb.Properties.Author = "Razack reds";
+        wb.Properties.Title = "Employees";
+        wb.Properties.Subject = "List View";
+
+        var ws = wb.AddWorksheet("Employee list");
+
+        ws.Cell(1,1).Value = "CODE";
+        ws.Cell(1, 2).Value = "FIRST NAME";
+        ws.Cell(1, 3).Value = "LAST NAME";
+
+        // styling
+        ws.Cell(1, 1).Style.Border.BottomBorder = XLBorderStyleValues.Thick;
+        ws.Cell(1, 2).Style.Border.BottomBorder = XLBorderStyleValues.Thick;
+        ws.Cell(1, 3).Style.Border.BottomBorder = XLBorderStyleValues.Thick;
+
+        for(int row = 1 ; row <= TheseUsers.Count ; row++)
+        {
+            ws.Cell(row + 1, 1).Value = $"{TheseUsers[row - 1].Code}{TheseUsers[row - 1].Id}";
+            ws.Cell(row+1, 2).Value = $"{TheseUsers[row-1].FirstName}";
+            ws.Cell(row+1, 3).Value = $"{TheseUsers[row-1].LastName}";
+        }
+
+        wb.SaveAs("Employees.xlsx");
+    }
+}

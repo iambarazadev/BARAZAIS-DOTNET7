@@ -1,0 +1,400 @@
+@page "/Adjustments/Opens/ListView"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+
+<div class="row pb-3 mt-2 rounded bg-white shadow-sm">
+    <div class="col-12">
+        <Header
+    Title=@Title
+    LineText=@LineText
+    NewUrl=@NewUrl
+    ViewUrl=@ViewUrl
+    ViewUrlIcon=@ViewUrlIcon
+    />
+    </div>
+    <div class="col-12">
+        <hr class="text-muted" />
+    </div>
+    <div class="col-md-2 col-6  mt-md-0 mt-3 ">
+        <div class="form-floating rounded-3">
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <label for="floatingInput" class="">
+                From Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-6 mt-md-0 mt-3 ">
+        <div class="form-floating rounded-3">
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <label for="floatingInput" class="">
+                To Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-4 col-6 mt-md-0 mt-2">
+        <div class="form-floating rounded-0 py-0">
+           <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var ThisUser in TheseUsers){
+                        <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Users</label>
+        </div>
+    </div>
+    <div class="col-md-1 col-4  mt-md-0 mt-3">
+        <ul class="p-0 m-0 text-center">
+            <li class="p-0 m-0 text-unique " >
+                <button @onclick=@(()=>Filter()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+            <li class="p-0 m-0 text-unique mt-1" >
+                <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-3 col-12 mt-md-0 mt-2">
+        <div class="form-floating rounded-0">
+            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-xss border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
+            <label for="floatingInput">
+                <i class="bi bi-search txtshadow fs-6 me-2 "></i> <span class="text-muted opacity-75">OPN#</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3 bg-white shadow-sm rounded" style="font-size:0.8rem !important">
+    <div class="col-md-4 col-12 rounded-3 p-3">
+        <ul class="p-2 m-0 text-start bg-xss rounded">
+            <li class="p-2 m-0 text-unique" >
+                TOTAL PURCHASES
+            </li>
+            <li class="p-2 py-0 m-0 text-primary" >
+                &sum; @((TotalOpens).ToString("n0"))
+            </li>
+            <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                @(NumOfOpens) <i class="bi bi-dot txtshadow "></i> @(NumOfOpens > 1 ? "As Opened Stocks" : "As Opened Stock").
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row bg-white my-3 rounded shadow-sm">
+    <div class="col-12 px-3 bg-xs rounded-top shadow-sm">
+        <div class="row bg-xs">
+            <div class="col-1 text-center py-3 fw-bolder">#</div>
+            <div class="col-lg-1 col-md-2 col-3 py-3 text-start">Code</div>
+            <div class="col-lg-2 d-none d-lg-block py-3 text-center ">Items</div>
+            <div class="col-lg-2 d-none d-lg-block py-3 text-center">Pcs</div>
+            <div class="col-md-2 col-4 py-3 text-start">Cost</div>
+            <div class="col-md-2 col-4 py-3 text-start">Date</div>
+            <div class="col-md-2 d-none d-md-block py-3 text-start">By</div>
+        </div>
+    </div>
+    <div class="col-12 px-3 pt-2">
+    @{
+        if(!TheseOpens.Any()){
+            <div class="container text-center">
+                <p class="p-3  fs-4 text-unique text-center opacity-75" >-- : --</p>
+            </div>
+        }
+        else{
+            foreach(var item in TheseOpens){
+                FullCost = 0.0;
+                GetFullOpenCost(item);
+                <div class="row text-unique border-bottom bg-xss" style="font-size:0.8rem !important">
+                    <div class="col-1 text-center py-1">@(item.Id)</div>
+                    <div class="col-lg-1 col-md-2 col-3 py-1 ">
+                        <a href="Adjustments/Opens/Details/@item.Id" class="p-0 m-0 text-primary">
+                            @(item.Code + item.Id)
+                        </a>
+                    </div>
+                    <div class="col-lg-2 d-none d-lg-block text-primary py-1 text-center ">
+                        @item.ProductOpen.Count
+                    </div>
+                    <div class="col-lg-2 d-none d-lg-block py-1 text-center">
+                        @item.ProductOpen.Sum(x => x.Qty)
+                    </div>
+                    <div class="col-md-2 col-4 text-primary text-start py-1 ">
+                        @FullCost.ToString("n0")
+                    </div>
+                    <div class="col-md-2 col-4 py-1  text-unique">
+                        <ul class="p-0 m-0 d-flex flex-column text-start">
+                            <li class="p-0 m-0 text-primary text-capitalize">@(item.DateCreated.ToString("dd MMM yy"))</li>
+                            <li class="  m-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;">@(item.DateCreated.ToString("ddd hh : mm"))</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-2 d-none d-md-block py-1 text-unique text-start text-capitalize">
+                        <ul class="p-0 m-0 d-flex flex-column text-center">
+                            <li class="p-0 m-0 text-start text-primary">@(item.User.Code + item.User.Id)</li>
+                            <li class=" m-0 opacity-75 text-capitalize" style="font-size:0.8rem !important; width:fit-content;">@(item.User.FirstName + " " + item.User.LastName)</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            <Pagination FirstPage=@FirstPage
+                LastPage=@LastPage
+                NextPage=@NextPage
+                PreviousPage=@PreviousPage
+                TotalPages=@TotalPages
+                CurrentPage=@CurrentPage />
+        }
+    }
+    </div>
+</div>
+
+
+@code{
+        //Header Component
+    private string Title = "Open Stock Adjustments";
+    private string LineText = "List view";
+    private string NewUrl = "Adjustments/Opens/New";
+    private string ViewUrl = "Adjustments/Opens/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+    
+ // Data Variables
+    private List<OpenModel> TheseOpens = new();
+    private int CurrentPage = 0;
+    private int PageSize = 50;
+    private int TotalPages = 1;
+    private double FullCost = 0.0;
+    
+    //filtering
+    private List<UserModel> TheseUsers = new();
+    private int UserId = 0;
+    private int? SearchId = null;
+    
+    private decimal TotalOpens = 0;
+    private int NumOfOpens = 0;
+    
+    private DateOnly FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+    private DateOnly ToDate = DateOnly.FromDateTime(DateTime.Now);
+    
+    protected override async Task OnInitializedAsync(){
+        
+        await base.OnInitializedAsync();
+        
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        Reset();
+        
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseUsers = await repo.Users.GetAllRecords(repo.Users.GetNoRecords(),1);
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+    
+    private async Task NextPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            double Num = (double)(repo.Opens.GetNoRecords())/PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            if(CurrentPage < TotalPages ){
+               CurrentPage ++ ;
+            }
+            else{
+                CurrentPage = TotalPages; 
+            }
+            
+            TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .ToList();
+            
+            OpensInfo();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task PreviousPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            double Num = (double)(repo.Opens.GetNoRecords())/PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            if(CurrentPage > 1 ){
+               CurrentPage -- ;
+            }
+            else{
+                CurrentPage = 1; 
+            }
+            
+            TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .ToList();
+            
+            OpensInfo();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task FirstPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            double Num = (double)(repo.Opens.GetNoRecords())/PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            CurrentPage = 1;
+            
+            TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .ToList();
+            
+            OpensInfo();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task LastPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            double Num = (double)(repo.Opens.GetNoRecords())/PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            CurrentPage = TotalPages;
+            
+            TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
+                    .OrderBy(x=> x.Id)
+                    .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+                    .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+                    .Reverse()
+                    .ToList();
+                    
+                    OpensInfo();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private void GetFullOpenCost(OpenModel ThisData){
+        
+        if(ThisData != null){
+            foreach(var xitem in ThisData.ProductOpen){
+                FullCost += (double)((xitem.Qty) * (xitem.Cost));
+            }
+        } 
+    }
+    
+    //filtering 
+    private async Task Filter(){
+        if(ToDate >= FromDate){
+            if( UserId > 0)
+            {
+                using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+                {
+                    TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
+                    .OrderBy(x=> x.Id)
+                    .Where(x => (x.UserId == UserId))
+                    .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+                    .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+                    .Reverse()
+                    .ToList();
+                    
+                    OpensInfo();
+                    await repo.CompleteAsync();
+                    repo.Dispose();
+                }
+            }else{
+                using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+                {
+                    TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
+                    .OrderBy(x=> x.Id)
+                    .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+                    .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+                    .Reverse()
+                    .ToList();
+                    
+                    OpensInfo();
+                    await repo.CompleteAsync();
+                    repo.Dispose();
+                }
+            }
+        }
+        else{
+            await Reset();
+        }
+    }
+    
+    
+    private async Task InnerSearch(){ 
+        if(SearchId > 0){
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
+                .OrderBy(x=> x.Id)
+                .Where(x => (x.Id == (int)SearchId))
+                .Reverse()
+                .ToList();
+                
+                if(TheseOpens.Any()){
+                    UserId = (int)TheseOpens.FirstOrDefault().UserId;
+                    FromDate = DateOnly.FromDateTime(TheseOpens.FirstOrDefault().DateCreated);
+                    ToDate = DateOnly.FromDateTime(TheseOpens.FirstOrDefault().DateCreated);
+                }
+                else{
+                    UserId = 0;
+                    TheseOpens = new();
+                }
+                
+                OpensInfo();
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }else{
+            await Reset();
+        }
+    }
+    
+    private void OpensInfo(){
+        NumOfOpens = 0;
+        TotalOpens = 0;
+        SearchId = null;
+        
+        if(TheseOpens.Any()){
+            NumOfOpens = TheseOpens.Count();
+            foreach(var Opens in TheseOpens){
+                foreach(var prodOpen in Opens.ProductOpen){
+                    TotalOpens += ((prodOpen.Qty) * (prodOpen.Cost));
+                }
+            }
+        }
+    }
+    
+    private async Task Reset(){
+        UserId = 0;
+        SearchId = null;
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        await NextPage();
+    }
+}

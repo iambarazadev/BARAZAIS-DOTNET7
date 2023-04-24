@@ -6,15 +6,14 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // ConnectionString and Option to user MySqlDatabase
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContextFactory<BarazaDbContext>(options =>
+builder.Services.AddDbContextFactory<BarazaContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -26,7 +25,7 @@ builder.Services.AddIdentity<UserModel, IdentityRole<int>>(options =>
     options.Password.RequireUppercase = true;
     options.SignIn.RequireConfirmedEmail = false;
 
-}).AddEntityFrameworkStores<BarazaDbContext>();
+}).AddEntityFrameworkStores<BarazaContext>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();

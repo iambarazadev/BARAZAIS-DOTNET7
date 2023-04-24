@@ -1,0 +1,421 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+
+<div class="row bg-white my-3 rounded shadow-sm">
+    <div class="col-12 px-3 bg-xs rounded-top shadow-sm">
+        <div class="row bg-xs">
+            <div class="col-1 text-center py-3">
+                #
+            </div>
+            <div class="col-md-3 col-4 text-start py-3">
+                Product
+            </div>
+            <div class="col-md-3 col-4 text-start py-3">
+                Total Sales
+            </div>
+            <div class="col-md-2 col-3 text-start py-3">
+                Total Return
+            </div>
+            <div class="col-md-3 d-none d-md-block text-start py-3">
+                Total Cost
+            </div>
+        </div>
+    </div>
+    <div class="col-12 px-3 pt-2">
+        
+@{
+    if (!TheseProducts.Any()){
+            <div class="container text-center">
+                <p class="p-3  fs-4 text-unique fw-lighter opacity-75 text-capitalize">-- : --</p>
+        </div>
+    }
+    else{
+        var Dezo = TheseTempProducts.Distinct().ToList();
+        foreach(var item in TheseProducts){
+                
+                GetFullPurchaseCost(item);
+                
+                <div class="row bg-xss border-bottom" style="font-size:0.8rem !important">
+                    <div class="col-1 text-center py-1">
+                        @(Dezo.IndexOf(item) + 1)
+                    </div>
+                    <div class="col-md-3 col-4 text-start py-1">
+                        <a class="p-0 m-0" href="Products/Details/@item.Id">
+                            <ul class="p-0 m-0 d-flex flex-column text-start">
+                                <li class="  m-0 opacity-75 text-primary" style="font-size:0.8rem !important; width:fit-content;">@(item.Code + item.Id)</li>
+                                <li class="p-0 m-0 text-capitalize text-muted">@(item.Caption)</li>
+                            </ul>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-4 text-start py-1">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                &sum; @((FullRetail).ToString("n0"))
+                            </li>
+                            <li class="p-0 m-0 text-muted" style="font-size:0.75rem !important">
+                                @NumOfBills @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @NumOfPcs @(NumOfPcs > 1 ? "pcs" : "pc")
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-2 col-3 text-start py-1 pe-0">
+                         <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0 text-success" style="font-size:0.8rem !important">
+                                &sum; @((FullRetail - FullCost).ToString("n0"))
+                            </li>
+                            <li class="p-0 m-0 text-muted" style="font-size:0.75rem !important">
+                                @NumOfBills @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @NumOfPcs @(NumOfPcs > 1 ? "pcs" : "pc")
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 d-none d-md-block text-start py-1">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0 text-danger opacity-75" style="font-size:0.8rem !important">
+                                &sum; @((FullCost).ToString("n0"))
+                            </li>
+                            <li class="p-0 m-0 text-muted" style="font-size:0.75rem !important">
+                                @NumOfBills @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @NumOfPcs @(NumOfPcs > 1 ? "pcs" : "pc")
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            
+        <Pagination FirstPage=@FirstPage
+            LastPage=@LastPage
+            NextPage=@NextPage
+            PreviousPage=@PreviousPage
+            TotalPages=@TotalPages
+            CurrentPage=@CurrentPage 
+        />
+    }
+}
+    </div>
+</div>
+
+
+
+@code{
+    [Parameter]
+    public DateOnly FromThisDate { get; set; }
+
+    [Parameter]
+    public DateOnly ToThisDate { get; set; }
+    
+    [Parameter]
+    public int Uid {get;set;} = 0;
+
+    private int NumOfBills = 0;
+    private int NumOfPcs = 0;
+
+    //ProductModel Variables
+    private List<ProductModel> TheseProducts = new();
+    private List<ProductModel> TheseTempProducts = new();
+
+    //Pagination Variables
+    private int TotalPages = 1;
+    private int CurrentPage = 0;
+    private int PageSize = 20;
+
+    private decimal FullCost = 0;
+    private decimal FullRetail = 0;
+
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await FetchData();
+    }
+
+    private async Task NextPage()
+    {
+        TheseTempProducts = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(Uid > 0){
+                var TempoBills = await repo.Bills.GetAllBillsDetailedAsync(FromThisDate, ToThisDate, Uid);
+                
+                foreach (var bill in TempoBills)
+                {
+                    foreach (var prodbill in bill.ProductBill)
+                    {
+                        TheseTempProducts.Add(prodbill.Product);
+                    }
+                }
+
+                double Num = (double)(TheseTempProducts.Distinct().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+
+                if (CurrentPage < TotalPages){
+                    CurrentPage ++;
+                }
+                else{
+                    CurrentPage = TotalPages;
+                }
+
+                TheseProducts = TheseTempProducts
+                .Distinct()
+                .Reverse()
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            
+            }
+            else{
+                var TempoBills = await repo.Bills.GetAllBillsDetailedAsync(FromThisDate, ToThisDate);
+                
+                foreach (var bill in TempoBills)
+                {
+                    foreach (var prodbill in bill.ProductBill)
+                    {
+                        TheseTempProducts.Add(prodbill.Product);
+                    }
+                }
+
+                double Num = (double)(TheseTempProducts.Distinct().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+
+                if (CurrentPage < TotalPages){
+                    CurrentPage ++;
+                }
+                else{
+                    CurrentPage = TotalPages;
+                }
+
+                TheseProducts = TheseTempProducts
+                .Distinct()
+                .Reverse()
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task PreviousPage()
+    {
+        TheseTempProducts = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+           if(Uid > 0){
+                var TempoBills = await repo.Bills.GetAllBillsDetailedAsync(FromThisDate, ToThisDate, Uid);
+                
+                foreach (var bill in TempoBills)
+                {
+                    foreach (var prodbill in bill.ProductBill)
+                    {
+                        TheseTempProducts.Add(prodbill.Product);
+                    }
+                }
+
+                double Num = (double)(TheseTempProducts.Distinct().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+
+                if (CurrentPage > 1){
+                    CurrentPage --;
+                }
+                else{
+                    CurrentPage = 1;
+                }
+
+                TheseProducts = TheseTempProducts
+                .Distinct()
+                .Reverse()
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            
+            }
+            else{
+                var TempoBills = await repo.Bills.GetAllBillsDetailedAsync(FromThisDate, ToThisDate);
+                
+                foreach (var bill in TempoBills)
+                {
+                    foreach (var prodbill in bill.ProductBill)
+                    {
+                        TheseTempProducts.Add(prodbill.Product);
+                    }
+                }
+
+                double Num = (double)(TheseTempProducts.Distinct().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+
+                if (CurrentPage > 1){
+                    CurrentPage --;
+                }
+                else{
+                    CurrentPage = 1;
+                }
+
+                TheseProducts = TheseTempProducts
+                .Distinct()
+                .Reverse()
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task FirstPage()
+    {
+        TheseTempProducts = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+           if(Uid > 0){
+                var TempoBills = await repo.Bills.GetAllBillsDetailedAsync(FromThisDate, ToThisDate, Uid);
+                
+                foreach (var bill in TempoBills)
+                {
+                    foreach (var prodbill in bill.ProductBill)
+                    {
+                        TheseTempProducts.Add(prodbill.Product);
+                    }
+                }
+
+                double Num = (double)(TheseTempProducts.Distinct().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+
+                CurrentPage = 1;
+
+                TheseProducts = TheseTempProducts
+                .Distinct()
+                .Reverse()
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            
+            }
+            else{
+                var TempoBills = await repo.Bills.GetAllBillsDetailedAsync(FromThisDate, ToThisDate);
+                
+                foreach (var bill in TempoBills)
+                {
+                    foreach (var prodbill in bill.ProductBill)
+                    {
+                        TheseTempProducts.Add(prodbill.Product);
+                    }
+                }
+
+                double Num = (double)(TheseTempProducts.Distinct().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+
+                CurrentPage = 1;
+
+                TheseProducts = TheseTempProducts
+                .Distinct()
+                .Reverse()
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+
+        StateHasChanged();
+    }
+
+    private async Task LastPage()
+    {
+        TheseTempProducts = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+           if(Uid > 0){
+                var TempoBills = await repo.Bills.GetAllBillsDetailedAsync(FromThisDate, ToThisDate, Uid);
+                
+                foreach (var bill in TempoBills)
+                {
+                    foreach (var prodbill in bill.ProductBill)
+                    {
+                        TheseTempProducts.Add(prodbill.Product);
+                    }
+                }
+
+                double Num = (double)(TheseTempProducts.Distinct().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+
+                CurrentPage = TotalPages;
+
+                TheseProducts = TheseTempProducts
+                .Distinct()
+                .Reverse()
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            
+            }
+            else{
+                var TempoBills = await repo.Bills.GetAllBillsDetailedAsync(FromThisDate, ToThisDate);
+                
+                foreach (var bill in TempoBills)
+                {
+                    foreach (var prodbill in bill.ProductBill)
+                    {
+                        TheseTempProducts.Add(prodbill.Product);
+                    }
+                }
+
+                double Num = (double)(TheseTempProducts.Distinct().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+
+                CurrentPage = TotalPages;
+
+                TheseProducts = TheseTempProducts
+                .Distinct()
+                .Reverse()
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+
+        StateHasChanged();
+    }
+
+    private async Task FetchData()
+    {
+        if(FromThisDate <= ToThisDate)
+        {
+            CurrentPage = 0;
+            await NextPage();
+        }
+        else
+        {
+            TheseProducts = new();
+        }
+    }
+
+    private void GetFullPurchaseCost(ProductModel ThisData)
+    {
+        NumOfBills = 0;
+        NumOfPcs = 0;
+        FullCost = 0;
+        FullRetail = 0;
+
+        if (ThisData != null)
+        {
+            foreach (var xitem in ThisData.ProductBill.Where(x => (((DateOnly.FromDateTime(x.Bill.DateCreated)) >= FromThisDate)) && ((DateOnly.FromDateTime(x.Bill.DateCreated)) <= ToThisDate)))
+            {
+                FullCost += (decimal)((xitem.Qty) * (xitem.Cost));
+                FullRetail += (decimal)((xitem.Qty) * (xitem.Price));
+                NumOfPcs += xitem.Qty;
+                NumOfBills += 1;
+            }
+        }
+    }
+}

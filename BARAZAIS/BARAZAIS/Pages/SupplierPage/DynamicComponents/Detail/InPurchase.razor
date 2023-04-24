@@ -1,0 +1,197 @@
+<div class="row text-start">
+    <div class="col-12 pt-2 pb-4 px-0 d-flex flex-row flex-wrap justify-content-start">
+        <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@FromDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="From Date" />
+                    <label for="floatingInput" class="text-unique">
+                        From Date
+                    </label>
+                </div>
+            </li>
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@ToDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="To Date" />
+                    <label for="floatingInput" class="text-unique">
+                        To Date
+                    </label>
+                </div>
+            </li>
+            <li class="py-2">
+                <button class="btn btn-sm btn-primary text-white border-0 rounded" @onclick="ChangeDate"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+@{
+    if(!TheseGrns.Any()){
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique fw-lighter">--:--</p>
+        </div>
+    }
+    else{
+        <div class="row py-2 border-bottom text-unique bg-xss rounded">
+            <div class="col-1 py-2 text-center">#</div>
+            <div class=" col-lg-2 col-3 py-1 text-center text-unique">
+                <ul class=" text-start m-0 p-0">
+                    <li>GRN</li>
+                    <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Receipt</li>
+                </ul>
+            </div>
+            <div class=" col-lg-3 col-4 py-1 text-center text-unique">
+                <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                    <li class="text-unique text-start">Total Cost</li>
+                </ul>
+            </div>
+            <div class=" col-lg-3 col-4 py-1 text-start text-unique">
+                <ul class="d-flex flex-column text-start m-0 p-0">
+                    <li>Date</li>
+                    <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Day & Time</li>
+                </ul>
+            </div>
+            <div class="col-lg-3 d-none d-lg-block py-1 text-start text-unique">
+                <ul class="d-flex flex-column text-start m-0 p-0">
+                    <li class="p-0 text-unique text-start">Responsible</li>
+                    <li class="p-0 opacity-75" style="font-size:0.7rem !important;">Access Level</li>
+                </ul>
+            </div>
+        </div>
+       
+        foreach(var item in TheseGrns){
+            RecordSum = 0.0;
+            TotalSum = 0.0;
+            
+            foreach(var rec in item.ProductGrn){
+                RecordSum += (double)(rec.QtyPurchased * rec.Cost);
+            }
+            
+            TotalSum += RecordSum;
+
+            <div class="row py-0 text-unique bg-xss border-bottom" style="font-size:0.8rem !important">
+                <div class="col-1 py-2 text-center text-dark">@(SupplierToCheck.Grn.IndexOf(item) + 1)</div>
+                <div class=" col-lg-2 col-3 py-1 text-start text-unique">
+                    <a class="p-0 m-0 text-unique text-start" href="Purchases/Details/@item.Id" style="font-size:0.8rem !important;">
+                        <ul class=" m-0 p-0">
+                            <li class="text-primary">@(item.Code + item.Id)</li>
+                            <li class=" opacity-75" style="font-size:0.7rem !important; width:fit-content;">@item.ReceiptCode</li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-4 py-1 text-start text-unique">
+                    <ul class="m-0 p-0">
+                        <li class="text-unique text-start">
+                            @TotalSum.ToString("n0")
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-4 py-1 text-start text-unique">
+                    <ul class=" m-0 p-0">
+                        <li class="text-unique text-start">@(item.DateCreated.ToString("dd MMM yy"))</li>
+                        <li class=" opacity-75" style="font-size:0.7rem !important; ">@(item.DateCreated.ToString("ddd hh : mm"))</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 d-none d-lg-block py-1 text-start text-unique">
+                    <ul class=" m-0 p-0">
+                        <li class="text-unique text-start">@(item.User.Code + item.User.Id)</li>
+                        <li class=" opacity-75" style="font-size:0.7rem !important; ">@(item.User.FirstName + " " + item.User.LastName)</li>
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <InnerPagination InnerNextPage=@InnerNextPage
+                 InnerPreviousPage=@InnerPreviousPage
+                 InnerCurrentPage=@InnerCurrentPage
+                 InnerTotalPages=@InnerTotalPages />
+        
+    }
+}
+@code{
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 10 ;
+        
+    // Parameter
+    [Parameter]
+    public SupplierModel SupplierToCheck {get;set;}
+    private List<GrnModel> TheseGrns = new();
+    private double RecordSum = 0.0;
+    private double TotalSum = 0.0;
+    
+    private DateOnly FromDate;
+    private DateOnly ToDate;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();  
+        FromDate = DateOnly.FromDateTime(SupplierToCheck.DateCreated);
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        
+        await InnerNextPage();
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        
+        if(SupplierToCheck.Grn.Any()){
+            //InnerTotalPages = ((int)(Math.Ceiling((double)(SupplierToCheck.Grn.Count)/InnerPageSize)));
+            
+            InnerTotalPages = (int)(Math.Ceiling((double)(SupplierToCheck.Grn
+            .Where(x => (((DateOnly.FromDateTime(x.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.DateCreated)) <= ToDate))).ToList().Count())/InnerPageSize));
+            
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseGrns = SupplierToCheck.Grn
+            .Where(x => (((DateOnly.FromDateTime(x.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.DateCreated)) <= ToDate)))
+            .OrderBy(x=> x.Id)
+            .Reverse()
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            SupplierToCheck.Grn = new();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        if(SupplierToCheck.Grn.Any()){
+            //InnerTotalPages = ((int)(Math.Ceiling((double)(SupplierToCheck.Grn.Count)/InnerPageSize)));
+            InnerTotalPages = (int)(Math.Ceiling((double)(SupplierToCheck.Grn
+            .Where(x => (((DateOnly.FromDateTime(x.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.DateCreated)) <= ToDate))).ToList().Count())/InnerPageSize));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseGrns = SupplierToCheck.Grn
+            .Where(x => (((DateOnly.FromDateTime(x.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.DateCreated)) <= ToDate)))
+            .OrderBy(x=> x.Id)
+            .Reverse()
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            SupplierToCheck.Grn = new();
+        }
+        StateHasChanged();
+    }
+    
+    private void ChangeDate(){
+        InnerCurrentPage = 0;
+        InnerNextPage();
+    }
+}

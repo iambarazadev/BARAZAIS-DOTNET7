@@ -1,0 +1,48 @@
+﻿<div class="row mt-3">
+    <div class="col-12 py-0">
+        <ul class="p-0 m-0 d-flex flex-row justify-content-center justify-content-md-end">
+            <li class="p-0 m-0 ms-2">
+                <button @onclick=@FirstPage class="btn btn-md btn-primary text-white border-0 rounded-0">first</button>
+            </li>
+            <li class="p-0 m-0 ms-2">
+                <button @onclick=@PreviousPage class="btn btn-md btn-primary text-white border-0 rounded-0">
+                    <i class="bi bi-arrow-left-circle fw-bolder txtshadow text-white " style="font-size:.9rem !important;"></i> prev
+                </button>
+            </li>
+            <li class="m-0 mx-2 p-0">
+                <p class="p-2">@CurrentPage / @TotalPages</p>
+            </li>
+            <li class="p-0 m-0 ms-2">
+                <button @onclick=@NextPage class="btn btn-md btn-primary text-white border-0 rounded-0">
+                    next <i class="bi bi-arrow-right-circle fw-bolder txtshadow text-white " style="font-size:.9rem !important;"></i>
+                </button>
+            </li>
+            <li class="p-0 m-0 ms-2">
+                <button @onclick=@LastPage class="btn btn-md btn-primary text-white border-0 rounded-0">last</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+@code {
+    // EventCallBack variables for pages
+        
+    [Parameter]
+    public EventCallback<MouseEventArgs> PreviousPage { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> NextPage { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> FirstPage { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> LastPage { get; set; }
+
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int TotalPages { get; set; }
+}

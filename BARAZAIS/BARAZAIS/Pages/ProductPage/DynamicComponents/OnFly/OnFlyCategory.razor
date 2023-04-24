@@ -1,0 +1,88 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<EditForm Model="ThisCategory" OnValidSubmit="ProcessAndSave" autocomplete="off">
+    <div class="row text-unique mb-3 p-3 bg-white">
+        <div class="col-lg-3 col-md-2 col-12">
+            @{
+                if(ThisCategory.Id > 0){
+                    <div class="container pb-3">
+                        <p class="mt-3 p-3 border border-2">
+                            <i class="bi bi-upc-scan " style="font-size:0.75rem !important;"></i>  @(ThisCategory.Id > 0 ? ThisCategory.Id : "--:--")
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-lg-6 col-md-8 col-12 ps-md-0 pb-3 text-start">
+            <div class="container pt-2 pb-3">
+                <div class="form-floating my-2 rounded-0">
+                    <input type="text" required @bind="ThisCategory.Caption" class="form-control bg-xss border-0 text-unique fw-bolder rounded-0 text-capitalize " id="floatingInput" placeholder="Category Name (Caption / Short Description)" />
+                    <label for="floatingInput">
+                        Category Name
+                    </label>
+                    @*<ValidationMessage For=" () => Fx.CategoryCaption " />*@
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-12 text-start pb-2 px-0">
+                        <div class="form-floating rounded-0">
+                            <textarea @bind="ThisCategory.Description" class="form-control rounded-0 border-0 w-100 fw-bolder text-unique text-capitalize bg-xss h-50" rows="3" placeholder="Add Description" required></textarea>
+                            <label for="floatingInput">
+                                Description [Note]
+                            </label>
+                            @*<ValidationMessage For=" () => Fx.Description " />*@
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-12 text-start pb-2 px-0 d-flex flex-row justify-content-between">
+                        <button class="btn btn-md btn-outline-light text-muted border-0 rounded-0" @onclick=@(()=> CancelEntry()) data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-md btn-primary border-0 rounded-0" data-bs-dismiss="modal" >Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-2 col-12">
+            @*Empty Div for centering*@
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+
+    //Category Model Variable
+    private CategoryModel ThisCategory = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        ThisCategory = new();
+    }
+
+    private async Task ProcessAndSave()
+    {
+        if (ThisCategory != null)
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                ThisCategory.UserId = 1;
+                ThisCategory.CompanyId = 1;
+
+                await repo.Categories.AddAsync(ThisCategory);
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }
+
+        ThisCategory = new();
+        Navigation.NavigateTo("Products/New");
+        StateHasChanged();
+    }
+
+    private void CancelEntry()
+    {
+        Navigation.NavigateTo("Products/New");
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,157 @@
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<div class="row bg-white rounded shadow-sm py-3" style="font-size:0.8rem !important">
+    <div class="col-md-3 col-5">
+        <div class="form-floating rounded-0 py-0">
+            <select @bind=@Selection @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="billwise" class="text-unique">Bill Wise</option>
+                <option value="itemwise" class="text-unique">Item Wise</option>
+                <option value="summary" class="text-unique">Summary</option>
+            </select>
+            <label for="floatingSelect">Selection</label>
+        </div>
+    </div>
+    <div class="col-md-4 col-7 ">
+        <div class="form-floating rounded-0 py-0 @DisplayCashier">
+            <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var ThisUser in TheseUsers){
+                        <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Cashiers</label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4  mt-md-0 mt-2">
+        <div class="form-floating rounded-3">
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <label for="floatingInput" class="">
+                From Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4 mt-md-0 mt-2">
+        <div class="form-floating rounded-3">
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <label for="floatingInput" class="">
+                To Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-1 col-3  mt-md-0 mt-2">
+        <ul class="p-0 m-0 text-center">
+            <li class="p-0 m-0 text-unique" >
+                <button @onclick=@(()=>Filter()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+            <li class="p-0 m-0 text-unique mt-1 " >
+                <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        @{
+            if(ShowSummary){
+                <div class="row">
+                    <div class="col-12">
+                        <ShowSummaryFilter DateA=@(FromDate) DateB=@(ToDate) Uid=@(UserId)/>
+                    </div>
+                    <div class="col-12">
+
+                    </div>
+                </div>
+                
+                ShowSummary = false;
+            }
+            else if(ShowBillwise){
+                <ShowBillWiseFilter FromThisDate=@FromDate ToThisDate=@ToDate ThisUserId=@(UserId) />
+                ShowBillwise = false;
+            }
+            else if(ShowItemwise){
+                <ShowItemWiseFilter FromThisDate=@FromDate ToThisDate=@ToDate Uid=@(UserId)/>
+                ShowItemwise = false;
+            }
+            else{
+                <p class="py-3 fs-6">--:--</p>
+                LineText = "List view";
+            }
+        }
+    </div>
+</div>
+
+
+@code {
+    
+    //Header Component
+    private string Title = "Sales";
+    private string LineText = "List view";
+    private string NewUrl = "Pos/0";
+    private string ViewUrl = "Sales/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+
+    //Filter
+    private string Selection;
+    private string DisplayCashier = "";
+    private int UserId;
+    private int CurrentUserId;
+    private List<UserModel> TheseUsers = new();
+    private DateOnly FromDate;
+    private DateOnly ToDate;
+    
+    //logic 
+    private bool ShowSummary = false;
+    private bool ShowBillwise = false;
+    private bool ShowItemwise = false;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await Reset();
+    }
+    
+    private async Task Filter(){
+        if(Selection == "summary"){
+            ShowSummary = true;
+            ShowBillwise = false;
+            ShowItemwise = false;
+            LineText = "Summary view";
+        }
+        else if(Selection == "billwise"){
+            ShowSummary = false;
+            ShowBillwise = true;
+            ShowItemwise = false;
+            LineText = "Bill wise";
+        }
+        else if(Selection == "itemwise"){
+            ShowSummary = false;
+            ShowBillwise = false;
+            ShowItemwise = true;
+            LineText = "Item wise";
+        }
+        else{
+            Selection = "summary";
+            ShowBillwise = false;
+            ShowItemwise = false;
+        }
+    }
+    
+    private async Task Reset(){
+        UserId = 0;
+        Selection = "summary";
+        ShowSummary = true;
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddDays(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseUsers = await repo.Users.GetAllUsersAsync(1, repo.Users.GetNoRecords());
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        StateHasChanged();
+        await Filter();
+    }
+}

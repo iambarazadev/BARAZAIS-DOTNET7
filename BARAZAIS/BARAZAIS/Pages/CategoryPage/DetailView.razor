@@ -1,0 +1,328 @@
+﻿@page "/Categories/Details"
+@page "/Categories/Details/{Sn:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+
+@{
+    if (ThisCategory.Id < 1)
+    {
+        <div class="row">
+            <div class="text-unique txtshadow fs-4">
+                --:--
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mt-2 bg-white shadow-sm rounded">
+            <div class="col-12">
+                <Header Title=@Title
+                LineText=@LineText
+                NewUrl=@NewUrl
+                EditUrl=@EditUrl
+                ViewUrl=@ViewUrl
+                ViewUrlIcon=@ViewUrlIcon />
+            </div>
+            <div class="col-12">
+                <hr class="text-muted" />
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <ul class="d-flex flex-column p-0 m-0">
+                    <li class="text-md-start text-center">
+                        <h3 class="txtshadow text-capitalize fw-bold fs-4">@ThisCategory.Caption</h3>
+                    </li>
+                    <li>
+                        <ul class="m-0 p-0 d-flex flex-row justify-content-md-start justify-content-center">
+                            <li class="me-2 text-md-start text-center">
+                                <p>Code : @(ThisCategory.Code + ThisCategory.Id)</p>
+                            </li>
+                            <li class="me-2 text-md-start text-center">
+                                <p> <i class=" bi-dot"></i> </p>
+                            </li>
+                            <li class="me-2 text-md-start text-center">
+                                <p><i class="bi bi-stack txtshadow me-2"></i> Products :  @ThisCategory.Product.Count</p>
+                            </li>
+                            <li class="me-2 text-md-start text-center">
+                                <p> <i class=" bi-dot"></i> </p>
+                            </li>
+                            <li class="me-2 text-md-start text-center">
+                                <p>
+                                    <i class="bi-bookmark-fill me-2"></i> 
+                                    Brands : 
+                                    @((ThisCategory.Product)
+                                        .GroupBy(a => a.Brand)
+                                        .Select(b => new{
+                                            Brand = b.Key,
+                                    }).ToList().Count)
+                                </p>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    CurrentPage=@CurrentPage
+                    TotalPages=@TotalPages />
+            </div>
+        </div>
+
+        @*End header*@
+
+        <div class="row my-3 rounded">
+            <div class="col-12">
+                <div class="row text-start bg-white rounded shadow-sm">
+                    <div class="col-12 border-bottom py-3 rounded-top bg-xs">
+                        Description
+                    </div>
+                    <div class="col-12 py-3">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0 text-capitalize">
+                                <p>@(ThisCategory.Description != null ? ThisCategory.Description + "." : "--:--") </p>
+                            </li>
+                            <li class="p-0 pt-3 m-0 text-muted mt-4 border-top" style="font-size:0.65rem !important">
+                                <ul class="p-0 m-0 d-flex flex-row justify-content-start">
+                                    <li class="p-0 m-0">
+                                        <p class="pb-0 ms-0 mb-0">Last Updated : @(ThisCategory.DateUpdated.ToString("dd MMM yy, HH:mm"))</p>
+                                    </li>
+                                    <li class="mx-3">
+                                        <i class="bi bi-dot fs-6 txtshadow"></i>
+                                    </li>
+                                    <li class="p-0 m-0">
+                                        <p class="pb-0 ms-0 mb-0">DateCreated : @(ThisCategory.DateCreated.ToString("dd MMM yy, HH:mm"))</p>
+                                        <p class="p-0 m-0">By : @ThisCategory.User.FirstName (ID : @ThisCategory.UserId), @ThisCategory.User.AccessLevel</p>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 bg-white mt-3 rounded">
+                <div class="row text-start">
+                    <div class="col-12 bg-xs shadow-sm py-3 rounded-top">
+                        Associated Data
+                    </div>
+                    <div class="col-12">
+                        <ul class="m-0 p-0">
+                            <li class=" m-0 p-2">
+                                <div class="row text-start text-unique">
+                                    <div class="col-8 py-3 fs-6">
+                                        <i class=" @TabIcon "></i> @TabCaption
+                                    </div>
+                                    <div class="col-4 p-0 ps-md-5">
+                                        <ul class="nav nav-pills nav-fill gap-2 p-1 mx-0 small bg-xss rounded fw-bolder" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-unique); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); font-size:0.85rem !important;">
+                                            <li class="nav-item p-0 m-0" role="presentation" @onclick=@(()=> SwitchToProductTab()) >
+                                                <button class="nav-link active rounded" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true"><i class="fs-6 bi-stack "></i></button>
+                                            </li>
+                                            <li class="nav-item p-0 m-0" role="presentation" @onclick=@(()=> SwitchToBrandTab()) >
+                                                <button class="nav-link rounded" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true"><i class="fs-6 bi-bookmark "></i></button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-12 ">
+                        <ul class="m-0 p-0">
+                            <li class=" m-0 p-2">
+                                @* Start Dynamic Tabs for Products and Brands*@
+                
+                                    @{
+                                        if(ProductTab){
+                                                
+                                            if(this.ThisCategory.Product != null && this.ThisCategory.Product.Count > 0){
+                                                <InProduct CategoryToCheck=@ThisCategory/>
+                                            }
+                                            else{
+                                        
+                                                <p class="fs-6 text-center text-unique py-3 px-5  bg-xss my-3" style="width:fit-content; margin:1px auto;">--:--</p>
+                                                ThisCategory.Product = new();
+                                                
+                                            }
+                                        }
+                                        else if (BrandTab)
+                                        {
+
+                                            if ((ThisCategory.Product)
+                                            .GroupBy(a => a.Brand)
+                                            .Select(b => new
+                                            {
+                                                Brand = b.Key,
+                                            }).ToList().Count > 0)
+                                            {
+                                                <InBrand CategoryToCheck=@ThisCategory />
+                                            }
+                                            else
+                                            {
+                                                <p class="fs-6 text-center text-unique py-3 px-5  bg-xss my-3" style="width:fit-content; margin:1px auto;">--:--</p>
+                                                ThisCategory.Product = new();
+                                            }
+                                        }
+                                    }
+                                    
+                                @* End Dynamic Tabs for Products and Brands*@
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    // Url product Id
+    [Parameter]
+    public int Sn { get; set; } = 0;
+
+    //Header Component
+    private string Title = "Categories";
+    private string LineText = "Detail view";
+    private string NewUrl = "Categories/New";
+    private string ViewUrl = "Categories/ListView";
+    private string EditUrl = "Categories/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //  Pagination
+    private int TotalPages = 1;
+    private int CurrentPage = 1;
+    private int PageSize = 1;
+
+    //  Tabs Variables
+    private bool ProductTab = true;
+    private bool BrandTab = false;
+    private string TabCaption = "Products";
+    private string TabIcon = "bi-stack";
+    
+    private int TheCount = 0;
+
+    //Data
+    private CategoryModel ThisCategory = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await Start((int)Sn);
+    }
+
+    private async Task Start(int cid = 0){
+        ThisCategory.Product = new();
+            using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Categories.GetNoRecords();
+            
+            if(cid < 1 && TotalPages > 0){
+                ThisCategory = (await repo.Categories.GetAllCategoriesDetailedAsync(1,1)).SingleOrDefault();
+                CurrentPage = (repo.Categories.GetIndexOf(ThisCategory) + 1 );
+                EditUrl = "Categories/Edit/" + ThisCategory.Id ;
+            }
+            else if(cid > 0 && cid <= TotalPages){
+                ThisCategory = await repo.Categories.GetDetailedCategoryAsync(cid);
+                CurrentPage = (repo.Categories.GetIndexOf(ThisCategory) + 1 );
+                EditUrl = "Categories/Edit/" + ThisCategory.Id ;
+            }
+            else{
+                ThisCategory = new();
+                ThisCategory.Product = new();
+            }
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task NextPage(){
+        ThisCategory.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Categories.GetNoRecords();
+            
+            if(CurrentPage < TotalPages ){
+                CurrentPage ++ ;
+            }
+            else{
+                CurrentPage = TotalPages; 
+            }
+            
+            ThisCategory = (await repo.Categories.GetAllCategoriesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            
+            await repo.CompleteAsync();
+            EditUrl = "Categories/Edit/" + ThisCategory.Id ;
+            repo.Dispose(); 
+        }
+    }
+    
+    private async Task PreviousPage(){
+        ThisCategory.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Categories.GetNoRecords();
+            
+            if(CurrentPage > 1 ){
+                CurrentPage -- ;
+            }
+            else{
+                CurrentPage = 1; 
+            }
+            
+            ThisCategory = (await repo.Categories.GetAllCategoriesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            
+            await repo.CompleteAsync();
+            EditUrl = "Categories/Edit/" + ThisCategory.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private async Task FirstPage(){
+        ThisCategory.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Categories.GetNoRecords();
+            
+            CurrentPage = 1; 
+            
+            ThisCategory = (await repo.Categories.GetAllCategoriesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            
+            await repo.CompleteAsync();
+            EditUrl = "Categories/Edit/" + ThisCategory.Id ;
+            repo.Dispose(); 
+        }
+    }
+    
+    private async Task LastPage(){
+        ThisCategory.Product = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Categories.GetNoRecords();
+            
+            CurrentPage = TotalPages; 
+            
+            ThisCategory = (await repo.Categories.GetAllCategoriesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            
+            await repo.CompleteAsync();
+            EditUrl = "Categories/Edit/" + ThisCategory.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private void SwitchToProductTab(){
+        ProductTab = true;
+        BrandTab = false;
+        
+        TabCaption = "Products";
+        TabIcon = "bi-stack";
+    }
+    
+    private void SwitchToBrandTab(){
+        ProductTab = false;
+        BrandTab = true;
+        
+        TabCaption = "Brands";
+        TabIcon = "bi-bookmark-fill";
+    }
+}

@@ -1,0 +1,124 @@
+@page "/Pos/CashDraw"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<PageTitle>Cash Counter</PageTitle>
+
+<div class="row">
+    <div class="col-12 p-md-3 p-2"></div>
+</div>
+<div class="row text-unique bg-white rounded shadow-sm">
+    <div class="col-md-6 col-12">
+        <div class="row opacity-75 border-bottom">
+            <div class="col-6 text-end py-3 fw-bolder">CURRENCY [TZS]</div>
+            <div class="col-6 text-start ps-5 py-3 fw-bolder">COUNTED</div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-6 text-end py-2 fw-bolder fs-6">10,000</div>
+            <div class="col-6 text-start fw-bolder rounded"><input type="number" @bind=@TenThousand @bind:event="oninput"  @onkeyup=@(()=> CalculateCash()) @onchange=@(()=> CalculateCash())  min="0" class="py-2 rounded bg-xss text-center fw-bolder border-0 form-control w-50 text-unique" /></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-6 text-end py-2 fw-bolder fs-6">5,000</div>
+            <div class="col-6 text-start fw-bolder rounded"><input type="number"  @bind=@FiveThousand @bind:event="oninput"  @onkeyup=@(()=> CalculateCash()) @onchange=@(()=> CalculateCash()) min="0" class="py-2 rounded bg-xss text-center fw-bolder border-0 form-control w-50 text-unique" /></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-6 text-end py-2 fw-bolder fs-6">2,000</div>
+            <div class="col-6 text-start fw-bolder rounded"><input type="number"  @bind=@TwoThousand @bind:event="oninput"  @onkeyup=@(()=> CalculateCash()) @onchange=@(()=> CalculateCash()) min="0" class="py-2 rounded bg-xss text-center fw-bolder border-0 form-control w-50 text-unique" /></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-6 text-end py-2 fw-bolder fs-6">1,000</div>
+            <div class="col-6 text-start fw-bolder rounded"><input type="number"  @bind=@OneThousand @bind:event="oninput"  @onkeyup=@(()=> CalculateCash()) @onchange=@(()=> CalculateCash()) min="0" class="py-2 rounded bg-xss text-center fw-bolder border-0 form-control w-50 text-unique" /></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-6 text-end py-2 fw-bolder fs-6">500</div>
+            <div class="col-6 text-start fw-bolder rounded"><input type="number"  @bind=@FiveHundred @bind:event="oninput"  @onkeyup=@(()=> CalculateCash()) @onchange=@(()=> CalculateCash()) min="0" class="py-2 rounded bg-xss text-center fw-bolder border-0 form-control w-50 text-unique" /></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-6 text-end py-2 fw-bolder fs-6">200</div>
+            <div class="col-6 text-start fw-bolder rounded"><input type="number"  @bind=@TwoHundred @bind:event="oninput"  @onkeyup=@(()=> CalculateCash()) @onchange=@(()=> CalculateCash()) min="0" class="py-2 rounded bg-xss text-center fw-bolder border-0 form-control w-50 text-unique" /></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-6 text-end py-2 fw-bolder fs-6">100</div>
+            <div class="col-6 text-start fw-bolder rounded"><input type="number"  @bind=@OneHundred @bind:event="oninput"  @onkeyup=@(()=> CalculateCash()) @onchange=@(()=> CalculateCash()) min="0" class="py-2 rounded bg-xss text-center fw-bolder border-0 form-control w-50 text-unique" /></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-6 text-end py-2 fw-bolder fs-6">50</div>
+            <div class="col-6 text-start fw-bolder rounded"><input type="number"  @bind=@FiftyTsh @bind:event="oninput"  @onkeyup=@(()=> CalculateCash()) @onchange=@(()=> CalculateCash()) min="0" class="py-2 rounded bg-xss text-center fw-bolder border-0 form-control w-50 text-unique" /></div>
+        </div>
+        <div class="row">
+        <div class="col-3 text-center py-5 fw-bolder"></div>
+            <div class="col-9 text-center py-5 fw-bolder">
+                <button @onclick=@(()=> Clear()) class="btn btn-md text-unique border border-2 rounded"><i class="bi bi-brush"> </i> Clear</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-12 border-bottom">
+        <div class="row opacity-75 border-bottom">
+            <div class="col-12 text-end py-3 fw-bolder text-center opacity-75">
+                CASH IN COUNTER [TZS]
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-start py-3 fw-bolder">
+                <div class="container bg-xss text-center text-unique py-3 fs-5 rounded">
+                    @TotalCashInDraw.ToString("n0")
+                </div>
+                <div class="container text-center py-3">
+                    <button @onclick=@(()=> Done()) class="btn btn-md bg-unique text-white fw-bolder rounded border-0">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 p-md-3 p-2"></div>
+</div>
+
+
+@code{
+    
+    private int TotalCashInDraw = 0;
+    private int? TenThousand = null, 
+                FiveThousand = null, 
+                TwoThousand = null, 
+                OneThousand = null, 
+                FiveHundred = null, 
+                TwoHundred = null, 
+                OneHundred = null, 
+                FiftyTsh = null;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        CalculateCash();
+    }
+    
+    private void CalculateCash(){
+        TotalCashInDraw = 0;
+        TotalCashInDraw = (10000 * (TenThousand != null ? (int)TenThousand : 0)) + 
+        (5000 * (FiveThousand != null ? (int)FiveThousand : 0)) + 
+        (2000 * (TwoThousand != null ? (int)TwoThousand : 0)) + 
+        (1000 * (OneThousand != null ? (int)OneThousand : 0)) + 
+        (100 * (OneHundred != null ? (int)OneHundred : 0)) + 
+        (500 * (FiveHundred != null ? (int)FiveHundred : 0)) + 
+        (200 * (TwoHundred != null ? (int)TwoHundred : 0)) + 
+        (50 * (FiftyTsh != null ? (int)FiftyTsh : 0));
+    }
+    
+    private void Clear(){
+        TenThousand = null; 
+        FiveThousand = null; 
+        TwoThousand = null; 
+        OneThousand = null; 
+        FiveHundred = null; 
+        TwoHundred = null; 
+        OneHundred = null; 
+        FiftyTsh = null;
+        TotalCashInDraw = 0;
+    }
+    
+    private void Done(){
+        Clear();
+        Navigation.NavigateTo("/Pos/0");
+    }
+}

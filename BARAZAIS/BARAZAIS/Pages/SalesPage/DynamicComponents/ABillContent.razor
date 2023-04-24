@@ -1,0 +1,133 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+
+
+    @{  
+        foreach(var item in TheseProductBills){
+            MoreVisual = (item.ProductId == MoreId) ? "bg-white border border-warning rounded-3" : "bg-xss";
+            <div class="row text-unique @MoreVisual border-bottom border-1" style="font-size:0.8rem !important">
+                <div class="col-1 text-center py-1 fw-bolder">
+                    @(BillToCheck.ProductBill.IndexOf(item) + 1)
+                </div>
+                <div class="col-lg-2 col-4 py-1 text-start">
+                    <a href="Products/Details/@item.Product.Id" class="p-0 m-0">
+                        <ul class="d-flex flex-column justify-content-start p-0 m-0 text-capitalize">
+                            <li class=" m-0 text-primary opacity-75 " style="font-size:0.75rem !important; width:fit-content;">@(item.Product.Code + item.Product.Id)</li>
+                            <li class="text-muted d-none d-lg-block">@(item.Product.Caption.Length > 20 ? item.Product.Caption.Substring(0,16) + " .." : item.Product.Caption)</li>
+                            <li class="text-muted d-lg-none">@(item.Product.Caption.Length > 11 ? item.Product.Caption.Substring(0,10) + " .." : item.Product.Caption)</li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="col-lg-1 col-3 py-1 text-center text-success">
+                    @item.Qty
+                </div>
+                <div class=" col-lg-2 col-4 py-1 text-start px-0 ps-2">
+                    <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                        <li class="text-primary">&#64; @((item.Price).ToString("n0"))</li>
+                        <li class=" m-0 text-muted " style="font-size:0.7rem !important; width:fit-content;">
+                            &sum; @((item.Price * (item.Qty)).ToString("n0"))
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-2 d-none d-lg-block py-1 text-md-start text-center">
+                    <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                        <li class="text-danger">&#64; @(item.Cost.ToString("n0"))</li>
+                        <li class=" m-0 text-muted " style="font-size:0.7rem !important; width:fit-content;">&sum; @((item.Cost * item.Qty).ToString("n0"))</li>
+                    </ul>
+                </div>
+                <div class="col-2 d-none d-lg-block py-1 text-md-start text-center">
+                    <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                        <li class="text-success">&#64; @((item.Price - item.Cost).ToString("n0"))</li>
+                        <li class=" m-0 text-muted " style="font-size:0.7rem !important; width:fit-content;">&sum; @(((item.Price - item.Cost) * item.Qty).ToString("n0"))</li>
+                    </ul>
+                </div>
+                <div class="col-1 d-none d-lg-block py-1 text-center opacity-75 ">
+                    @(item.OldStock)
+                </div>
+                <div class="col-1 d-none d-lg-block py-1 text-center opacity-75">
+                    @(item.OldStock - item.Qty)
+                </div>
+            </div>
+        }
+    }
+
+<InnerPagination 
+    InnerNextPage=@InnerNextPage
+    InnerPreviousPage=@InnerPreviousPage
+    InnerCurrentPage=@InnerCurrentPage
+    InnerTotalPages=@InnerTotalPages 
+    />
+
+
+
+@code{
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 10 ;
+        
+    // Parameter
+    [Parameter]
+    public BillModel BillToCheck {get;set;}
+    
+    [Parameter]
+    public int MoreId {get;set;}
+    
+    private string MoreVisual = "";
+    
+    private List<ProductBill> TheseProductBills = new();
+    private int OldStock = 0;
+    private int AtStock = 0;
+    private decimal RetailPrice = 0;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await InnerNextPage();
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        
+        if(BillToCheck.ProductBill.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((decimal)(BillToCheck.ProductBill.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductBills = BillToCheck.ProductBill
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            BillToCheck.ProductBill = new();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        if(BillToCheck.ProductBill.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((decimal)(BillToCheck.ProductBill.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductBills = BillToCheck.ProductBill
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            BillToCheck.ProductBill = new();
+        }
+        StateHasChanged();
+    }
+}

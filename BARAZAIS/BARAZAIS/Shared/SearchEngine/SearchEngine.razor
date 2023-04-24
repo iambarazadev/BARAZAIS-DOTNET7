@@ -1,0 +1,53 @@
+﻿@page "/MainSearch"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<div class="form-floating rounded-0">
+    <input type="search" @bind="ValuesEntered" @bind:event="oninput" onkeyup=@(()=> FindItem()) onfocusout=@(()=> FindItem()) class="form-control border text-unique fw-bolder rounded-3 text-capitalize pt-5 pb-3" id="floatingInput" placeholder="Search" />
+    <label for="floatingInput">
+        <i class="bi bi-search txtshadow fs-5 me-2 "></i> <span class="fw-normal text-muted"></span>
+        @{
+            if(MaxMum !=null && MaxMum > 0){
+                <span class="ms-2 text-muted">(@MaxMum)</span>
+            }
+        }
+    </label>
+</div>
+
+@code {
+    [Parameter]
+    public string Content {get;set;}
+    public string? ValuesEntered;
+    private List<string> Filtered = new();
+    private string? Cocatenated = null;
+    private int? MaxMum = null;
+    private List<string> Database = new(){
+      "razack", "baraza","said","leila"  
+    };
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Filtered = new();
+        Cocatenated = null;
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+    
+    private void FindItem(){
+        if(ValuesEntered != null && ValuesEntered.Length > 0){
+            Cocatenated +=ValuesEntered;
+            MaxMum = ValuesEntered.Length;
+            if(Database.Contains(Cocatenated)){
+                Filtered.Add(Cocatenated);
+            }
+        }else{
+            MaxMum = null;
+        }
+    }
+}

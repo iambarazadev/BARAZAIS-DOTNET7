@@ -1,0 +1,135 @@
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+        
+    if(!TheseProductsCategories.Any()){
+        
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique fw-lighter">--:--</p>
+        </div>
+    }
+    else{
+        <div class="row py-2 text-unique bg-xss rounded border-bottom">
+            <div class="col-1 py-2 text-center">#</div>
+            <div class=" col-3 py-2 text-start text-unique">
+                ID | <i class=" bi-upc-scan "></i>
+            </div>
+            <div class=" col-6 py-2 text-start text-unique">
+                Description [Note]
+            </div>
+            <div class="col-2 py-2 text-center">
+                Items
+            </div>
+        </div>
+            int Numbers = 0;
+            int index = 0;
+            var TempoList = TheseProductsCategories.GroupBy(a => a.Brand).Select(a => new{
+                Brand = a.Key,
+                Numbers = a.Count()
+            });
+            foreach(var item in TempoList){
+                index+=1;
+                <div class="row bg-xss text-unique border-bottom"style="font-size:0.8rem !important;">
+                    <div class="col-1 py-1 text-center text-dark">@index</div>
+                    <div class=" col-3 py-1 text-start text-unique">
+                        <a class="p-0 m-0 text-unique" href="Brands/Details/@item.Brand.Id" style="font-size:0.8rem !important;">
+                            <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                                <li class="text-primary text-capitalize">@(item.Brand.Caption.Length > 17 ? item.Brand.Caption.Substring(0,15) + " .." : item.Brand.Caption)</li>
+                                <li class=" opacity-75 text-capitalize" style="font-size:0.7rem !important; width:fit-content;">
+                                    @(item.Brand.Code + item.Brand.Id)
+                                </li>
+                            </ul>
+                        </a>
+                    </div>
+                    <div class="col-6 py-1 text-start text-unique text-capitalize">
+                        @(item.Brand.Description.Length > 34 ? item.Brand.Description.Substring(0,30) + " .." : item.Brand.Description)
+                    </div>
+                    <div class="col-2 py-2 text-center text-primary">
+                        @item.Numbers
+                    </div>
+                </div>
+            }
+            
+        <InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+            />
+    }
+}
+
+@code{
+    
+    //  Inner Pagination 
+        private int InnerTotalPages = 1;
+        private int InnerCurrentPage = 1;
+        private int InnerPageSize = 50 ;
+        private int TheCount = 0;
+        
+    // Parameter
+    [Parameter]
+    public CategoryModel CategoryToCheck {get;set;}
+
+    private List<ProductModel> FilteredCategories = new();
+    private List<ProductModel> TheseProductsCategories = new();
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await InnerNextPage();
+    }
+    
+    
+    private async Task InnerNextPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            FilteredCategories = CategoryToCheck.Product ;
+            
+            if(FilteredCategories.Any()){
+                InnerTotalPages = InnerTotalPages = ((int)(Math.Ceiling((double)(FilteredCategories.Count)/InnerPageSize)));
+                
+                if(InnerCurrentPage < InnerTotalPages ){
+                    InnerCurrentPage ++ ;
+                }
+                else{
+                    InnerCurrentPage = InnerTotalPages; 
+                }
+                
+                TheseProductsCategories = FilteredCategories
+                .Skip((InnerCurrentPage - 1) * InnerPageSize)
+                .Take(InnerPageSize)
+                .ToList();
+            }
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        StateHasChanged();
+    }
+    
+    
+    private async Task InnerPreviousPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            FilteredCategories = CategoryToCheck.Product ;
+            if(FilteredCategories.Any()){
+                InnerTotalPages = ((int)(Math.Ceiling((double)(FilteredCategories.Count)/InnerPageSize)));
+                
+                if(InnerCurrentPage > 1 ){
+                    InnerCurrentPage -- ;
+                }
+                else{
+                    InnerCurrentPage = 1; 
+                }
+                
+                TheseProductsCategories = FilteredCategories
+                .Skip((InnerCurrentPage - 1) * InnerPageSize)
+                .Take(InnerPageSize)
+                .ToList();
+            }
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        StateHasChanged();
+    }
+}
+

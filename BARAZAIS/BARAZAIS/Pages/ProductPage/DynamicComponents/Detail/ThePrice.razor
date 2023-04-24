@@ -1,0 +1,241 @@
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<BarazaContext> MyFactory
+
+@{
+    if(ViewPrice){         
+        <div class="modal fade " style="width:100vw !important;" id="Search" tabindex="-1" aria-labelledby="SearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog modal-dialog-scrollable modal-xl rounded-0">
+                <div class="modal-content border-0 bg-xss rounded-0">
+                    <div class="modal-header border-0 px-1 py-0 pb-1 my-0 text-capitalize"> 
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class="p-0" style="font-size:1.14rem !important; width:fit-content;"><p class="bg-xs py-1 px-2 fw-bolder"> @(ProductToCheck.Caption)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2">Code : @(ProductToCheck.Code + ProductToCheck.Id )</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi bi-bookmark-fill  txtshadow me-1"></i> @(ProductToCheck.Brand.Caption)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi-columns-gap me-1"></i> @(ProductToCheck.Category.Caption)</p></li>
+                        </ul>
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75 rounded-circle" style="font-size:1rem !important; width:fit-content; cursor:pointer;"> <p class=" text-white rounded-circle"><i class="bi-printer text-white fw-bolder me-1"></i></p></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body py-0">
+                        <div class="row">
+                            <div class="col-12 shadow-lg bg-light border border-5 rounded-3 p-3">
+                                <QuickViewPrice GetThisProduct=@ProductToCheck PNum=@SendPriceId/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+    }
+}
+
+<div class="row text-start">
+    <div class="col-12 pt-2 pb-4 px-0 d-flex flex-row flex-wrap justify-content-start">
+        <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@FromDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="From Date" />
+                    <label for="floatingInput" class="text-unique">
+                        From Date
+                    </label>
+                </div>
+            </li>
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@ToDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="To Date" />
+                    <label for="floatingInput" class="text-unique">
+                        To Date
+                    </label>
+                </div>
+            </li>
+            <li class="py-2">
+                <button class="btn btn-sm btn-primary text-white rounded border-0" @onclick="ChangeDate"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row bg-xss text-unique text-start py-2 border-bottom rounded">
+    <div class="col-1 py-2 text-center">#</div>
+    <div class="col-md-2 col-3 py-1 text-start text-unique">
+       <ul class="d-flex flex-column m-0 p-0">
+            <li>PRC</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important; ">PRC</li>
+        </ul>
+    </div>
+    <div class="col-lg-2 col-3 py-1 text-start text-unique">
+        <ul class="d-flex flex-column m-0 p-0">
+            <li>Price</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important; ">Old</li>
+        </ul>
+    </div>
+    <div class="col-lg-2 py-1 text-start text-unique d-none d-lg-block">
+        <ul class="d-flex flex-column m-0 p-0">
+            <li>Price</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important; ">Variance</li>
+        </ul>
+    </div>
+    <div class="col-lg-2 col-3 py-1 text-start text-unique">
+        <ul class="d-flex flex-column m-0 p-0">
+            <li>Price</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important; ">Latest</li>
+        </ul>
+    </div>
+    <div class="col-md-1 col-2 py-1 text-start text-unique">
+        <ul class="d-flex flex-column m-0 p-0">
+            <li>Date</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Day & Time</li>
+        </ul>
+    </div>
+    <div class="col-md-2 d-none d-lg-block py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
+        <ul class=" m-0 p-0 text-start">
+            <li class="text-start">Responsible</li>
+            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Code</li>
+        </ul>
+    </div>
+</div>
+@{
+    if(!TheseProductPrices.Any()){
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique bg-light fw-lighter">--:--</p>
+        </div>
+    }
+    else{
+        foreach(var item in TheseProductPrices){
+            LatestPrice = (double)item.LatestPrice;
+            OldPrice = (double)item.OldPrice;
+            Variance = (double)(LatestPrice - OldPrice);
+            Colors = Variance < 1 ? "text-danger" : "text-success"; 
+            
+            if(LatestPrice != OldPrice){
+                <div class="row bg-xss border-bottom py-0 text-unique" style="font-size:0.8rem !important">
+                    <div class="col-1 py-1 text-center">
+                        @(ProductToCheck.ProductPrice.IndexOf(item)+1)
+                    </div>
+                    <div class="col-md-2 col-3 py-1 text-start text-primary">
+                        <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" onclick=@(()=>ViewPriceAsap(item.Price.Id)) class="d-flex flex-column justify-content-start p-0 m-0 text-unique" style="font-size:0.8rem !important; cursor:pointer;">
+                            <li class="text-primary" style="font-size:0.8rem !important;">@(item.Price.Code + item.Price.Id)</li>
+                            <li class=" opacity-75 text-unique" style="font-size:0.7rem !important; ">@(item.Price.Code + item.Price.Id)</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 col-3 py-1 text-start text-unique opacity-75">
+                        @OldPrice.ToString("n0")
+                    </div>
+                    <div class="col-lg-2 py-1 text-start @Colors d-none d-lg-block opacity-75">
+                        @((Variance > 0 ? "+":""))@(Variance.ToString("n0")) 
+                    </div>
+                    <div class="col-lg-2 col-3 py-1 text-start text-primary opacity-75">
+                        @LatestPrice.ToString("n0")
+                    </div>
+                    <div class="col-md-1 col-2 py-1 pe-0 text-start text-unique">
+                        <ul class="d-flex flex-column  m-0 p-0">
+                            <li style="font-size:0.8rem !important;">@item.Price.DateCreated.ToString("dd MMM yy")</li>
+                            <li class=" opacity-75 d-none d-sm-block " style="font-size:0.7rem !important; ">@item.Price.DateCreated.ToString("ddd hh : mm")</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-2 d-none d-lg-block py-1 ps-0 text-start text-unique" style="font-size:0.8rem !important;">
+                        <ul class="d-flex flex-column justify-content-start m-0 p-0 text-capitalize">
+                            <li class=" d-none d-sm-block" style="font-size:0.8rem !important;">@(item.Price.User.Code + item.Price.User.Id)</li>
+                            <li class=" opacity-75 d-none d-sm-block" style="font-size:0.7rem !important;"> @(item.Price.User.FirstName + " " + item.Price.User.LastName)</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        }
+        <InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+        />
+    }
+}
+
+
+@code{
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 10 ;
+    
+    [Parameter]
+    public ProductModel ProductToCheck {get;set;}
+    
+    //forpopping modal
+    private bool ViewPrice = false;
+    private int SendPriceId = 0;
+    
+    private List<ProductPrice> TheseProductPrices = new();
+    private double OldPrice = 0.0;
+    private double LatestPrice = 0.0;
+    private double Variance = 0.0;
+    private string Colors = "";
+    
+    private DateOnly FromDate;
+    private DateOnly ToDate;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();  
+        FromDate = DateOnly.FromDateTime(ProductToCheck.DateCreated);
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        InnerNextPage();
+    }
+    
+    private async Task InnerNextPage(){
+        TheseProductPrices = new();
+        if(ProductToCheck.ProductPrice.Any()){
+            double Num = InnerTotalPages = (int)(Math.Ceiling((double)(ProductToCheck.ProductPrice
+            .Where(x => (((DateOnly.FromDateTime(x.Price.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Price.DateCreated)) <= ToDate))).ToList().Count())/InnerPageSize));
+
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductPrices = ProductToCheck.ProductPrice
+            .Where(x => (((DateOnly.FromDateTime(x.Price.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Price.DateCreated)) <= ToDate)))
+            .OrderBy(x => x.Price.Id)
+            .Reverse()
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+    }
+    
+    private async Task InnerPreviousPage(){
+        TheseProductPrices = new();
+        if(ProductToCheck.ProductPrice.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(ProductToCheck.ProductPrice
+            .Where(x => (((DateOnly.FromDateTime(x.Price.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Price.DateCreated)) <= ToDate))).ToList().Count())/InnerPageSize));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductPrices = ProductToCheck.ProductPrice
+            .Where(x => (((DateOnly.FromDateTime(x.Price.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Price.DateCreated)) <= ToDate)))
+            .OrderBy(x => x.Price.Id)
+            .Reverse()
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+    }
+    
+    private void ChangeDate(){
+        InnerCurrentPage = 0;
+        InnerNextPage();
+    }
+    
+    private void ViewPriceAsap(int G){
+        ViewPrice = true;
+        SendPriceId = G;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,135 @@
+﻿@page "/Home"
+
+<div class="row mb-3 mt-2 rounded-3 bg-white shadow-sm">
+    <div class="col-md-6 col-12 opacity-75 p-3">
+        <p class="p-0 m-0 text-muted fs-5 opacity-75"><span class="@TheClass fs-5 text-primary"></span><span class="bi-dot"></span>@Caption</p>
+    </div>
+    <div class="col-md-6 col-12 py-3">
+        <SearchEngine />
+    </div>
+    <div class="col-12 mt-md-0 opacity-75 p-0">
+        <ul class="nav nav-pills nav-fill gap-2 p-0 small bg-xs rounded-bottom" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-dark); --bs-nav-pills-link-active-bg: var(--bs-white);">
+            <li class="nav-item" role="presentation" @onclick=@(()=>SwitchToSalesSummary())>
+                <button class="nav-link active rounded-0 py-3" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true"><span class="bi-cart-check-fill me-1"></span><span class="">Sales</span></button>
+            </li>
+            <li class="nav-item" role="presentation" @onclick=@(()=>SwitchToPurchasesSummary())>
+                <button class="nav-link rounded-0 py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-cart4 me-1"></span><span class="">Purchses</span></button>
+            </li>
+            <li class="nav-item" role="presentation" @onclick=@(()=>SwitchToStockSummary())>
+                <button class="nav-link rounded-0 py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-stack me-1"></span><span class="">Stock</span></button>
+            </li>
+            <li class="nav-item d-lg-block d-none" role="presentation" @onclick=@(()=>SwitchToCategorySummary())>
+                <button class="nav-link rounded-0 py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-columns-gap me-1"></span><span class="">Categories</span></button>
+            </li>
+            <li class="nav-item d-lg-block d-none" role="presentation" @onclick=@(()=>SwitchToBrandSummary())>
+                <button class="nav-link rounded-0 py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-bookmark me-1"></span><span class="">Brands</span></button>
+            </li>
+            <li class="nav-item d-lg-block d-none" role="presentation" @onclick=@(()=>SwitchToMonitor())>
+                <button class="nav-link rounded-0 py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-brightness-alt-high me-1"></span><span class="">Monitor</span></button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+@{
+    if(ToSales){
+        <HomeSalesSummary/>
+    }
+    if(ToPurchase){
+        <HomePurchaseSummary/>
+    }
+    if(ToStock){
+        <HomeStockSummary/>
+    }
+    if(ToCategory){
+        <HomeCategorySummary/>
+    }
+    if(ToBrand){
+        <HomeBrandSummary/>
+    }
+    if(ToMonitor){
+        <p class="p-3 m-0 fs-6 text-unique">Monitor logs coming soon</p>
+    }
+}
+
+
+@code {
+    
+    private bool ToSales = true;
+    private bool ToPurchase = false;
+    private bool ToStock = false;
+    private bool ToCategory = false;
+    private bool ToBrand = false;
+    private bool ToMonitor = false;
+    private string Caption = "Sales Info.";
+    private string TheClass = "bi-cart-check-fill";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        SwitchToSalesSummary();
+    }
+    
+    private void SwitchToSalesSummary(){
+        ToSales = true;
+        ToPurchase = false;
+        ToStock = false;
+        ToCategory = false;
+        ToBrand = false;
+        ToMonitor = false;
+        Caption = "Sales Info.";
+        TheClass = "bi-cart-check-fill";
+    }
+    private void SwitchToPurchasesSummary(){
+        ToSales = false;
+        ToPurchase = true;
+        ToStock = false;
+        ToCategory = false;
+        ToBrand = false;
+        ToMonitor = false;
+        Caption = "Purchases Info.";
+        TheClass = "bi-cart4";
+    }
+    private void SwitchToStockSummary(){
+        ToSales = false;
+        ToPurchase = false;
+        ToStock = true;
+        ToCategory = false;
+        ToBrand = false;
+        ToMonitor = false;
+        Caption = "Stock Info.";
+        TheClass = "bi-stack";
+    }
+    
+    private void SwitchToCategorySummary(){
+        ToSales = false;
+        ToPurchase = false;
+        ToStock = false;
+        ToCategory = true;
+        ToBrand = false;
+        ToMonitor = false;
+        Caption = "Categories Info.";
+        TheClass = "bi-columns-gap";
+    }
+    
+    private void SwitchToBrandSummary(){
+        ToSales = false;
+        ToPurchase = false;
+        ToStock = false;
+        ToCategory = false;
+        ToBrand = true;
+        ToMonitor = false;
+        Caption = "Brands Info.";
+        TheClass = "bi-bookmark-fill";
+    }
+    private void SwitchToMonitor(){
+        ToSales = false;
+        ToPurchase = false;
+        ToStock = false;
+        ToCategory = false;
+        ToBrand = false;
+        ToMonitor = true;
+        Caption = "Logs Monitor";
+        TheClass = "bi-brightness-alt-high-fill";
+    }
+}

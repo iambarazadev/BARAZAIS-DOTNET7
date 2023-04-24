@@ -1,0 +1,509 @@
+﻿@page "/Products/ListView"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<div class="row pb-3 mt-2 rounded bg-white shadow-sm">
+    <div class="col-12">
+        <Header Title=@Title
+                LineText=@LineText
+                NewUrl=@NewUrl
+                ViewUrl=@ViewUrl
+                ViewUrlIcon=@ViewUrlIcon
+                PrintTheseProducts=@TheseTempProducts 
+                />
+    </div>
+    <div class="col-12">
+        <hr class="text-muted" />
+    </div>
+    <div class="col-md-2 col-4 " style="font-size:0.8rem !important">
+        <div class="form-floating rounded-0 py-0">
+            <select @bind=@CategoryFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var Cat in TheseCategories){
+                        <option value=@Cat.Id class="text-unique">@(Cat.Caption)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Category</label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4  " style="font-size:0.8rem !important">
+        <div class="form-floating rounded-0 py-0">
+           <select @bind=@BrandFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var Brnd in TheseBrands){
+                        <option value=@Brnd.Id class="text-unique">@(Brnd.Caption)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Brand</label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4 " style="font-size:0.8rem !important">
+        <div class="form-floating rounded-0 py-0">
+            <select @bind=@UserFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var Urs in TheseUsers){
+                        <option value=@Urs.Id class="text-unique">@(Urs.FirstName + " " + Urs.LastName)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Responsible</label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4  mt-md-0 mt-2 " style="font-size:0.8rem !important">
+        <div class="form-floating rounded-3">
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <label for="floatingInput" class="">
+                From Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4  mt-md-0 mt-2" style="font-size:0.8rem !important">
+        <div class="form-floating rounded-3">
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <label for="floatingInput" class="">
+                To Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-1 col-4  mt-md-0 mt-3 " style="font-size:0.8rem !important">
+        <ul class="p-0 m-0 text-center">
+            <li class="p-0 m-0 text-unique" >
+                <button @onclick=@(()=>Filter()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+            <li class="p-0 m-0 text-unique mt-1" >
+                <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-1 col-8 mt-md-0 mt-2" style="font-size:0.8rem !important">
+        <div class="form-floating rounded-0">
+            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-xss border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
+            <label for="floatingInput">
+                <i class="bi bi-search txtshadow fs-6 me-2 "></i> <span class="text-muted opacity-75">PID#</span>
+            </label>
+        </div>
+    </div>
+</div>
+<div class="row mt-3 bg-white rounded shadow-sm" style="font-size:0.8rem !important">
+    <div class="col-md-4 col-12 rounded-3 p-3">
+        <ul class="p-2 m-0 text-start bg-xss rounded">
+            <li class="p-2 m-0 text-unique" >
+                TOTAL RETAIL
+            </li>
+            <li class="p-2 py-0 m-0 text-primary" >
+                &sum; @((TotalRetail).ToString("n0"))
+            </li>
+            <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-4 col-12 mt-md-0 p-3">
+        <ul class="p-2 m-0 text-start bg-xss rounded">
+            <li class="p-2 m-0 text-unique" >
+                TOTAL COST
+            </li>
+            <li class="p-2 py-0 m-0 text-danger opacity-75" >
+                &sum; @((TotalCost).ToString("n0"))
+            </li>
+            <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-4 col-12 mt-md-0 rounded-3 p-3 ">
+        <ul class="p-2 bg-xss rounded m-0 text-start">
+            <li class="p-2  m-0 text-unique" >
+                TOTAL EXPECTED RETURN
+            </li>
+            <li class="p-2 py-0 m-0 text-success" >
+                &sum; @((TotalReturn).ToString("n0"))
+            </li>
+            <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
+            </li>
+        </ul>
+    </div>
+</div>
+
+@*xxxxxxxxxx*@
+<div class="row bg-white my-3 rounded shadow-sm">
+    <div class="col-12 px-3 bg-xs rounded-top shadow-sm">
+        <div class="row">
+            <div class="col-1 text-center py-3">
+                #
+            </div>
+            <div class="col-3 col-md-2 text-start py-3">
+                PID
+            </div>
+            <div class="col-5 ps-0 col-md-2 text-start py-3">
+                ITEM
+            </div>
+            <div class="d-none d-md-block col-md-2 text-start py-3">
+                CATEGORY
+            </div>
+            <div class="d-none d-md-block col-md-2 text-start py-3">
+                RETAIL
+            </div>
+            <div class="d-none d-md-block col-md-2 text-start py-3">
+                COST
+            </div>
+            <div class="col-3 col-md-1 text-center py-3">
+                STOCK
+            </div>
+        </div>
+    </div>
+<div class="col-12 px-3 pt-2">
+    
+@{
+    if (!TheseProducts.Any())
+    {
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique fw-lighter opacity-75 text-capitalize">-- : --</p>
+        </div>
+    }
+    else
+    {
+        RetailPrice = 0;
+        CostPrice = 0;
+        Stock = 0;
+
+        foreach (var item in TheseProducts)
+        {
+            RetailPrice = GR.GetRetailOfThis(item, ToDate);
+            Stock = GS.GetStockOfThis(item, ToDate);
+            CostPrice = GC.GetCostOfThis(item, ToDate);
+            
+            <div class="row bg-xss border-bottom" style="font-size:0.8rem !important">
+                <div class="col-1 text-center py-1">
+                    @(TheseTempProducts.IndexOf(item) + 1)
+                </div>
+                <div class="col-3 col-md-2 text-start py-1">
+                    <a href=@("Products/Details/"+(item.Id)) class="p-0 m-0">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0 text-primary " style="font-size:0.8rem !important">
+                                @(item.Code + item.Id)
+                            </li>
+                            <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                @(item.Barcode.LastOrDefault().Scan)
+                            </li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="col-5 ps-0 col-md-2 text-start py-1">
+                    <ul class="p-0 m-0 text-start">
+                        <li class="p-0 m-0  text-capitalize">
+                            @item.Caption
+                        </li>
+                        <li class="p-0 m-0 text-muted text-capitalize" style="font-size:0.8rem !important">
+                            <i class="bi bi-bookmark-fill txtshadow me-2 "></i> @(item.Brand.Caption)
+                        </li>
+                    </ul>
+                </div>
+                <div class="d-none d-md-block col-md-2 text-capitalize text-start py-1">
+                    @(item.Category.Caption)
+                </div>
+                <div class="d-none d-md-block col-md-2 text-start py-1">
+                    <ul class="p-0 m-0 text-start">
+                        <li class="p-0 m-0 text-primary" >
+                            &#64; @(RetailPrice.ToString("n0"))
+                        </li>
+                        <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                            &sum; @(((Stock > 0 ? Stock : 0) * RetailPrice).ToString("n0"))
+                        </li>
+                    </ul>
+                </div>
+                <div class="d-none d-md-block col-md-2 text-start py-1">
+                    <ul class="p-0 m-0 text-start">
+                        <li class="p-0 m-0">
+                            &#64; @(CostPrice.ToString("n0"))
+                        </li>
+                        <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                            &sum; @(((Stock > 0 ? Stock : 0) * CostPrice).ToString("n0"))
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-3 col-md-1 text-center py-1">
+                    @(Stock)
+                </div>
+            </div>
+        }
+
+        <Pagination FirstPage=@FirstPage
+            LastPage=@LastPage
+            NextPage=@NextPage
+            PreviousPage=@PreviousPage
+            TotalPages=@TotalPages
+            CurrentPage=@CurrentPage
+            />
+    }
+}
+
+</div>
+</div>
+
+
+@code {
+    //Header Component
+    private string Title = "Products";
+    private string LineText = "List view";
+    private string NewUrl = "Products/New";
+    private string ViewUrl = "Products/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+
+    //ProductModel Variables
+    private List<ProductModel> TheseProducts = new();
+    private List<ProductModel> TheseTempProducts = new();
+
+    //GLOBAL CLASSES
+    private GlobalStock GS = new();
+    private GlobalRetail GR = new();
+    private GlobalCost GC = new();
+
+    //Pagination Variables
+    private int PageSize = 10;
+    private int TotalPages = 1;
+    private int CurrentPage = 0;
+
+    //ListVariables
+    private decimal RetailPrice = 0;
+    private decimal CostPrice = 0;
+    private int Stock = 0;
+
+    //filter variables
+    private List<BrandModel> TheseBrands = new();
+    private List<CategoryModel> TheseCategories = new();
+    private List<UserModel> TheseUsers = new();
+
+    private DateOnly FromDate = DateOnly.FromDateTime((DateTime.Today.AddDays(-7)));
+    private DateOnly ToDate = DateOnly.FromDateTime(DateTime.Now);
+
+    private int CategoryFiltered = 0;
+    private int BrandFiltered = 0;
+    private int UserFiltered = 0;
+    private int? SearchId = null;
+
+    private int NumOfItems = 0;
+    private int NumOfPcs = 0;
+    private decimal TotalCost = 0;
+    private decimal TotalRetail = 0;
+    private decimal TotalReturn = 0;
+
+
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await Reset();
+    }
+
+    private async Task NextPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTempProducts = await repo.Products.GetAllProductsDetailedAsync(FromDate, ToDate, CategoryFiltered, BrandFiltered, UserFiltered);
+
+            double Num = (double)(TheseTempProducts.Count) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            if (CurrentPage < TotalPages){
+                CurrentPage ++;
+            }
+            else{
+                CurrentPage = TotalPages;
+            }
+
+            TheseProducts = TheseTempProducts
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task PreviousPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTempProducts = await repo.Products.GetAllProductsDetailedAsync(FromDate, ToDate, CategoryFiltered, BrandFiltered, UserFiltered);
+
+            double Num = (double)(TheseTempProducts.Count) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            if (CurrentPage > 1){
+                CurrentPage --;
+            }
+            else{
+                CurrentPage = 1;
+            }
+
+            TheseProducts = TheseTempProducts
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task FirstPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTempProducts = await repo.Products.GetAllProductsDetailedAsync(FromDate, ToDate, CategoryFiltered, BrandFiltered, UserFiltered);
+
+            double Num = (double)(TheseTempProducts.Count) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            CurrentPage = 1;
+
+            TheseProducts = TheseTempProducts
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LastPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTempProducts = await repo.Products.GetAllProductsDetailedAsync(FromDate, ToDate, CategoryFiltered, BrandFiltered, UserFiltered);
+
+            double Num = (double)(TheseTempProducts.Count) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            CurrentPage = TotalPages;
+
+            TheseProducts = TheseTempProducts
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task Filter(){
+        if(FromDate <= ToDate)
+        {
+            CurrentPage = 0;
+            await NextPage();
+        }else{
+            await Reset();
+        }
+    }
+
+    private async Task InnerSearch(){ 
+        if(SearchId > 0){
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                TheseTempProducts = new();
+                TheseProducts = new();
+
+                var Chungulia = await repo.Products.GetDetailedProductAsync((int)SearchId);
+                if(Chungulia.Id > 1){
+                    TheseTempProducts.Add(Chungulia);
+                    TheseProducts = TheseTempProducts;
+
+                    if(TheseProducts.Any()){
+                        CategoryFiltered = (int)TheseProducts.FirstOrDefault().CategoryId;
+                        BrandFiltered = (int)TheseProducts.FirstOrDefault().BrandId;
+                        UserFiltered = (int)TheseProducts.FirstOrDefault().UserId;
+                        FromDate = DateOnly.FromDateTime(TheseProducts.FirstOrDefault().DateCreated);
+                        ToDate = DateOnly.FromDateTime(TheseProducts.FirstOrDefault().DateCreated);
+                    }
+                }
+
+                StockInfo();
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }else{
+            await Reset();
+        }
+    }
+
+    private void StockInfo(){
+        NumOfItems = 0;
+        NumOfPcs = 0;
+        TotalCost = 0;
+        TotalRetail = 0;
+        TotalReturn = 0;
+        SearchId = null;
+
+        GlobalStock gs = new();
+        GlobalRetail gr = new();
+        GlobalCost gc = new();
+
+        if(ToDate >= FromDate){
+            if (TheseTempProducts.Any())
+            {
+                NumOfItems = TheseTempProducts.Count();
+                foreach (var item in TheseTempProducts)
+                {
+                    NumOfPcs += gs.GetStockOfThis(item, ToDate);
+                    TotalCost += ((gc.GetCostOfThis(item, ToDate)) * (gs.GetStockOfThis(item, ToDate)));
+                    TotalRetail += ((gr.GetRetailOfThis(item, ToDate)) * (gs.GetStockOfThis(item, ToDate)));
+                }
+
+                TotalReturn = TotalRetail - TotalCost;
+            }
+        }
+    }
+
+    private async Task Reset(){
+        CategoryFiltered = 0;
+        BrandFiltered = 0;
+        UserFiltered = 0;
+        SearchId = null;
+
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseBrands = await repo.Brands.GetAllRecords(repo.Brands.GetNoRecords(),1);
+            TheseCategories = await repo.Categories.GetAllRecords(repo.Categories.GetNoRecords(),1);
+            TheseUsers = await repo.Users.GetAllUsersAsync();
+
+            FromDate = DateOnly.FromDateTime((await repo.Products.FirstProduct()).DateCreated);
+
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        
+        StateHasChanged();
+        CurrentPage = 0;
+        await NextPage();
+    }
+}

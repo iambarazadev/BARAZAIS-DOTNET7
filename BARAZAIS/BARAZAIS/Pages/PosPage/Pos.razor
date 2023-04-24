@@ -1,0 +1,43 @@
+@page "/Pos/{GetPendingBillId:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<div class="row rounded-3 bg-white mt-md-1 mt-2 shadow-sm">
+    <div class="col-12 opacity-75 p-0 m-0">
+        <ul class="nav nav-pills nav-fill gap-2 p-0 small bg-xs rounded" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-dark); --bs-nav-pills-link-active-bg: var(--bs-white);">
+            <li class="nav-item" role="presentation" @onclick=@(()=>SwitchToCounterSummary())>
+                <button class="nav-link active rounded-0 py-3" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true"><span class="bi-cart-check-fill me-1"></span><span class="">POS</span></button>
+            </li>
+            <li class="nav-item" role="presentation" @onclick=@(()=>SwitchToBillOnHoldsSummary())>
+                <button class="nav-link rounded-0 py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-stack me-1"></span><span class="">ON HOLD BILL</span></button>
+            </li>
+            <li class="nav-item" role="presentation" @onclick=@(()=>SwitchToDrawSummary())>
+                <button class="nav-link rounded-0 py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-stack me-1"></span><span class="">CASH DRAW</span></button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+@{
+    if (ToCounter)
+    {
+        <Counter PendingBillId=@GetPendingBillId />
+    }
+
+    if (ToBillOnHold)
+    {
+        <HoldReport />
+    }
+
+    if (ToDraw)
+    {
+        <CashDraw />
+    }
+
+    if (ToListItems)
+    {
+        <ListAllItems />
+    }
+}

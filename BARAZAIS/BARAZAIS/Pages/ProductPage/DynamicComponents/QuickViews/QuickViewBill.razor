@@ -1,0 +1,267 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+    if(!TheseProductBills.Any()){
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique bg-light fw-lighter"> --:--</p>
+        </div>
+    }
+    else{
+        <div class="row">
+            <div class="col-lg-6 col-12 p-0">
+                <ul class="d-flex flex-column p-0 m-0">
+                    <li>
+                        <h3 class="txtshadow text-capitalize fw-bold fs-4">Code : @(ThisBill.Code + ThisBill.Id)</h3>
+                    </li>
+                    <li class="me-2">
+                        <ul class="d-flex flex-column justify-content-start p-0">
+                            <li>Date Of Issue </li>
+                            <li class=" m-0 opacity-75 " style="font-size:0.8rem !important; width:fit-content;"> @ThisBill.DateCreated.ToString("ddd, dd MMM yyyy") </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <InnerPagination 
+                        InnerNextPage=@InnerNextPage
+                        InnerPreviousPage=@InnerPreviousPage
+                        InnerCurrentPage=@InnerCurrentPage
+                        InnerTotalPages=@InnerTotalPages 
+                    />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row text-start mt-3">
+                    <div class="col-xxl-3 mb-3 col-lg-3 col-md-6 col-12 py-0">
+                        <div class="row text-start border-0 bg-xss">
+                            <div class="col-12 p-3  bg-xs shadow-sm ">
+                                Receipt Info
+                            </div>
+                            <div class="col-12 p-3">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0">
+                                        Receipt Numb : --
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        Rceceipt Date : --
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-3 mb-3 col-lg-3 col-md-6 col-12 py-0 ps-md-4">
+                        <div class="row text-start border-0 bg-xss">
+                            <div class="col-12 p-3 bg-xs shadow-sm ">
+                                Total Sale
+                            </div>
+                            <div class="col-12 p-3">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0">
+                                       Items : @(ThisBill.ProductBill.Count) , Pcs : @(ThisBill.ProductBill.Sum(x => x.Qty))
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        &sum; @((FullRetail).ToString("n0"))
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-3 mb-3 col-lg-3 col-md-6 col-12 py-0 ps-md-4">
+                        <div class="row text-start border-0 bg-xss">
+                            <div class="col-12 p-3  bg-xs shadow-sm ">
+                                Total Cost
+                            </div>
+                            <div class="col-12 p-3">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0">
+                                       Items : @(ThisBill.ProductBill.Count) , Pcs : @(ThisBill.ProductBill.Sum(x => x.Qty))
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        &sum; @((FullCost).ToString("n0"))
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-3 mb-3 col-lg-3 col-md-6 col-12 py-0 ps-md-4">
+                        <div class="row text-start border-0 bg-xss">
+                            <div class="col-12 p-3  bg-xs shadow-sm ">
+                                Responsible
+                            </div>
+                            <div class="col-12 p-3">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0 text-capitalize">
+                                        @ThisBill.User.FirstName @ThisBill.User.LastName
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        Code : @(ThisBill.User.Code + ThisBill.User.Id)
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row text-white  shadow-sm txtshadow bg-xs">
+                            <div class="col-1 text-center py-3 fw-bolder">#</div>
+                            <div class="col-lg-2 col-4 py-3 text-start">Product</div>
+                            <div class="col-lg-1 col-3 py-3 text-center ">Sold</div>
+                            <div class="col-2 d-none d-lg-block py-3 text-md-start text-center ">Retail Price</div>
+                            <div class="col-2 d-none d-lg-block py-3 text-start">AtCostOf</div>
+                            <div class="col-2 d-none d-lg-block py-3 text-start">Exp Return</div>
+                            <div class="col-1 d-none d-lg-block py-3 text-center ">Before</div>
+                            <div class="col-1 d-none d-lg-block py-3 text-center">After</div>
+                        </div>
+                        @* Start Dynamic Products*@
+                            @{
+                                if(this.ThisBill.ProductBill.Any() && this.ThisBill.ProductBill.Count > 0){
+                                        <ABillContent BillToCheck=@ThisBill MoreId=@(GetThisProduct.Id)/>
+                                    }
+                                else{
+                                    <p class="fs-6 text-center text-unique py-3 px-5  bg-xss my-3" style="width:fit-content; margin:1px auto;">--:--</p>
+                                    ThisBill.ProductBill = new();
+                                }
+                            }
+                        @* End Dynamic ProductBills*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*End header*@
+    }
+}
+
+
+@code{
+    [Parameter]
+    public ProductModel GetThisProduct {get;set;}
+    
+    [Parameter]
+    public int BNum {get;set;}
+    
+    //Data variables
+    private BillModel ThisBill = new();
+    private List<ProductBill> TheseProductBills = new();
+    
+    private decimal FullCost = 0;
+    private decimal FullRetail = 0;
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 1 ;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();  
+        await Refresh();
+        StateHasChanged();
+        await Start((int)BNum);
+    }
+    
+    private async Task Start(int Num){
+        if(Num > 0){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductBill.Count())/InnerPageSize));
+        
+            TheseProductBills = GetThisProduct.ProductBill
+                .Where(x => x.BillId == (int)Num)
+                .OrderBy(x => x.Bill.Id)
+                .Skip((InnerCurrentPage - 1) * InnerPageSize)
+                .Take(InnerPageSize)
+                .ToList();
+            
+            var BillItem = GetThisProduct.ProductBill
+                .OrderBy(x => x.Bill.Id)
+                .ToList();
+
+                await FetchBillData(TheseProductBills.SingleOrDefault().BillId);
+            
+            InnerCurrentPage = BillItem.IndexOf(TheseProductBills.SingleOrDefault())+1;
+             StateHasChanged();
+        }
+        else{
+            InnerCurrentPage = 0;
+            await InnerNextPage();
+            StateHasChanged();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        Refresh();
+        if(GetThisProduct.ProductBill.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductBill.Count())/InnerPageSize));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductBills = GetThisProduct.ProductBill
+            .OrderBy(x => x.Bill.Id)
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            await FetchBillData(TheseProductBills.SingleOrDefault().BillId);
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        Refresh();
+        if(GetThisProduct.ProductBill.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductBill.Count())/InnerPageSize));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductBills = GetThisProduct.ProductBill
+            .OrderBy(x => x.Bill.Id)
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            await FetchBillData(TheseProductBills.SingleOrDefault().BillId);
+        }
+        StateHasChanged();
+    }
+    
+    private async Task FetchBillData(int? BNumber){
+        Refresh();
+        FullCost = 0;
+        FullRetail = 0;
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(BNumber > 0){
+                ThisBill = await repo.Bills.GetDetailedBillAsync((int)BNumber);
+            }
+            
+            if (ThisBill != null)
+            {
+                foreach (var xitem in ThisBill.ProductBill)
+                {
+                    FullCost += (decimal)((xitem.Qty) * (xitem.Cost));
+                    FullRetail += (decimal)((xitem.Qty) * (xitem.Price));
+                }
+            }
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+    
+    private async Task Refresh(){
+        ThisBill = new();
+        ThisBill.ProductBill = new();
+        ThisBill.User = new();
+        
+        StateHasChanged();
+    }
+}

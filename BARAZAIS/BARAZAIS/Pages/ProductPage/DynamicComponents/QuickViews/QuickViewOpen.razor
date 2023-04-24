@@ -1,0 +1,244 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+    if(!TheseProductOpens.Any()){
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique bg-light fw-lighter"> --:--</p>
+        </div>
+    }
+    else{
+        foreach(var item in TheseProductOpens){
+        <div class="row">
+            <div class="col-lg-6 col-12 p-0">
+                <ul class="d-flex flex-column p-0 m-0">
+                    <li>
+                        <h3 class="txtshadow fw-bold fs-4">Code : @(ThisOpen.Code + ThisOpen.Id)</h3>
+                    </li>
+                    <li class="me-2">
+                        <ul class="d-flex flex-column justify-content-start p-0">
+                            <li>Date Of Issue </li>
+                            <li class=" m-0 opacity-75 " style="font-size:0.8rem !important; width:fit-content;"> @ThisOpen.DateCreated.ToString("ddd, dd MMM yyyy") </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <InnerPagination 
+                    InnerNextPage=@InnerNextPage
+                    InnerPreviousPage=@InnerPreviousPage
+                    InnerCurrentPage=@InnerCurrentPage
+                    InnerTotalPages=@InnerTotalPages 
+                />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row text-start mt-3">
+                    <div class="mb-3 col-md-6 col-12 py-0">
+                        <div class="row text-start border">
+                            <div class="col-12 p-3  bg-xs shadow-sm ">
+                               Items Cost Info
+                            </div>
+                            <div class="col-12 p-3 ">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0 text-success">
+                                        <span class="text-dark me-1">Items [Pcs] : </span> @(ThisOpen.ProductOpen.Count) [ @(ThisOpen.ProductOpen.Sum(x => x.Qty))]
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        <span class="text-muted me-1">Total Cost : </span>@FullCost.ToString("n0")
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 col-md-6 col-12 py-0">
+                        <div class="row text-start border">
+                            <div class="col-12 p-3  bg-xs shadow-sm ">
+                                Responsible
+                            </div>
+                            <div class="col-12 p-3">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0 text-capitalize">
+                                        @ThisOpen.User.FirstName @ThisOpen.User.LastName
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        Code : @(ThisOpen.User.Code + ThisOpen.User.Id)
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-start border mb-3">
+                    <div class="col-12 pt-3 pb-2">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0">
+                                Description [Note]
+                            </li>
+                            <li class="p-0 m-0 text-muted text-capitalize" style="font-size:0.8rem !important">
+                                <p>
+                                    @(ThisOpen.Description != null ? ThisOpen.Description : "--:--")
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row text-white  shadow-sm txtshadow bg-xs">
+                            <div class="col-1 text-center py-3 fw-bolder">#</div>
+                            <div class="col-4 py-3 text-stat">Product</div>
+                            <div class="col-3 py-3 text-center ">Qty Opened</div>
+                            <div class="col-2 p-3 text-start">Cost Info</div>
+                            <div class="col-2 py-3 text-start">Retail Info</div>
+                        </div>
+                        @* Start Dynamic Products*@
+                            @{
+                                if(this.ThisOpen.ProductOpen != null && this.ThisOpen.ProductOpen.Count > 0){
+                                        <InProductOpen OpenToCheck=@ThisOpen MoreId=@(GetThisProduct.Id)/>
+                                    }
+                                else{
+                                    <p class="fs-6 text-center text-unique py-3 px-5  bg-xss my-3 " style="width:fit-content; margin:1px auto;">--:--</p>
+                                    ThisOpen.ProductOpen = new();
+                                }
+                            }
+                        @* End Dynamic ProductOpens*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*End header*@
+            
+        }
+    }
+}
+
+@code{
+    [Parameter]
+    public ProductModel GetThisProduct {get;set;}
+    
+    [Parameter]
+    public int Onum {get;set;}
+    
+    //Data variables
+    private OpenModel ThisOpen = new();
+    private List<ProductOpen> TheseProductOpens = new();
+    
+    private double FullCost = 0.0;
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 1 ;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();  
+        
+        Refresh();
+        await Start((int)Onum);
+        StateHasChanged();
+    }
+    
+    private async Task Start(int Num){
+        if(Num > 0){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductOpen.Count())/InnerPageSize));
+        
+            TheseProductOpens = GetThisProduct.ProductOpen
+                .Where(x => x.OpenId == (int)Num)
+                .OrderBy(x => x.Open.Id)
+                .Skip((InnerCurrentPage - 1) * InnerPageSize)
+                .Take(InnerPageSize)
+                .ToList();
+            
+            var OpenItem = GetThisProduct.ProductOpen
+                .OrderBy(x => x.Open.Id)
+                .ToList();
+
+                await FetchOpenData(TheseProductOpens.SingleOrDefault().OpenId);
+            
+            InnerCurrentPage = OpenItem.IndexOf(TheseProductOpens.SingleOrDefault())+1;
+             StateHasChanged();
+        }
+        else{
+            InnerCurrentPage = 0;
+            await InnerNextPage();
+            StateHasChanged();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        Refresh();
+        if(GetThisProduct.ProductOpen.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductOpen.Count())/InnerPageSize));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductOpens = GetThisProduct.ProductOpen
+            .OrderBy(x => x.Open.Id)
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            await FetchOpenData(TheseProductOpens.SingleOrDefault().OpenId);
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        Refresh();
+        if(GetThisProduct.ProductOpen.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductOpen.Count())/InnerPageSize));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductOpens = GetThisProduct.ProductOpen
+            .OrderBy(x => x.Open.Id)
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            await FetchOpenData(TheseProductOpens.SingleOrDefault().OpenId);
+        }
+        StateHasChanged();
+    }
+    
+    private async Task FetchOpenData(int? Onumber){
+        Refresh();
+        FullCost = 0.0;
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(Onumber > 0){
+                ThisOpen = await repo.Opens.GetDetailedOpenAsync((int)Onumber);
+            }
+            
+            if (ThisOpen != null)
+            {
+                foreach (var xitem in ThisOpen.ProductOpen)
+                {
+                    FullCost += (double)((xitem.Qty) * (xitem.Cost));
+                }
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+    
+    private void Refresh(){
+        ThisOpen = new();
+        ThisOpen.ProductOpen = new();
+        ThisOpen.User = new();
+        StateHasChanged();
+    }
+}

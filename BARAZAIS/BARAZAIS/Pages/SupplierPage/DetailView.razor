@@ -1,0 +1,327 @@
+﻿@page "/Suppliers/Details"
+@page "/Suppliers/Details/{Sn:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+
+@{
+    if (ThisSupplier.Id < 1)
+    {
+        <div class="row">
+            <div class="text-unique txtshadow fs-4">
+                --:--
+            </div>
+        </div>
+    }
+    else
+    {
+         <div class="row mt-2 bg-white shadow-sm rounded">
+            <div class="col-12">
+                <Header Title=@Title
+                LineText=@LineText
+                NewUrl=@NewUrl
+                EditUrl=@EditUrl
+                ViewUrl=@ViewUrl
+                ViewUrlIcon=@ViewUrlIcon />
+            </div>
+            <div class="col-12">
+                <hr class="text-muted"/>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <ul class="d-flex flex-column p-0 m-0">
+                    <li class="text-md-start text-center">
+                        <h3 class="txtshadow text-capitalize fw-bold fs-4">@ThisSupplier.Caption</h3>
+                    </li>
+                    <li>
+                        <ul class="m-0 p-0 d-flex flex-row justify-content-md-start justify-content-center">
+                            <li class="me-2 text-md-start text-center">
+                                <p>Code : @(ThisSupplier.Code + ThisSupplier.Id)</p>
+                            </li>
+                            <li class="me-2 text-md-start text-center">
+                                <p> <i class=" bi-dot"></i> </p>
+                            </li>
+                            <li class="me-2 text-md-start text-center">
+                                <p><i class="bi bi-cart4 txtshadow me-2"></i> Total Purchases :  @ThisSupplier.Grn.Count</p>
+                            </li>
+                            <li class="me-2 text-md-start text-center">
+                                <p> <i class=" bi-dot"></i> </p>
+                            </li>
+                            <li class="me-2 text-md-start text-center">
+                                <p>Amount :  @CostPerGrn.ToString("n0")</p>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    CurrentPage=@CurrentPage
+                    TotalPages=@TotalPages />
+            </div>
+        </div>
+
+        @*End header*@
+
+        <div class="row mb-3">
+            <div class="col-lg-5 col-12 pe-lg-4">
+                <div class="row text-start mt-3 bg-white rounded shadow-sm">
+                    <div class="col-12  bg-xs shadow-sm py-3 rounded-top">
+                        Info
+                    </div>
+                    <div class="col-12 py-3">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0">
+                                <p>Contacts</p>
+                            </li>
+                            <li class="p-0 py-2 m-0 text-muted border-bottom mb-2" style="font-size:0.8rem !important">
+                                <p class="pb-0 ms-0 mb-0">Phone : @ThisSupplier.Phone</p>
+                                <p class="p-0 m-0">Email : @ThisSupplier.Email</p>
+                            </li>
+                        </ul>
+                        <ul class="p-0 m-0 mt-3 text-start">
+                            <li class="p-0 m-0">
+                                <p>Documentation</p>
+                            </li>
+                            <li class="p-0 py-2 m-0 text-muted border-bottom mb-2" style="font-size:0.8rem !important">
+                                <p class="pb-0 ms-0 mb-0">TIN : @ThisSupplier.TIN</p>
+                                <p class="p-0 m-0">VRN : @(ThisSupplier.VRN != null ? ThisSupplier.VRN : "--:--") </p>
+                            </li>
+                        </ul>
+                        <ul class="p-0 m-0 mt-3 text-start">
+                            <li class="p-0 m-0">
+                                <p>Address</p>
+                            </li>
+                            <li class="p-0 pt-2 m-0 text-muted text-capitalize" style="font-size:0.8rem !important">
+                                <p>@(ThisSupplier.Address != null ? ThisSupplier.Address : "--:--") </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row text-start mt-3 bg-white rounded shadow-sm">
+                    <div class="col-12  bg-xs shadow-sm py-3 rounded-top">
+                        Description
+                    </div>
+                    <div class="col-12 py-3">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0 text-capitalize">
+                                <p>@(ThisSupplier.Description != null ? ThisSupplier.Description : "--:--") </p>
+                            </li>
+                            <li class="p-0 pt-3 m-0 text-muted border-top mt-4" style="font-size:0.65rem !important">
+                                <ul class="p-0 m-0 d-flex flex-row justify-content-between">
+                                    <li class="p-0 m-0">
+                                        <p class="pb-0 ms-0 mb-0">Last Updated : @(ThisSupplier.DateUpdated.ToString("dd MMM yy, HH:mm"))</p>
+                                    </li>
+                                    <li>
+                                        <i class="bi bi-dot fs-6 txtshadow"></i>
+                                    </li>
+                                    <li class="p-0 m-0">
+                                        <p class="pb-0 ms-0 mb-0">DateCreated : @(ThisSupplier.DateCreated.ToString("dd MMM yy, HH:mm"))</p>
+                                        <p class="p-0 m-0">By : @ThisSupplier.User.FirstName (ID : @ThisSupplier.Id), @ThisSupplier.User.AccessLevel</p>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7 col-12">
+                <div class="row text-start mt-3 bg-white rounded shadow-sm">
+                    <div class="col-12  bg-xs shadow-sm py-3 rounded-top">
+                        Associated Data
+                    </div>
+                    <div class="col-12">
+                        <ul class="m-0 p-0">
+                            <li class=" m-0 p-2">
+                                <div class="row text-start text-unique border-bottom border-2">
+                                    <div class="col-6 py-3 fs-6">
+                                        <i class=" fs-5 bi-cart4  "></i> Grns
+                                    </div>
+                                    <div class="col-6">
+                                        <ul class="d-flex flex-row justify-content-end p-0 m-0">
+                                            <li class="btn py-3 text-unique mx-3"><i class="fs-6 bi-cart4 "></i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-12">
+                        <ul class="m-0 p-0">
+                            <li class=" m-0 p-2">
+                                @* Start Dynamic Tabs for Products and Brands*@
+
+                                    @{
+                                        if (this.ThisSupplier.Grn != null && this.ThisSupplier.Grn.Count > 0)
+                                        {
+                                            <InPurchase SupplierToCheck=@ThisSupplier />
+                                        }
+                                        else
+                                        {
+                                            <p class="fs-6 text-center text-unique py-3 px-5  bg-xss my-3 " style="width:fit-content; margin:1px auto;">--:--</p>
+                                            ThisSupplier.Grn = new();
+                                        }
+                                    }
+
+                                @* End Dynamic Tabs for Products and Brands*@
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    // Url product Id
+    [Parameter]
+    public int Sn { get; set; } = 0;
+
+    //Header Component
+    private string Title = "Suppliers";
+    private string LineText = "Detail view";
+    private string NewUrl = "Suppliers/New";
+    private string ViewUrl = "Suppliers/ListView";
+    private string EditUrl = "Suppliers/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //  Pagination
+    private int TotalPages = 1;
+    private int CurrentPage = 1;
+    private int PageSize = 1;
+
+    private int TheCount = 0;
+
+    //Data
+    private SupplierModel ThisSupplier = new();
+    private double CostPerGrn = 0.0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await Start((int)Sn);
+    }
+
+    private async Task Start(int cid = 0){
+        ThisSupplier.Grn = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Suppliers.GetNoRecords();
+
+            if(cid < 1 && TotalPages > 0){
+                ThisSupplier = (await repo.Suppliers.GetAllSuppliersDetailedAsync(1,1)).SingleOrDefault();
+                TotalAllGrnsCost(ThisSupplier);
+
+                CurrentPage = (repo.Suppliers.GetIndexOf(ThisSupplier) + 1 );
+                EditUrl = "Suppliers/Edit/" + ThisSupplier.Id ;
+            }
+            else if(cid > 0 && cid <= TotalPages){
+                ThisSupplier = await repo.Suppliers.GetDetailedSupplierAsync(cid);
+                TotalAllGrnsCost(ThisSupplier);
+
+                CurrentPage = (repo.Suppliers.GetIndexOf(ThisSupplier) + 1 );
+                EditUrl = "Suppliers/Edit/" + ThisSupplier.Id ;
+            }
+            else{
+                ThisSupplier = new();
+                ThisSupplier.Grn = new();
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task NextPage(){
+        ThisSupplier.Grn = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Suppliers.GetNoRecords();
+
+            if(CurrentPage < TotalPages ){
+                CurrentPage ++ ;
+            }
+            else{
+                CurrentPage = TotalPages; 
+            }
+
+            ThisSupplier = (await repo.Suppliers.GetAllSuppliersDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            TotalAllGrnsCost(ThisSupplier);
+
+            await repo.CompleteAsync();
+            EditUrl = "Suppliers/Edit/" + ThisSupplier.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private async Task PreviousPage(){
+        ThisSupplier.Grn = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Suppliers.GetNoRecords();
+
+            if(CurrentPage > 1 ){
+                CurrentPage -- ;
+            }
+            else{
+                CurrentPage = 1; 
+            }
+
+            ThisSupplier = (await repo.Suppliers.GetAllSuppliersDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            TotalAllGrnsCost(ThisSupplier);
+
+            await repo.CompleteAsync();
+            EditUrl = "Suppliers/Edit/" + ThisSupplier.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private async Task FirstPage(){
+        ThisSupplier.Grn = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Suppliers.GetNoRecords();
+
+            CurrentPage = 1; 
+
+            ThisSupplier = (await repo.Suppliers.GetAllSuppliersDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            TotalAllGrnsCost(ThisSupplier);
+
+            await repo.CompleteAsync();
+            EditUrl = "Suppliers/Edit/" + ThisSupplier.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private async Task LastPage(){
+        ThisSupplier.Grn = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = repo.Suppliers.GetNoRecords();
+
+            CurrentPage = TotalPages; 
+
+            ThisSupplier = (await repo.Suppliers.GetAllSuppliersDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            TotalAllGrnsCost(ThisSupplier);
+
+            await repo.CompleteAsync();
+            EditUrl = "Suppliers/Edit/" + ThisSupplier.Id ;
+            repo.Dispose(); 
+        }
+    }
+
+    private void TotalAllGrnsCost(SupplierModel x)
+    {
+        CostPerGrn = 0.0;
+        var AllGrns = x.Grn != null ? x.Grn : null;
+        foreach(var item in AllGrns)
+        {
+            foreach(var rec in item.ProductGrn)
+            {
+                CostPerGrn += ((double)(rec.Cost * rec.QtyPurchased));
+            }
+        }
+    }
+}

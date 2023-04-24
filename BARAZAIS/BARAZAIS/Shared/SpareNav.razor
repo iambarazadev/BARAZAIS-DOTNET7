@@ -1,0 +1,76 @@
+<div class="top-row ps-3 navbar navbar-dark">
+	<div class="container-fluid">
+		<a class="navbar-brand text-white" href="">BIS</a>
+		<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</div>
+</div>
+
+<div id="Alone" class="@NavMenuCssClass fw-bold opacity-75" >
+	<nav class="flex-column">
+		<div class="nav-item px-3 " >
+			<NavLink class="nav-link text-white rounded-0 ps-3" href="/Home" Match="NavLinkMatch.All" >
+				 <span class="fs-6 bi-house-fill" aria-hidden="true" > Home</span>
+			</NavLink>
+		</div>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link text-white rounded-0 ps-3" href="Pos/0">
+				<span class="bi-display" aria-hidden="true"> Pos</span>
+			</NavLink>
+		</div>
+		<div class="nav-item px-3">
+			<a data-bs-toggle="collapse" href="#CollapseFinance" role="button" aria-expanded="false" aria-controls="CollapseFinance" class="text-white rounded-0 ps-3">
+				<span class=" bi-cash-coin" aria-hidden="true"> Finance</span> <i class="bi bi-caret-down-fill ms-2 text-white-50 "style="font-size:0.8rem"></i>
+			</a>
+			<div class="collapse p-0 m-0 text-start" id="CollapseFinance">
+				<ul class="p-0 m-0">
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Sales/ListView"><span class="bi-window-stack" aria-hidden="true"> Sales</span></NavLink></li>
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Purchases/ListView"><span class="fs-6 bi-cart4" aria-hidden="true"> Purchases</span></NavLink></li>
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Suppliers/ListView"><span class="fs-6 bi-truck-flatbed" aria-hidden="true"> Suppliers</span></NavLink></li>
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Taxes/ListView"><span class="" aria-hidden="true">% Taxes</span></NavLink></li>
+				</ul>
+			</div> 
+		</div>
+		<div class="nav-item px-3">
+			<a data-bs-toggle="collapse" href="#CollapseProduct" role="button" aria-expanded="false" aria-controls="CollapseProduct" class="a text-white rounded-0 ps-3">
+				<span class=" bi-stack" aria-hidden="true"> Products</span> <i class="bi bi-caret-down-fill ms-2 text-white-50 "style="font-size:0.8rem"></i>
+			</a>
+			<div class="collapse p-0 m-0 text-start" id="CollapseProduct">
+				<ul class="p-0 m-0">
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Products/ListView"><span class=" bi-stack" aria-hidden="true"> Stock</span></NavLink></li>
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Brands/ListView"><span class="bi bi-bookmark-fill" aria-hidden="true"> Brands</span></NavLink></li>
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Categories/ListView"><span class="bi-columns-gap " aria-hidden="true"> Categories</span></NavLink></li>
+				</ul>
+			</div> 
+		</div>
+		<div class="nav-item px-3">
+			<a data-bs-toggle="collapse" href="#CollapseAdjust" role="button" aria-expanded="false" aria-controls="CollapseAdjust" class="a text-white rounded-0 ps-3">
+				<span class="bi-toggles2 fs-6" aria-bs-hidden="true"> Adjustments </span> <i class="bi bi-caret-down-fill ms-2 text-white-50 "style="font-size:0.8rem"></i>
+			</a>
+			<div class="collapse p-0 m-0 text-start" id="CollapseAdjust">
+				<ul class="p-0 m-0">
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Adjustments/Stock/ListView"><span class="bi bi-activity fs-6 "> Stock Adjustment</span> </NavLink></li>
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Adjustments/Prices/ListView"><span class="bi bi-tag fs-6 "> Price Adjustment</span></NavLink></li>
+					<li class="ms-4"><NavLink class="nav-link text-white-50 rounded-0 ps-3" href="Adjustments/Opens/ListView"><span class="bi bi-layers fs-6"> Open Stock</span> </NavLink></li>
+				</ul>
+			</div> 
+		</div>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link text-white rounded-0 ps-3" href="Staffs/ListView">
+				<span class="bi bi-people" aria-hidden="true"> Staff</span>
+			</NavLink>
+		</div>
+	</nav>
+</div>
+
+@code {
+	private bool collapseNavMenu = false;
+
+	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
+}

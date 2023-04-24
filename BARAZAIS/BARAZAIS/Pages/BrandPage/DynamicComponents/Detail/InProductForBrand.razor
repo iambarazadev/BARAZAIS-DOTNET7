@@ -1,0 +1,126 @@
+
+@{
+        
+    if(!TheseProducts.Any()){
+        
+        <div class="container text-center">
+            <p class="p-3 rounded-3 fs-4 text-unique fw-lighter">..No Product To Display!</p>
+        </div>
+    }
+    else{
+        <div class="row text-unique bg-xss rounded border-bottom">
+            <div class="col-1 py-2 text-center">#</div>
+            <div class=" col-4 py-2 text-start text-unique">
+               <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                    <li class="">PID</li>
+                    <li class="rounded-3 opacity-75" style="font-size:0.7rem !important; width:fit-content;">Barcode</li>
+                </ul>
+            </div>
+            <div class=" col-7 py-2 text-start text-unique">
+                <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                    <li class="">Product</li>
+                    <li class="rounded-3 opacity-75" style="font-size:0.7rem !important; width:fit-content;">Category</li>
+                </ul>
+            </div>
+        </div>
+        
+            foreach(var item in TheseProducts){
+                
+                <div class="row rounded-0 py-0 bg-xss text-unique border-bottom">
+                    <div class="col-1 py-1 text-center text-dark">@(BrandToCheck.Product.IndexOf(item) + 1)</div>
+                    <div class=" col-4 py-1 text-start text-unique">
+                        <a class="p-0 m-0 text-unique" href="Products/Details/@item.Id" style="font-size:0.8rem !important;">
+                            <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                                <li class="text-primary">@(item.Code + item.Id)</li>
+                                <li class="rounded-3 opacity-75 text-capitalize" style="font-size:0.7rem !important; width:fit-content;">@(item.Barcode.Any() ? item.Barcode.LastOrDefault().Scan : "--:--")</li>
+                            </ul>
+                        </a>
+                    </div>
+                    <div class="col-7 py-1 text-start text-unique">
+                        <NavLink class="p-0 m-0 text-unique" style="font-size:0.8rem !important;">
+                            <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                                <li class="text-capitalize">@item.Caption</li>
+                                <li class="rounded-3 opacity-75 text-capitalize" style="font-size:0.7rem !important; width:fit-content;">@item.Category.Caption</li>
+                            </ul>
+                        </NavLink>
+                    </div>
+                    
+                </div>
+            }
+            
+        <InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+            />
+    }
+}
+
+@code{
+    
+    //  Inner Pagination 
+        private int InnerTotalPages = 1;
+        private int InnerCurrentPage = 1;
+        private int InnerPageSize = 50 ;
+        
+    // Parameterel
+    [Parameter]
+    public BrandModel BrandToCheck {get;set;}
+    private List<ProductModel> TheseProducts = new();
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await InnerNextPage();
+        StateHasChanged();
+    }
+    
+    
+    private async Task InnerNextPage(){
+        
+        if(BrandToCheck.Product.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((double)(BrandToCheck.Product.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProducts = BrandToCheck.Product
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            BrandToCheck.Product = new();
+        }
+        StateHasChanged();
+    }
+    
+    
+    private async Task InnerPreviousPage(){
+        if(BrandToCheck.Product.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((double)(BrandToCheck.Product.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProducts = BrandToCheck.Product
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            BrandToCheck.Product = new();
+        }
+        StateHasChanged();
+    }
+    
+}
+

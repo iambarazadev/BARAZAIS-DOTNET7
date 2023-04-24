@@ -1,0 +1,120 @@
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+    @{  
+        foreach(var item in TheseProductOpens){
+            RetailPrice = item.Product.ProductPrice.Any() ? item.Product.ProductPrice.LastOrDefault().LatestPrice : 0 ;
+            MoreVisual = (item.ProductId == MoreId) ? "bg-white border border-warning rounded-3" : "bg-xss";
+            <div class="row text-unique @MoreVisual border-bottom">
+                <div class="col-1 text-center py-1 fw-bolder">@(OpenToCheck.ProductOpen.IndexOf(item) + 1)</div>
+                <div class="col-4 py-1 text-start">
+                    <a class="p-0 m-0" href="Products/Details/@item.Product.Id">
+                        <ul class="d-flex flex-column justify-content-start p-0 m-0 text-capitalize">
+                            <li class="m-0 text-primary opacity-75" style="font-size:0.8rem !important; width:fit-content;">@(item.Product.Code + item.Product.Id)</li>
+                            <li class="text-muted d-none d-lg-block">@(item.Product.Caption.Length > 20 ? item.Product.Caption.Substring(0,16) + " .." : item.Product.Caption)</li>
+                            <li class="text-muted d-lg-none">@(item.Product.Caption.Length > 11 ? item.Product.Caption.Substring(0,8) + " .." : item.Product.Caption)</li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="col-3 py-1 text-center">@item.Qty</div>
+                <div class="col-2 py-1 text-start">
+                    <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                        <li class="p-0 m-0 text-danger">&#64; @(item.Cost.ToString("n0"))</li>
+                        <li class="p-0 m-0 opacity-75 " style="font-size:0.8rem !important; width:fit-content;">&sum; @((item.Cost * item.Qty).ToString("n0"))</li>
+                    </ul>
+                </div>
+                <div class="col-2 py-1 text-start ">
+                    <ul class="p-0 m-0">
+                        <li class="p-0 m-0 text-primary opacity-75">&#64; @((RetailPrice).ToString("n0"))</li>
+                        <li class="p-0 m-0 opacity-75 " style="font-size:0.8rem !important; width:fit-content;">
+                            &sum; @((RetailPrice * item.Qty).ToString("n0"))
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+    }
+
+<InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+            />
+
+
+
+@code{
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 50 ;
+        
+    // Parameter
+    [Parameter]
+    public OpenModel OpenToCheck {get;set;}
+    
+    [Parameter]
+    public int MoreId {get;set;}
+    
+    private string MoreVisual = "";
+    
+    private List<ProductOpen> TheseProductOpens = new();
+    private decimal RetailPrice = 0;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await InnerNextPage();
+        StateHasChanged();
+    }
+    
+    
+    private async Task InnerNextPage(){
+        
+        if(OpenToCheck.ProductOpen.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((double)(OpenToCheck.ProductOpen.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductOpens = OpenToCheck.ProductOpen
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            OpenToCheck.ProductOpen = new();
+        }
+        StateHasChanged();
+    }
+    
+    
+    private async Task InnerPreviousPage(){
+        if(OpenToCheck.ProductOpen.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((double)(OpenToCheck.ProductOpen.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductOpens = OpenToCheck.ProductOpen
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            OpenToCheck.ProductOpen = new();
+        }
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,469 @@
+﻿@page "/Adjustments/Stock/ListView"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<div class="row pb-3 mt-2 rounded bg-white shadow-sm">
+    <div class="col-12">
+        <Header
+            Title=@Title
+            LineText=@LineText
+            NewUrl=@NewUrl
+            ViewUrl=@ViewUrl
+            ViewUrlIcon=@ViewUrlIcon
+            />
+    </div>
+    <div class="col-12">
+        <hr class="text-muted" />
+    </div>
+    <div class="col-md-2 col-6  mt-md-0 mt-3">
+        <div class="form-floating rounded-3">
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <label for="floatingInput" class="">
+                From Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-6 mt-md-0 mt-3 ">
+        <div class="form-floating rounded-3">
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <label for="floatingInput" class="">
+                To Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-4 col-6 mt-md-0 mt-2 ">
+        <div class="form-floating rounded-0 py-0">
+           <select @bind=@UserFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var ThisUser in TheseUsers){
+                        <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Responsible</label>
+        </div>
+    </div>
+    <div class="col-md-1 col-4  mt-md-0 mt-3">
+        <ul class="p-0 m-0 text-center">
+            <li class="p-0 m-0 text-unique" >
+                <button @onclick=@(()=>Filter()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+            <li class="p-0 m-0 text-unique mt-1" >
+                <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-3 col-12 mt-md-0 mt-2">
+        <div class="form-floating rounded-0">
+            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-xss border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
+            <label for="floatingInput">
+                <i class="bi bi-search txtshadow fs-6 me-2 "></i> <span class="text-muted ">SID#</span>
+            </label>
+        </div>
+    </div>
+</div>
+<div class="row mt-3 bg-white rounded shadow-sm" style="font-size:0.8rem !important">
+    <div class="col-md-6 col-12 rounded-3 p-3">
+        <ul class="p-2 m-0 text-start rounded bg-xss">
+            <li class="p-2 m-0 text-unique" >
+                TOTAL ADJUSTMENTS [+ve]
+            </li>
+            <li class="p-2 py-0 m-0 text-success" >
+                &sum; @((TotalUpAdjustmentCost).ToString("n0"))
+            </li>
+            <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                @(UpItems) @(UpItems > 1 ? "items" : "item") <span class="bi bi-dot"></span> <span class="text-success">+@(NumOfUpAdjustment) @(NumOfUpAdjustment > 1 ? "pcs" : "pc")</span>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-6 col-12 rounded-3 p-3 mt-md-0 mt-2">
+        <ul class="p-2 m-0 text-start rounded bg-xss">
+            <li class="p-2 m-0 text-unique" >
+                TOTAL ADJUSTMENTS [-ve]
+            </li>
+            <li class="p-2 py-0 m-0 text-danger" >
+                &sum; @((TotalDownAdjustmentCost).ToString("n0"))
+            </li>
+            <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                @(DownItems) @(DownItems > 1 ? "items" : "item")<span class="bi bi-dot"></span> <span class="text-danger"> @(NumOfDownAdjustment) @(NumOfDownAdjustment > 1 ? "pcs" : "pc")</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row bg-white my-3 rounded shadow-sm">
+    <div class="col-12 px-3 bg-xs rounded-top shadow-sm">
+        <div class="row bg-xs">
+            <div class="col-1 text-center py-3 fw-bolder">#</div>
+            <div class="col-md-2 col-3 py-3 text-start">Adjustment</div>
+            <div class="col-md-1 col-2 py-3 text-start">Items</div>
+            <div class="col-lg-1 col-md-2 col-3 py-3 text-center">Pcs</div>
+            <div class="col-lg-2 col-3 py-3 text-start">Cost</div>
+            <div class="d-none d-lg-block col-lg-2 py-3 text-start">Date Time</div>
+            <div class="col-md-3 d-none d-md-block py-3 text-start">By</div>
+        </div>
+    </div>
+    <div class="col-12 px-3 pt-2">
+        @{
+            if (!TheseStockAdjustments.Any())
+            {
+                <div class="container text-center">
+                    <p class="p-3  fs-4 text-unique fw-lighter  text-capitalize">-- : --</p>
+                </div>
+            }
+            else
+            {
+                foreach (var item in TheseStockAdjustments)
+                {
+                    UpQtyCost = 0.0;
+                    DownQtyCost = 0.0;
+                    UpQtyItems = 0;
+                    DownQtyItems = 0;
+
+                    foreach (var xitem in item.ProductAdjustment)
+                    {
+                        if (xitem.QtyAdjusted > 0)
+                        {
+                            UpQtyCost += (double)(xitem.QtyAdjusted * (xitem.Cost));
+                            UpQtyItems +=1;
+                        }
+                        if (xitem.QtyAdjusted < 0)
+                        {
+                            DownQtyCost += (double)(xitem.QtyAdjusted * (xitem.Cost));
+                            DownQtyItems +=1;
+                        }
+                    }
+
+                    <div class="row border-bottom bg-xss" style="font-size:0.8rem !important">
+                        <div class="col-1 text-center py-1">
+                            @(item.Id)
+                        </div>
+                        <div class="col-md-2 col-3 py-1 text-start">
+                            <a href=@("Adjustments/Stock/Details/"+(item.Id)) class="p-0 m-0">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0 text-primary opacity-75" style="font-size:0.8rem !important">
+                                        @(item.Code + item.Id)
+                                    </li>
+                                    <li class="p-0 m-0 text-muted d-none d-lg-block " style="font-size:0.8rem !important">
+                                        @(item.DateCreated.ToString("ddd, dd MMM yy"))
+                                    </li>
+                                    <li class="p-0 m-0 text-muted m-0 d-lg-none " style="font-size:0.8rem !important">
+                                        @(item.DateCreated.ToString("dd MMM yy"))
+                                    </li>
+                                </ul>
+                            </a>
+                        </div>
+                        <div class="col-md-1 col-2 py-1 text-center">
+                            <ul class="p-0 m-0 d-flex flex-column text-center ">
+                                <li class="p-0 m-0 text-start text-success">@UpQtyItems</li>
+                                <li class=" m-0  text-danger " style="font-size:0.8rem !important; width:fit-content;">@DownQtyItems</li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-3 py-1 text-center">
+                            <ul class="p-0 m-0 text-center ">
+                                <li class="p-0 m-0 text-center  text-success">@item.ProductAdjustment.Where(x => x.QtyAdjusted > 0).Sum(x => x.QtyAdjusted) </li>
+                                <li class=" text-center m-0  text-danger " style="font-size:0.8rem !important;">@(item.ProductAdjustment.Where(x => x.QtyAdjusted < 0).Sum(x => x.QtyAdjusted) * -1)</li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-3 py-1 text-unique text-md-start text-center">
+                            <ul class="p-0 m-0 d-flex flex-column text-center ">
+                                <li class="p-0 m-0 text-start text-success">@UpQtyCost.ToString("n0")</li>
+                                <li class=" m-0  text-danger " style="font-size:0.8rem !important; width:fit-content;">@((DownQtyCost < 0 ? -1 * DownQtyCost : 0).ToString("n0"))</li>
+                            </ul>
+                        </div>
+                        <div class=" col-lg-2 d-none d-lg-block text-start py-1">
+                            <ul class="p-0 m-0 d-flex flex-column text-start">
+                                <li class="p-0 m-0 text-primary text-capitalize">@(item.DateCreated.ToString("dd MMM yy"))</li>
+                                <li class="  m-0 text-muted" style="font-size:0.8rem !important; width:fit-content;">@(item.DateCreated.ToString("ddd hh : mm"))</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3 d-none d-md-block py-1 text-unique text-start">
+                            <ul class="p-0 m-0 d-flex flex-column text-center">
+                                <li class="p-0 m-0 text-start text-primary">@(item.User.Code + item.User.Id)</li>
+                                <li class=" m-0  text-capitalize text-muted" style="font-size:0.8rem !important; width:fit-content;">@(item.User.FirstName + " " + item.User.LastName)</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    TotalPages=@TotalPages
+                    CurrentPage=@CurrentPage />
+            }
+        }
+    </div>
+</div>
+@code {
+    //Header Component
+    private string Title = "Stock Adjustments";
+    private string LineText = "List view";
+    private string NewUrl = "Adjustments/Stock/New";
+    private string ViewUrl = "Adjustments/Stock/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+
+
+    // Data Variables
+    private List<AdjustmentModel> TheseStockAdjustments = new();
+    private int CurrentPage = 0;
+    private int PageSize = 20;
+    private int TotalPages = 1;
+    private double UpQtyCost = 0.0;
+    private double DownQtyCost = 0.0;
+    private int UpQtyItems = 0;
+    private int DownQtyItems = 0;
+    
+    //filter variables
+    private List<UserModel> TheseUsers = new();
+    private int UserFiltered = 0;
+    private int? SearchId = null;
+    private int NumOfUpAdjustment = 0;
+    private int NumOfDownAdjustment = 0;
+    private decimal TotalDownAdjustmentCost = 0;
+    private decimal TotalUpAdjustmentCost = 0;
+    private int UpItems = 0;
+    private int DownItems = 0;
+    
+    private DateOnly FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+    private DateOnly ToDate = DateOnly.FromDateTime(DateTime.Now);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        Reset();
+        
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseUsers = await repo.Users.GetAllRecords(repo.Users.GetNoRecords(),1);
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Adjustments.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            if (CurrentPage < TotalPages)
+            {
+                CurrentPage++;
+            }
+            else
+            {
+                CurrentPage = TotalPages;
+            }
+
+            TheseStockAdjustments = (await repo.Adjustments.GetAllStockAdjustmentsDetailedAsync(1, repo.Adjustments.GetNoRecords()))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+            
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task PreviousPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Adjustments.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            if (CurrentPage > 1)
+            {
+                CurrentPage--;
+            }
+            else
+            {
+                CurrentPage = 1;
+            }
+
+            TheseStockAdjustments = (await repo.Adjustments.GetAllStockAdjustmentsDetailedAsync(1, repo.Adjustments.GetNoRecords()))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+            
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task FirstPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Adjustments.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            CurrentPage = 1;
+
+            TheseStockAdjustments = (await repo.Adjustments.GetAllStockAdjustmentsDetailedAsync(1, repo.Adjustments.GetNoRecords()))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+            
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LastPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Adjustments.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            CurrentPage = TotalPages;
+
+            TheseStockAdjustments = (await repo.Adjustments.GetAllStockAdjustmentsDetailedAsync(1, repo.Adjustments.GetNoRecords()))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Skip((CurrentPage - 1) * PageSize)
+            .Reverse()
+            .Take(PageSize)
+            .ToList();
+            
+            StockInfo();
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+    
+    private async Task InnerSearch(){ 
+        if(SearchId > 0){
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                TheseStockAdjustments = (await repo.Adjustments.GetAllStockAdjustmentsDetailedAsync(1, repo.Adjustments.GetNoRecords()))
+                .OrderBy(x=> x.Id)
+                .Where(x => (x.Id == (int)SearchId))
+                .ToList();
+                
+                if(TheseStockAdjustments.Any()){
+                    UserFiltered = (int)TheseStockAdjustments.FirstOrDefault().UserId;
+                    FromDate = DateOnly.FromDateTime(TheseStockAdjustments.FirstOrDefault().DateCreated);
+                    ToDate = DateOnly.FromDateTime(TheseStockAdjustments.FirstOrDefault().DateCreated);
+                }
+                else{
+                    TheseStockAdjustments = new();
+                }
+                
+                StockInfo();
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }else{
+            await Reset();
+        }
+    }
+    
+    private async Task Filter(){
+        if(UserFiltered > 0 )
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                TheseStockAdjustments = (await repo.Adjustments.GetAllStockAdjustmentsDetailedAsync(1, repo.Adjustments.GetNoRecords()))
+                .OrderBy(x=> x.Id)
+                .Where(x => (x.UserId == UserFiltered))
+                .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+                .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+                .Reverse()
+                .ToList();
+                
+                StockInfo();
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }
+        else 
+        if(UserFiltered < 1)
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                TheseStockAdjustments = (await repo.Adjustments.GetAllStockAdjustmentsDetailedAsync(1, repo.Adjustments.GetNoRecords()))
+                .OrderBy(x=> x.Id)
+                .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+                .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+                .Reverse()
+                .ToList();
+                
+                StockInfo();
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }else{
+            await Reset();
+        }
+    }
+    
+    private void StockInfo(){
+        UpItems = 0;
+        DownItems = 0;
+        
+        NumOfDownAdjustment = 0;
+        NumOfUpAdjustment = 0;
+        
+        TotalDownAdjustmentCost = 0;
+        TotalUpAdjustmentCost = 0;
+        
+        foreach(var Adjustmnt in TheseStockAdjustments){
+            foreach(var prodadj in Adjustmnt.ProductAdjustment){
+                if(prodadj.QtyAdjusted > 0){
+                    NumOfUpAdjustment += prodadj.QtyAdjusted;
+                    TotalUpAdjustmentCost += ((prodadj.Cost) * (prodadj.QtyAdjusted));
+                    UpItems += 1;
+                }
+                else{
+                    NumOfDownAdjustment += prodadj.QtyAdjusted;
+                    TotalDownAdjustmentCost += ((prodadj.Cost) * (prodadj.QtyAdjusted));
+                    DownItems += 1;
+                }
+            }
+        }
+    }
+    
+    private async Task Reset(){
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        UserFiltered = 0;
+        SearchId = null;
+        CurrentPage = 0;
+        await NextPage();
+    }
+}

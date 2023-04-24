@@ -1,0 +1,468 @@
+@page "/Pos/OnHold"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+    if(ViewHold){ 
+
+        GetFullCostRetail(PopperHold);        
+        <div class="modal fade " style="width:100vw !important;" id="Search" tabindex="-1" aria-labelledby="SearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog modal-dialog-scrollable modal-xl rounded-0">
+                <div class="modal-content border-0 bg-xss rounded-0">
+                    <div class="modal-header border-0 px-1 py-0 pb-1 my-0 text-capitalize"> 
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class="p-0" style="font-size:1.14rem !important; width:fit-content;"><p class="bg-xs py-1 px-2 fw-bolder"> @(PopperHold.Code + PopperHold.Id)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2">Total Sale : @FullRetail.ToString("n0")</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi bi-dot  txtshadow me-1"></i> @((PopperHold.DateCreated).ToString("MMM dd yyyy, ddd HH:mm"))</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi-person-fill me-1"></i> @(PopperHold.User.FirstName + " " + PopperHold.User.LastName)</p></li>
+                        </ul>
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75 rounded-circle" style="font-size:1rem !important; width:fit-content; cursor:pointer;"> <p class=" text-white rounded-circle"><i class="bi-printer text-white fw-bolder me-1"></i></p></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body py-0">
+                        <div class="row">
+                            <div class="col-12 shadow-lg bg-light border border-5 rounded-3">
+                                <div class="row text-white  shadow-sm txtshadow bg-xs">
+                                    <div class="col-1 text-center py-3 fw-bolder">#</div>
+                                    <div class="col-lg-4 col-4 py-3 text-start">Product</div>
+                                    <div class="col-lg-2 col-3 py-3 text-center ">OnHold</div>
+                                    <div class="col-3 d-none d-lg-block py-3 text-md-start text-center ">Retail Price</div>
+                                    <div class="col-lg-2 col-4 py-3 text-start">AtCostOf</div>
+                                </div>
+                                @{
+                                    foreach(var item in PopperHold.ProductHold){
+                                        <div class="row text-unique bg-xss border-bottom">
+                                            <div class="col-1 text-center py-1 fw-bolder">
+                                                @(PopperHold.ProductHold.IndexOf(item) + 1)
+                                            </div>
+                                            <div class="col-lg-4 col-4 py-1 text-start">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0 text-capitalize">
+                                                    <li class="text-primary d-none d-lg-block">@(item.Product.Caption.Length > 20 ? item.Product.Caption.Substring(0,16) + " .." : item.Product.Caption)</li>
+                                                    <li class="text-primary d-lg-none">@(item.Product.Caption.Length > 11 ? item.Product.Caption.Substring(0,8) + " .." : item.Product.Caption)</li>
+                                                    <li class=" m-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">@(item.Product.Code + item.Product.Id)</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-2 col-3 py-1 text-center text-success">
+                                                @item.Qty
+                                            </div>
+                                            <div class="col-3 d-none d-lg-block py-1 text-md-start text-center ">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0 text-success">
+                                                    <li>&#64; @((item.Price).ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">
+                                                        &sum; @((item.Price * (item.Qty)).ToString("n0"))
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-2 col-4 py-1 text-start px-0 ps-2 opacity-75">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                                                    <li>&#64; @(item.Cost.ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">&sum; @((item.Cost * item.Qty).ToString("n0"))</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+    }
+}
+
+<EditForm Model = "ThisSearch" OnSubmit="FetchData">
+<div class="row">
+    <div class="col-xl-2 col-md-4 mt-md-2 mt-3 px-1 col-12 ps-0">
+        <div class="form-floating rounded-0 py-0">
+            <select @bind="ThisSearch.UserId" @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 bg-light text-unique fw-bolder rounded-0 " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0">All</option>
+                @{
+                    foreach(var User in TheseUsers){
+                        <option class="text-unique txtshadow py-2" value=@User.Id>
+                            @(User.FirstName  + " " + User.LastName) 
+                        </option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Users</label>
+        </div>
+    </div>
+    <div class="col-xl-5 col-md-8 px-md-2 px-0 col-12">
+        <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
+            <li class="p-0 m-0 mt-2 me-2">
+                <div class="form-floating rounded-3">
+                    <input @bind="ThisSearch.FromDate" type="date"  style="font-size:0.8rem !important" class="form-control bg-light border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="From Date" />
+                    <label for="floatingInput" class="text-unique">
+                        From Date
+                    </label>
+                </div>
+            </li>
+            <li class="p-0 m-0 mt-2 me-2">
+                <div class="form-floating rounded-3">
+                    <input @bind="ThisSearch.ToDate" type="date" style="font-size:0.8rem !important" class="form-control bg-light border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="To Date" />
+                    <label for="floatingInput" class="text-unique">
+                        To Date
+                    </label>
+                </div>
+            </li>
+            <li class="py-2">
+                <button class="btn btn-sm btn-primary text-white rounded-0 border-0"><i class="fw-bolder bi-funnel text-white" style="font-size:0.8rem !important;"></i></button>
+            </li>
+        </ul>
+    </div>
+    <div class="col-xl-5 col-12 mt-md-2 mt-0 pt-2">
+        <div class="row" style="font-size:0.8rem !important">
+            <div class="col-6">
+                <ul class="p-0 m-0">
+                    <li class="p-0 m-0">
+                        <p class="m-0 p-0">Total Sales : 1,000,000 </p>
+                    </li>
+                    <li class="p-0 m-0 text-muted">
+                        <p class="m-0 p-0">Total Cost : 500,000 </p>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6">
+                <ul class="p-0 m-0">
+                    <li class="p-0 m-0">
+                        <p class="m-0 p-0">Items : 1,000 </p>
+                    </li>
+                    <li class="p-0 m-0 text-muted">
+                        <p class="m-0 p-0">Pcs : 50,000 </p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</EditForm>
+<div class="row">
+    <div class="col-12">
+        <div class="row mt-2 bg-xs">
+            <div class="col-1 text-center py-3">
+                #
+            </div>
+            <div class="col-2 text-start py-3">
+                Date
+            </div>
+            <div class="col-2 text-start py-3">
+                Hold
+            </div>
+            <div class=" col-3 text-start py-3">
+                Retail
+            </div>
+            <div class=" col-2 text-start py-3">
+                Counter
+            </div>
+            <div class=" col-2 text-start py-3">
+                Action
+            </div>
+        </div>
+        @{
+            if(!TheseHolds.Any()){
+                <div class="container text-center">
+                    <p class="p-3  fs-4 text-unique fw-lighter opacity-75 text-capitalize">-- : --</p>
+                </div>
+            }
+            else{
+                foreach(var Hold in TheseHolds){
+                    FullCost = 0;
+                    FullRetail = 0;
+
+                    GetFullCostRetail(Hold);
+                    <div class="row border-bottom bg-xss">
+                        <div class="col-1 text-center py-1">
+                            @(TheseHolds.IndexOf(Hold) + 1)
+                        </div>
+                        <div class="col-2 text-start py-1 pe-0">
+                            <ul class="p-0 m-0 text-start d-md-block d-none">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    @((Hold.DateCreated).ToString("dd MMM yy"))
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                    @((Hold.DateCreated).ToString("ddd, HH:mm"))
+                                </li>
+                            </ul>
+                            <ul class="p-0 m-0 text-start d-md-none">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    @((Hold.DateCreated).ToString("MMM dd"))
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                    @((Hold.DateCreated).ToString("HH:mm"))
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-2 text-start py-1">
+                            <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" onclick=@(()=>ViewHoldAsap(Hold.Id)) class="d-flex flex-column justify-content-start p-0 m-0 text-unique" style="font-size:0.8rem !important; cursor:pointer;">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    @(Hold.Code + Hold.Id)
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                    ---
+                                </li>
+                            </ul>
+                        </div>
+                        <div class=" col-3 text-start py-1 pe-0">
+                            <ul class="p-0 m-0 text-start">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    &sum; @((FullRetail).ToString("n0"))
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.75rem !important">
+                                     @(Hold.ProductHold.Count) @(Hold.ProductHold.Count > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(Hold.ProductHold.Sum(x => x.Qty)) @(Hold.ProductHold.Sum(x => x.Qty) > 1 ? "pcs" : "pc" )
+                                </li>
+                            </ul>
+                        </div>
+                        <div class=" col-2 text-start py-1">
+                            <ul class="p-0 m-0 text-start">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    @(Hold.User.Code + Hold.User.Id)
+                                </li>
+                                <li class="p-0 m-0 text-muted text-capitalize d-lg-none" style="font-size:0.8rem !important">
+                                    @((Hold.User.FirstName + " " + Hold.User.LastName).Length > 10 ? (Hold.User.FirstName + " " + Hold.User.LastName) : ((Hold.User.FirstName + " " + Hold.User.LastName).Substring(0,5))+"..")
+                                </li>
+                                <li class="p-0 m-0 text-muted text-capitalize d-lg-block d-none" style="font-size:0.8rem !important">
+                                    @((Hold.User.FirstName + " " + Hold.User.LastName).Length <= 10 ? (Hold.User.FirstName + " " + Hold.User.LastName) : ((Hold.User.FirstName + " " + Hold.User.LastName).Substring(0,10))+"..")
+                                </li>
+                            </ul>
+                        </div>
+                        <div class=" col-2 text-start py-1">
+                            <ul class="p-0 m-0 text-start d-flex flex-row justify-content-between">
+                                <li class="p-0 m-0 me-2" style="font-size:0.8rem !important">
+                                    <button @onclick=@(()=> this.UnHold(Hold.Id)) class="btn btn-sm mt-1 rounded-0 btn-success">UnHold</button>
+                                </li>
+                                <li class="p-0 m-0 text-muted d-none d-lg-block text-capitalize" style="font-size:0.8rem !important">
+                                    <button @onclick=@(()=> this.CancellRec(Hold)) class="btn btn-close mt-2"></button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+                
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    TotalPages=@TotalPages
+                    CurrentPage=@CurrentPage
+                />
+            }
+        }
+    </div>
+</div>
+
+
+@code{
+    private SalesPoccoModel ThisSearch = new();
+    private List<UserModel> TheseUsers = new();
+    private List<HoldModel> TheseHolds = new();
+    private HoldModel PopperHold = new();
+
+    //forpopping modal
+    private bool ViewHold = false;
+
+    //Paging
+    private int CurrentPage = 0;
+    private int PageSize = 10;
+    private int TotalPages = 0;
+
+    private decimal FullCost = 0;
+    private decimal FullRetail = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        TheseUsers = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseUsers = await repo.Users.GetAllRecords(repo.Users.GetNoRecords(),1);
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        FetchData();
+    }
+
+    private async Task NextPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(ThisSearch.UserId != null && (int)ThisSearch.UserId > 0 ){
+                double Num = (double)((await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate,(int)(ThisSearch.UserId), 1,repo.Holds.GetNoRecords(), null)).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            else{
+                double Num = (double)((await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, 1,repo.Holds.GetNoRecords(), null)).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+
+            if (CurrentPage < TotalPages)
+            {
+                CurrentPage ++;
+            }
+            else
+            {
+                CurrentPage = TotalPages;
+            }
+
+            if(ThisSearch.UserId != null && (int)ThisSearch.UserId > 0 ){
+                TheseHolds = (await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, (int)(ThisSearch.UserId),CurrentPage,PageSize, null));
+            }
+            else{
+                TheseHolds = await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, CurrentPage, PageSize, null);
+            }
+
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+
+    private async Task PreviousPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(ThisSearch.UserId != null && (int)ThisSearch.UserId > 0 ){
+                double Num = (double)((await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate,(int)(ThisSearch.UserId), 1,repo.Holds.GetNoRecords(), null)).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            else{
+                double Num = (double)((await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, 1,repo.Holds.GetNoRecords(), null)).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+
+            if (CurrentPage > 1)
+            {
+                CurrentPage --;
+            }
+            else
+            {
+                CurrentPage = 1;
+            }
+
+            if(ThisSearch.UserId != null && (int)ThisSearch.UserId > 0){
+                TheseHolds = await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, (int)(ThisSearch.UserId),CurrentPage,PageSize, null);
+            }
+            else{
+                TheseHolds = await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, CurrentPage, PageSize, null);
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+
+    private async Task FirstPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(ThisSearch.UserId != null && (int)ThisSearch.UserId > 0 ){
+                double Num = (double)((await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate,(int)(ThisSearch.UserId), 1,repo.Holds.GetNoRecords(),null)).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            else{
+                double Num = (double)((await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, 1,repo.Holds.GetNoRecords(),null)).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            CurrentPage = 1;
+
+            if(ThisSearch.UserId != null && (int)ThisSearch.UserId > 0){
+                TheseHolds = await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, (int)(ThisSearch.UserId),CurrentPage,PageSize, null);
+            }
+            else{
+                TheseHolds = await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, CurrentPage, PageSize,null);
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LastPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(ThisSearch.UserId != null && (int)ThisSearch.UserId > 0 ){
+                double Num = (double)((await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate,(int)(ThisSearch.UserId), 1,repo.Holds.GetNoRecords(), null)).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            else{
+                double Num = (double)((await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, 1,repo.Holds.GetNoRecords(),null)).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+
+            CurrentPage = TotalPages;
+
+            if(ThisSearch.UserId != null && (int)ThisSearch.UserId > 0){
+                TheseHolds = await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, (int)(ThisSearch.UserId),CurrentPage,PageSize, null);
+            }
+            else{
+                TheseHolds = await repo.Holds.GetAllHoldsDetailedAsync(ThisSearch.FromDate,ThisSearch.ToDate, CurrentPage, PageSize, null);
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private void GetFullCostRetail(HoldModel ThisData)
+    {
+        if (ThisData != null)
+        {
+            foreach (var xitem in ThisData.ProductHold)
+            {
+                FullCost += (decimal)((xitem.Qty) * (xitem.Cost));
+                FullRetail += (decimal)((xitem.Qty) * (xitem.Price));
+            }
+        }
+    }
+
+    private async void FetchData(){
+        if(ThisSearch.ToDate >= ThisSearch.FromDate){
+            CurrentPage = 0;
+            NextPage();
+        }else{
+            TheseHolds = new();
+        }
+    }
+
+    private void UnHold(int Number){
+        Navigation.NavigateTo("~/Pos/" + Number);
+        StateHasChanged();
+    }
+    
+    private async Task CancellRec(HoldModel HoldData){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            if(HoldData != null){
+                HoldData.Status = "cancelled";
+                repo.Holds.Update(HoldData);
+            }
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        await NextPage();
+        StateHasChanged();
+    }
+    
+    private void ViewHoldAsap(int G){
+        FullCost = 0;
+        FullRetail = 0;
+        PopperHold = new();
+        PopperHold = TheseHolds.Where(x => x.Id == G).SingleOrDefault();
+        ViewHold = true;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,289 @@
+@{
+    if(ViewGrn){         
+        <div class="modal fade " style="width:100vw !important;" id="Search" tabindex="-1" aria-labelledby="SearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog modal-dialog-scrollable modal-xl rounded-0">
+                <div class="modal-content border-0 bg-xss rounded-0">
+                    <div class="modal-header border-0 px-1 py-0 pb-1 my-0 text-capitalize"> 
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class="p-0" style="font-size:1.14rem !important; width:fit-content;"><p class="bg-xs py-1 px-2 fw-bolder"> @(ProductToCheck.Caption)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2">Code : @(ProductToCheck.Code + ProductToCheck.Id )</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi bi-bookmark-fill  txtshadow me-1"></i> @(ProductToCheck.Brand.Caption)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi-columns-gap me-1"></i> @(ProductToCheck.Category.Caption)</p></li>
+                        </ul>
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75 rounded-circle" style="font-size:1rem !important; width:fit-content; cursor:pointer;"> <p class=" text-white rounded-circle"><i class="bi-printer text-white fw-bolder me-1"></i></p></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body py-0">
+                        <div class="row">
+                            <div class="col-12 shadow-lg bg-light border border-5 rounded-3 p-3">
+                                <QuickViewGrn GetThisProduct=@ProductToCheck Gnum=@SendGrnId/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+    }
+}
+
+<div class="row text-start">
+    <div class="col-md-6 col-12 px-0 pt-2 d-flex flex-row flex-wrap justify-content-start">
+        <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@FromDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="From Date" />
+                    <label for="floatingInput" class="text-unique">
+                        From Date
+                    </label>
+                </div>
+            </li>
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@ToDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="To Date" />
+                    <label for="floatingInput" class="text-unique">
+                        To Date
+                    </label>
+                </div>
+            </li>
+            <li class="py-2">
+                <ul class="p-0 m-0 d-flex flex-md-column flex-row">
+                    <li class="p-0 m-0 text-unique" >
+                        <button @onclick=@(()=>ChangeDate()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+                    </li>
+                    <li class="p-0 m-0 text-unique mt-1 ps-md-0 ps-3" >
+                        <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-6 col-12 py-3 px-0">
+        <ul class="p-2 m-0 text-start bg-xss rounded" style="font-size:0.7rem !important">
+            <li class="p-2 m-0 text-unique" >
+                TOTAL SALES
+            </li>
+            <li class="p-2 py-0 m-0 text-primary" >
+                &sum; @((TotalPurchases).ToString("n0"))
+            </li>
+            <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                @(NumOfPurchases) <span class="bi bi-dot"></span> @(NumOfPurchases > 1 ? "Purchases" : "Purchase")
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row bg-xss text-unique py-2 border-bottom rounded mt-1" >
+    <div class="col-1 py-2 text-center">#</div>
+    <div class="col-lg-2 col-3 py-1 text-start text-unique">
+        <NavLink class="p-0 m-0 text-unique" href="" >
+            <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                <li>GRN</li>
+                <li class=" p-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">Receipt</li>
+            </ul>
+        </NavLink>
+    </div>
+    <div class="col-lg-2 col-3 py-1 text-start text-unique">
+        <NavLink class="p-0 m-0 text-unique" href="" style="font-size:0.8rem !important;">
+            <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                <li>&#64; Cost</li>
+                <li class=" p-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">&sum; Cost</li>
+            </ul>
+        </NavLink>
+    </div>
+    <div class=" col-lg-1 py-1 text-center text-unique d-none d-lg-block">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Stock</li>
+            <li class="opacity-75" style="font-size:0.7rem !important;">Before</li>
+        </ul>
+    </div>
+    <div class=" col-lg-1 col-2 py-1 text-center text-unique">
+        <ul class="text-center m-0 p-0">
+            <li class="text-center">Stock</li>
+            <li class="opacity-75 text-center" style="font-size:0.7rem !important;">Purchased</li>
+        </ul>
+    </div>
+     <div class=" col-lg-2 py-1 text-center text-unique d-none d-lg-block">
+        <ul class="d-flex flex-column justify-content-center m-0 p-0">
+            <li>Stock</li>
+            <li class="opacity-75" style="font-size:0.7rem !important;">After</li>
+        </ul>
+    </div>
+    <div class="col-lg-1 col-3 py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
+        <ul class=" m-0 p-0 text-start">
+            <li class="text-start">Date</li>
+            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Day & Time</li>
+        </ul>
+    </div>
+    <div class="col-lg-2 d-none d-lg-block py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
+        <ul class=" m-0 p-0 text-start">
+            <li class="text-start">Responsible</li>
+            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Code</li>
+        </ul>
+    </div>
+</div>
+@{
+    if(!TheseProductGrns.Any()){
+        <div class="container text-center">
+            <p class="p-3 fs-4 text-unique fw-lighter bg-light">--:--</p>
+        </div>
+    }
+    else{
+        
+        foreach(var item in TheseProductGrns){
+            <div class="row bg-xss border-bottom text-unique" style="font-size:0.8rem !important">
+                <div class="col-1 py-1 text-center">@(ProductToCheck.ProductGrn.IndexOf(item) + 1)</div>
+                <div class="col-lg-2 col-3 py-1 text-start text-unique">
+                    <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" onclick=@(()=>ViewGrnAsap(item.Grn.Id)) class="d-flex flex-column justify-content-start p-0 m-0 text-unique" style="font-size:0.8rem !important; cursor:pointer;">
+                        <li class="fw-bolder text-primary opacity-75 txtshadow">@(item.Grn.Code + item.Grn.Id)</li>
+                        <li class=" opacity-75 fw-bolder" style="font-size:0.7rem !important; width:fit-content;">@(item.Grn.ReceiptCode.Length > 10 ? item.Grn.ReceiptCode.Substring(0,8) + " .." : item.Grn.ReceiptCode)</li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-3 py-1 pe-0 text-start text-unique">
+                    <NavLink class="p-0 m-0 text-unique" href="" style="font-size:0.8rem !important;">
+                        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                            <li class="text-unique">&#64; @item.Cost.ToString("n0")</li>
+                            <li class=" opacity-75 d-none d-sm-block" style="font-size:0.7rem !important; width:fit-content;">&sum; @((item.Cost * item.QtyPurchased).ToString("n0"))</li>
+                        </ul>
+                    </NavLink>
+                </div>
+                <div class=" col-lg-1 py-1 text-center text-unique d-none d-lg-block">
+                    @item.OldStock
+                </div>
+                <div class="col-lg-1 col-2 py-1 text-center txtshadow">
+                    @item.QtyPurchased
+                </div>
+                <div class=" col-lg-2 py-1 text-center text-unique d-none d-lg-block">
+                    @(item.QtyPurchased + item.OldStock)
+                </div>
+                <div class="col-lg-1 col-3 py-1 ps-0  text-start text-unique" style="font-size:0.75rem !important; ">
+                    <ul class=" m-0 p-0">
+                        <li class="p-0 m-0 text-primary">@(item.Grn.DateCreated.ToString("dd MMM yy"))</li>
+                        <li class=" opacity-75 d-none d-sm-block p-0 m-0" style="font-size:0.7rem !important;">@(item.Grn.DateCreated.ToString("ddd hh : mm"))</li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 d-none d-lg-block py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
+                    <ul class=" m-0 p-0 text-start">
+                        <li class="text-start">@(item.Grn.User.Code + item.Grn.User.Id)</li>
+                        <li class="opacity-75 text-start text-capitalize" style="font-size:0.7rem !important;">@(item.Grn.User.FirstName + " " + item.Grn.User.LastName)</li>
+                    </ul>
+                </div>
+            </div>
+        }
+        <InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+        />
+    }
+}
+
+@code{
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 10 ;
+    
+    [Parameter]
+    public ProductModel ProductToCheck {get;set;}
+    private List<ProductGrn> TheseProductGrns = new();
+    private DateOnly FromDate;
+    private DateOnly ToDate;
+    
+    //filtering
+    private int NumOfPurchases = 0;
+    private decimal TotalPurchases = 0;
+    
+    //forpopping modal
+    private bool ViewGrn = false;
+    private int SendGrnId = 0;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();  
+        FromDate = DateOnly.FromDateTime(ProductToCheck.DateCreated);
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        
+        Reset();
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        if(ProductToCheck.ProductGrn.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(ProductToCheck.ProductGrn
+            .Where(x => (((DateOnly.FromDateTime(x.Grn.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Grn.DateCreated)) <= ToDate))).ToList().Count())/InnerPageSize));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductGrns = ProductToCheck.ProductGrn
+            .Where(x => (((DateOnly.FromDateTime(x.Grn.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Grn.DateCreated)) <= ToDate)))
+            .OrderBy(x => x.Grn.Id)
+            .Reverse()
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            
+            PurchasesInfo();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        if(ProductToCheck.ProductGrn.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(ProductToCheck.ProductGrn
+            .Where(x => (((DateOnly.FromDateTime(x.Grn.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Grn.DateCreated)) <= ToDate)))
+            .ToList().Count())/InnerPageSize));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductGrns = ProductToCheck.ProductGrn
+            .Where(x => (((DateOnly.FromDateTime(x.Grn.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Grn.DateCreated)) <= ToDate)))
+            .OrderBy(x => x.Grn.Id)
+            .Reverse()
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            
+            PurchasesInfo();
+        }
+        StateHasChanged();
+    }
+    
+    private void ChangeDate(){
+        InnerCurrentPage = 0;
+        InnerNextPage();
+    }
+    
+    private async Task PurchasesInfo(){
+        NumOfPurchases = 0;
+        TotalPurchases = 0;
+        
+        NumOfPurchases = (ProductToCheck.ProductGrn.Where(x => (((DateOnly.FromDateTime(x.Grn.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Grn.DateCreated)) <= ToDate)))).Count();
+        foreach(var pb in ProductToCheck.ProductGrn.Where(x => (((DateOnly.FromDateTime(x.Grn.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Grn.DateCreated)) <= ToDate)))){
+            TotalPurchases += (decimal)(pb.QtyPurchased * pb.Cost);
+        }
+    }
+    
+    private async Task Reset(){
+        FromDate = DateOnly.FromDateTime(ProductToCheck.DateCreated);
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        InnerCurrentPage = 0;
+        await InnerNextPage();
+    }
+    
+    private void ViewGrnAsap(int G){
+        ViewGrn = true;
+        SendGrnId = G;
+        StateHasChanged();
+    }
+}

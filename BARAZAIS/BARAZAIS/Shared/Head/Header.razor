@@ -1,0 +1,148 @@
+﻿@*offcanvas*@
+
+
+<div class="row">
+    <div class="col-md-6 col-12 pt-3">
+        <ul class="p-0 m-0 d-flex flex-column text-start">
+            <li class="p-0 m-0">
+                <h1 class="txtshadow p-0 m-0">@Title</h1>
+            </li>
+            <li class="p-0 m-0 text-muted">
+                <p class="p-0 mt-0">@LineText</p>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-6 col-12 pt-md-4 pb-md-0 pb-4">
+        <ul class=" d-flex flex-row justify-content-md-end justify-content-center p-0 m-0">
+            @{
+                if(ViewUrl != null)
+                {
+                    <li class="p-0 my-0 ms-2">
+                        <a href=@ViewUrl class="btn btn-lg rounded-3 border border-2 "><i class="bi @ViewUrlIcon fw-bolder txtshadow" style="font-size:.9rem !important;"></i></a>
+                    </li>
+                }
+                <li class="p-0 my-0 ms-2">
+                    <p class="btn btn-lg rounded-3"><i class="bi bi-dot txtshadow" style="font-size:.9rem !important;"></i></p>
+                </li>
+                if (NewUrl != null)
+                {
+                    <li class="p-0 my-0 ms-2">
+                        <a href=@NewUrl class="btn btn-lg rounded-3 border border-2 "><i class="bi bi-plus-circle fw-bolder txtshadow " style="font-size:.9rem !important;"></i></a>
+                    </li>
+                }
+                if (EditUrl != null)
+                {
+                    <li class="p-0 my-0 ms-2">
+                        <a href="@EditUrl" class="btn btn-lg rounded-3 border border-2 "><i class="bi bi-pencil-square fw-bolder txtshadow" style="font-size:.9rem !important;"></i></a>
+                    </li>
+                }
+                if (EditUrl != null || NewUrl != null)
+                {
+                    <li class="p-0 my-0 ms-2">
+                        <button class="btn btn-lg rounded-3 border border-2 "><i class="bi bi-file-pdf fw-bolder txtshadow" style="font-size:.9rem !important;"></i></button>
+                    </li>
+                    <li class="p-0 my-0 ms-2">
+                        <button @onclick=@(()=> PrintProductListView()) class="btn btn-lg rounded-3 border border-2 "><i class="bi bi-file-text fw-bolder txtshadow" style="font-size:.9rem !important;"></i></button>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string LineText { get; set; }
+
+
+#nullable enable
+    [Parameter]
+    public string? NewUrl { get; set; } = null;
+
+    [Parameter]
+    public string? EditUrl { get; set; } = null;
+
+    [Parameter]
+    public string? ViewUrl { get; set; } = null;
+
+    [Parameter]
+    public string? ViewUrlIcon { get; set; } = null;
+
+
+    // PARAMETERS RECEIVED FROM DYNAMIC PAGE FOR PRINING - 
+
+    [Parameter]
+    public DateOnly PrintFromDate { get; set; }
+
+    [Parameter]
+    public DateOnly PrintToDate { get; set; }
+
+    [Parameter]
+    public int PrintCategoryId { get; set; }
+
+    [Parameter]
+    public int PrintBrandId { get; set; }
+
+    [Parameter]
+    public int PrintUserId { get; set; }
+
+    [Parameter]
+    public ProductModel PrintThisProduct { get; set; }
+
+    [Parameter]
+    public List<ProductModel> PrintTheseProducts { get; set; }
+
+    private GlobalCost gcost = new();
+    private GlobalRetail gretail = new();
+    private GlobalStock gstk = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    private async Task PrintProductListView()
+    {
+        XLWorkbook wb = new();
+
+        wb.Properties.Author = "Razack reds";
+        wb.Properties.Title = "Store Products";
+        wb.Properties.Subject = "List View";
+
+        var ws = wb.AddWorksheet("Products list");
+        
+        ws.Cell(1, 1).Value = "#";
+        ws.Cell(1, 2).Value = "DATE";
+        ws.Cell(1, 3).Value = "TIME";
+        ws.Cell(1, 4).Value = "CODE";
+        ws.Cell(1, 5).Value = "CAPTION";
+        ws.Cell(1, 6).Value = "BRAND";
+        ws.Cell(1, 7).Value = "CATEGORY";
+        ws.Cell(1, 8).Value = "CURRENT SOCK";
+        ws.Cell(1, 9).Value = "RETAIL PRICE / PC";
+        ws.Cell(1, 10).Value = "COST / PC";
+        ws.Cell(1, 11).Value = "TOTAL RETAIL PRICE";
+        ws.Cell(1, 12).Value = "TOTAL COST";
+
+        for (int row = 1; row <= PrintTheseProducts.Count; row++)
+        {
+            ws.Cell(row + 1, 1).Value = $"{row}";
+            ws.Cell(row + 1, 2).Value = $"{(PrintTheseProducts[row - 1].DateCreated).ToString("dd MMM yyy")}";
+            ws.Cell(row + 1, 3).Value = $"{(PrintTheseProducts[row - 1].DateCreated).ToString("ddd, hh:mm tt")}";
+            ws.Cell(row + 1, 4).Value = $"{PrintTheseProducts[row - 1].Code}{PrintTheseProducts[row - 1].Id}";
+            ws.Cell(row + 1, 5).Value = $"{PrintTheseProducts[row - 1].Caption}";
+            ws.Cell(row + 1, 6).Value = $"{PrintTheseProducts[row - 1].Brand.Caption}";
+            ws.Cell(row + 1, 7).Value = $"{PrintTheseProducts[row - 1].Category.Caption}";
+            ws.Cell(row + 1, 8).Value = $"{gstk.GetStockOfThis((ProductModel)PrintTheseProducts[row - 1])}";
+            ws.Cell(row + 1, 9).Value = $"{gretail.GetRetailOfThis((ProductModel)PrintTheseProducts[row - 1])}";
+            ws.Cell(row + 1, 10).Value = $"{gcost.GetCostOfThis((ProductModel)PrintTheseProducts[row - 1])}";
+            ws.Cell(row + 1, 11).Value = $"{((gretail.GetRetailOfThis((ProductModel)PrintTheseProducts[row - 1])) * (gstk.GetStockOfThis((ProductModel)PrintTheseProducts[row - 1])))}";
+            ws.Cell(row + 1, 12).Value = $"{((gcost.GetCostOfThis((ProductModel)PrintTheseProducts[row - 1])) * (gstk.GetStockOfThis((ProductModel)PrintTheseProducts[row - 1])))}";
+        }
+
+        wb.SaveAs($"{(DateTime.Now).ToString("ddd dd MMM yyy HHmmsstt")} - ProductsListView.xlsx");
+    }
+}

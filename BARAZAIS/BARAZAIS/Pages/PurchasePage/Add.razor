@@ -1,0 +1,377 @@
+@page "/Purchases/New"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<Header Title=@Title
+        LineText=@LineText
+        ViewUrl=@ViewUrl
+        ViewUrlIcon=@ViewUrlIcon />
+
+<EditForm Model="PurchasePocco" OnSubmit="ProcessAndSave" autocomplete="off">
+    <DataAnnotationsValidator />
+    <div class="row">
+        <div class="col-12">
+            <div class="row my-3">
+                <div class="col-lg-7 col-4  text-start ps-0">
+                    <div class="form-floating mt-2">
+                        <InputTextArea required @bind-Value="PurchasePocco.Description" class="form-control border-0 bg-xss fw-bolder text-unique text-capitalize rounded-0" placeholder="Description" id="floatingTextarea2" ></InputTextArea>
+                        <label for="floatingTextarea2">Description[Note]</label>
+                        <ValidationMessage For="() => PurchasePocco.Description"/>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-8 d-flex flex-row justify-content-end text-end pe-0">
+                    <ul class="p-0 m-0 d-flex flex-row justify-content-between">
+                        <li class="p-0 m-0">
+                            <button class="btn btn-md text-muted me-4 border rounded-0" @onclick=@(()=> CancelEntry())> <i class="bi bi-file-earmark-excel fs-6 txtshadow me-2"></i>Cancel</button>
+                        </li>
+                        <li class="py-2">
+                            <i class="bi bi-dot fs-6 txtshadow "></i>
+                        </li>
+                        <li class="p-0 m-0">
+                            <button type="submit" class="btn btn-md px-3 btn-primary shadow-sm  border rounded-0 ms-4"><i class="bi bi-file-earmark-check fs-6 txtshadow me-2 text-white "></i> Create Grn</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row text-start mt-3">
+                <div class=" mb-3 col-lg-4 col-md-6 col-12 py-0">
+                    <div class="row text-start border">
+                        <div class="col-12 p-3  bg-xs shadow-sm ">
+                            Receipt Info
+                        </div>
+                        <div class="col-12 p-3">
+                            <ul class="p-0 m-0 text-start d-flex flex-row justify-content-start">
+                                <li class="p-0 m-0 me-3">
+                                    <div class="form-floating rounded-3">
+                                        <InputText required @bind-Value=@PurchasePocco.ReceiptCode class="form-control bg-light border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="Receipt Code"/>
+                                        <label for="floatingInput">
+                                            Receipt#
+                                        </label>
+                                        <ValidationMessage For="() => PurchasePocco.ReceiptCode" />
+                                    </div>
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                    <div class="form-floating rounded-3">
+                                        <input required style="font-size:0.8rem !important;" @bind=@PurchasePocco.ReceiptDate @bind:event="oninput" type="date" class="form-control bg-light border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="Receipt Date">
+                                        <label for="floatingInput">
+                                            Receipt Date
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class=" mb-3 col-lg-4 col-md-6 col-12 py-0">
+                    <div class="row text-start border">
+                        <div class="col-12 p-3  bg-xs shadow-sm ">
+                            Cost Info
+                        </div>
+                        <div class="col-12 p-3">
+                            <div class="form-floating rounded-3">
+                                <input required @bind=@PurchasePocco.ReceiptAmount @bind:event="oninput" type="text" class="form-control bg-light border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="Total Cost">
+                                <label for="floatingInput">
+                                    Total Cost
+                                </label>
+                                <ValidationMessage For="() => PurchasePocco.ReceiptAmount" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 col-lg-4 col-md-6 col-12 py-0">
+                    <div class="row text-start border">
+                        <div class="col-12 p-3 bg-xs shadow-sm ">
+                            Supplier Info
+                        </div>
+                        <div class="col-12 p-3">
+                            <div class="form-floating rounded-0 py-0">
+                                <select required @bind=@PurchasePocco.SupplierId @bind:event="onchange" class="form-select text-capitalize border-0 bg-light text-unique fw-bolder rounded-0 " id="floatingSelect" aria-label="Floating label select example">
+                                    <option class="text-unique text-capitalize">--:--</option>
+                                    @{
+                                        if (TheseSuppliers != null && TheseSuppliers.Count > 0)
+                                        {
+                                            foreach (var Sup in TheseSuppliers)
+                                            {
+                                                <option class="text-unique text-capitalize" value=@Sup.Id>@(Sup.Caption.Length > 17 ? Sup.Caption.Substring(0, 15) + " .." : Sup.Caption)</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <label for="floatingSelect">Select Supplier</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row rounded-0 bg-xs text-white txtshadow">
+                <div class="col-1 py-3">#</div>
+                <div class="col-md-3 col-4 py-3 text-start">
+                    Product
+                </div>
+                <div class="col-md-2 col-2 py-3 text-center">Qty</div>
+                <div class="col-md-2 col-3 pe-0 py-3 text-start">
+                    Cost
+                </div>
+                <div class="col-md-2 d-none d-md-block py-3 text-start">
+                    Selling
+                </div>
+                <div class="col-2 py-3 d-none d-md-block text-center">Action</div>
+            </div>
+
+            @{
+                foreach (var item in PurchasePoccoList)
+                {
+                    <div class="row rounded-0 border-bottom bg-xss">
+                        <div class="col-1 py-2">@(PurchasePoccoList.IndexOf(item) + 1)</div>
+                        <div class="col-md-3 col-4 py-1">
+                            <ul class="d-flex flex-column m-0 p-0">
+                                <li class="fw-bolder d-none d-lg-block text-primary text-start txtshadow text-capitalize">@((PurchasePocco.ProductCaption != null) && (PurchasePocco.ProductCaption.Length > 23) ? item.ProductCaption.Substring(0, 17) + " .." : item.ProductCaption)</li>
+                                <li class="rounded-3 opacity-75 fw-bolder" style="font-size:0.7rem !important; width:fit-content;">@(item.ProductCode + item.ProductId)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-2 col-2 py-2 text-center">@item.QtyPurchased</div>
+                        <div class="col-md-2 col-3 py-1">
+                            <ul class="d-flex flex-column m-0 p-0">
+                                <li class="fw-bolder text-primary text-start txtshadow">@item.Cost.Value.ToString("n0")</li>
+                                <li class="rounded-3 opacity-75 fw-bolder" style="font-size:0.7rem !important; width:fit-content;">@((item.QtyPurchased * item.Cost).Value.ToString("n0"))</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-2 d-none d-md-block py-1">
+                            <ul class="d-flex flex-column m-0 p-0">
+                                <li class="fw-bolder text-start txtshadow">@item.LatestPrice.Value.ToString("n0")</li>
+                                <li class="rounded-3 opacity-75 fw-bolder" style="font-size:0.7rem !important; width:fit-content;">@((item.LatestPrice * item.QtyPurchased).Value.ToString("n0"))</li>
+                            </ul>
+                        </div>
+                        <div class="col-2 pt-2 text-center">
+                            <ul class="m-0 p-0">
+                                <li @onclick=@(()=> this.PurchasePoccoList.Remove(item)) class=" btn btn-md btn-close m-0"></li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+            }
+
+            <div class="row mt-2 rounded-0 border border-2 bg-xss">
+                <div class="col-md-2 col-12 py-1 mt-md-0 mt-2 ps-md-1 pe-md-0">
+                    <input @bind=@PurchasePocco.ProductId @onfocusout=@(()=> FindThisProduct(PurchasePocco.ProductId)) type="text" class="py-3 bg-white border-0 py-md-2 text-start rounded-0 text-unique form-control" placeholder="scan item or id" style="font-size:0.9rem;" />
+                </div>
+                <div class="col-md-2 col-12 py-2 text-capitalize text-unique" style="font-size:0.93rem;">
+                    @((PurchasePocco.ProductCaption != null) && (PurchasePocco.ProductCaption.Length > 14) ? PurchasePocco.ProductCaption.Substring(0, 12) + " .." : PurchasePocco.ProductCaption)
+                </div>
+                <div class="col-md-2 col-12 py-1">
+                    <input @bind=@PurchasePocco.QtyPurchased type="number" min="1" class="py-3 bg-light border-0 py-md-2 text-md-center text-start rounded-0 text-unique form-control" placeholder="Qty" style="font-size:0.9rem;" />
+                </div>
+                <div class="col-md-2 col-12 py-1 ">
+                    <input @bind=@PurchasePocco.Cost type="text" class="py-3 bg-light border-0 py-md-2 text-start rounded-0 text-unique form-control" placeholder="item cost" style="font-size:0.9rem;" />
+                </div>
+                <div class="col-md-2 col-12 py-1 ">
+                    <input @bind=@PurchasePocco.LatestPrice type="text" class="py-3 bg-light border-0 py-md-2 text-start rounded-0 text-unique form-control" placeholder="retail price" style="font-size:0.9rem;" />
+                </div>
+                <div class="col-md-2 col-12 py-1 px-md-2 text-center text-md-end">
+                    <ul class="m-0 p-0">
+                        <li @onclick=@(()=> AddToPurchasePoccoList(PurchasePocco)) class=" btn fs-6 btn-md btn-success rounded-0 " style="cursor:pointer;"><i class="bi bi-plus-circle text-white "></i> Add</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    //Header Component
+    private string Title = "Purchases";
+    private string LineText = "Add New";
+    private string ViewUrl = "Purchases/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //Data
+    private List<SupplierModel> TheseSuppliers = new();
+    private PurchasePoccoModel PurchasePocco = new();
+    private List<PurchasePoccoModel> PurchasePoccoList = new();
+    private ProductModel ThisProduct = new();
+    private GrnModel ThisGrn = new();
+    private ProductGrn Pg = new();
+    private PriceModel ThisPrice = new();
+    private ProductPrice Pp = new();
+    private double ComparedAmout = 0.0;
+    private int LinkId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        PurchasePocco = new();
+        PurchasePoccoList = new();
+        ThisProduct = new();
+        ThisProduct.ProductPrice = new();
+        ThisProduct.ProductGrn = new();
+
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseSuppliers = await repo.Suppliers.GetAllSuppliersDetailedAsync(1, repo.Suppliers.GetNoRecords());
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+
+    private async Task FindThisProduct(int? sn)
+    {
+        if (sn != null && (int)sn > 0)
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                ThisProduct = await repo.Products.GetDetailedProductAsync((int)sn);
+                if (ThisProduct != null)
+                {
+
+                    PurchasePocco.ProductId = ThisProduct.Id;
+                    PurchasePocco.ProductCode = ThisProduct.Code;
+                    PurchasePocco.ProductCaption = ThisProduct.Caption;
+                    PurchasePocco.LatestPrice = ThisProduct.ProductPrice.Any() ? (decimal)ThisProduct.ProductPrice.LastOrDefault().LatestPrice : null;
+                    PurchasePocco.OldPrice = ThisProduct.ProductPrice.Any() ? (decimal)ThisProduct.ProductPrice.LastOrDefault().LatestPrice : null;
+
+                    PurchasePocco.OldStock = (int)((ThisProduct.ProductGrn.Any() ? ThisProduct.ProductGrn.Sum(a => a.QtyPurchased) : 0) +
+                                       (ThisProduct.ProductOpen.Any() ? ThisProduct.ProductOpen.Sum(a => a.Qty) : 0) +
+                                       (ThisProduct.ProductAdjustment.Any() ? ThisProduct.ProductAdjustment.Sum(a => a.QtyAdjusted) : 0) -
+                                       (ThisProduct.ProductBill.Any() ? ThisProduct.ProductBill.Sum(a => a.Qty) : 0));
+
+
+                    if (ThisProduct.ProductGrn.Any())
+                    {
+                        PurchasePocco.Cost = (decimal)ThisProduct.ProductGrn.LastOrDefault().Cost;
+                    }
+                    else if (ThisProduct.ProductOpen.Any())
+                    {
+                        PurchasePocco.Cost = (decimal)ThisProduct.ProductOpen.LastOrDefault().Cost;
+                    }
+                    else
+                    {
+                        PurchasePocco.Cost = null;
+                    }
+                }
+                else
+                {
+                    PurchasePocco.ProductCaption = "No Item Found";
+                    PurchasePocco.ProductId = null;
+                    PurchasePocco.OldPrice = null;
+                    PurchasePocco.LatestPrice = null;
+                }
+
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }
+        else
+        {
+            PurchasePocco.ProductCaption = "No Item Found";
+        }
+    }
+
+    private void AddToPurchasePoccoList(PurchasePoccoModel ThisData)
+    {
+        if (PurchasePocco != null &&
+            PurchasePocco.ProductId != null && (int)PurchasePocco.ProductId > 0 &&
+            PurchasePocco.QtyPurchased != null && (int)PurchasePocco.QtyPurchased > 0 &&
+            PurchasePocco.Cost != null && (decimal)PurchasePocco.Cost > 0 &&
+            PurchasePocco.SupplierId > 0 &&
+            PurchasePocco.ReceiptCode != "" && PurchasePocco.ReceiptAmount > 0 &&
+            PurchasePocco.LatestPrice != null &&
+            (decimal)PurchasePocco.LatestPrice > 0)
+        {
+
+            var CheckRedundancy = PurchasePoccoList.Where(x => x.ProductId == (int)PurchasePocco.ProductId).FirstOrDefault();
+            if (CheckRedundancy != null)
+            {
+                CheckRedundancy.QtyPurchased += PurchasePocco.QtyPurchased;
+                PurchasePocco = new();
+            }
+            else
+            {
+                PurchasePoccoList.Add(PurchasePocco);
+                PurchasePocco = new();
+            }
+
+            PurchasePocco.SupplierId = PurchasePoccoList.LastOrDefault().SupplierId;
+            PurchasePocco.ReceiptCode = PurchasePoccoList.LastOrDefault().ReceiptCode;
+            PurchasePocco.ReceiptAmount = PurchasePoccoList.LastOrDefault().ReceiptAmount;
+            PurchasePocco.ReceiptDate = PurchasePoccoList.LastOrDefault().ReceiptDate;
+            PurchasePocco.Description = PurchasePoccoList.LastOrDefault().Description;
+
+        }
+        StateHasChanged();
+    }
+
+    private async Task ProcessAndSave()
+    {
+
+        ThisProduct = new();
+        ThisGrn = new();
+        ThisPrice = new();
+        Pg = new();
+        Pp = new();
+
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if (PurchasePoccoList.Any())
+            {
+                ThisGrn.DateCreated = ThisGrn.ReceiptDate = ThisPrice.DateCreated = DateTime.Now;
+                ThisGrn.ReceiptCode = PurchasePoccoList.LastOrDefault().ReceiptCode;
+                ThisGrn.ReceiptDate = PurchasePoccoList.LastOrDefault().ReceiptDate;
+                ThisGrn.SupplierId = PurchasePoccoList.LastOrDefault().SupplierId;
+
+                if (PurchasePoccoList.LastOrDefault().Description != null || PurchasePoccoList.LastOrDefault().Description != "")
+                {
+                    ThisGrn.Description = PurchasePoccoList.LastOrDefault().Description;
+                }
+
+                ThisPrice.Description = "From New purchase";
+
+                ThisGrn.UserId = ThisPrice.UserId = 2;
+                ThisGrn.CompanyId = ThisPrice.CompanyId = 1;
+                
+                foreach (var xx in PurchasePoccoList)
+                {
+                    ThisProduct = await repo.Products.GetDetailedProductAsync((int)xx.ProductId);
+                    Pg.Product = ThisProduct;
+                    Pg.Grn = ThisGrn;
+                    Pg.Cost = xx.Cost != null ? (decimal)xx.Cost : 0;
+                    Pg.QtyPurchased = xx.QtyPurchased != null ? (int)xx.QtyPurchased : 0;
+                    Pg.OldStock = xx.OldStock != null ? (int)xx.OldStock : 0;
+
+                    Pp.Product = ThisProduct;
+                    Pp.Price = ThisPrice;
+                    Pp.OldPrice = xx.OldPrice != null ? (decimal)xx.OldPrice : 0;
+                    Pp.LatestPrice = xx.LatestPrice != null ? (decimal)xx.LatestPrice : 0;
+                    Pp.Cost = xx.Cost != null ? (decimal)xx.Cost : 0;
+                    Pp.QtyClosed = Pg.OldStock + Pg.QtyPurchased;
+                    Pp.OldStock = xx.OldStock != null ? (int)xx.OldStock : 0;
+
+                    await repo.ProductPrices.AddAsync(Pp);
+                    await repo.ProductGrns.AddAsync(Pg);
+                    await repo.CompleteAsync();
+                }
+
+                await repo.CompleteAsync();
+                LinkId = ThisGrn.Id;
+                repo.Dispose();
+            }
+        }
+
+        Navigation.NavigateTo("Purchases/Details/" + LinkId);
+        StateHasChanged();
+
+        ThisProduct = new();
+        ThisGrn = new();
+        Pg = new();
+        PurchasePocco = new();
+        PurchasePoccoList = new();
+    }
+
+    private void CancelEntry()
+    {
+        Navigation.NavigateTo("Purchases/ListView");
+    }
+}

@@ -1,0 +1,121 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+    @{  
+        foreach(var item in TheseProductGrns){
+            AtStock = item.OldStock;
+            RetailPrice = item.Product.ProductPrice.Any() ? (double)item.Product.ProductPrice.LastOrDefault().LatestPrice : 0.0;
+            MoreVisual = (item.ProductId == MoreId) ? "bg-white border border-warning rounded-3" : "bg-xss";
+            <div class="row text-unique @MoreVisual border-bottom border-1" style="font-size:0.8rem !important">
+                <div class="col-1 text-center py-2 fw-bolder">@(GrnToCheck.ProductGrn.IndexOf(item) + 1)</div>
+                <div class="col-lg-4 col-4 py-1 text-start">
+                    <a class="p-0 m-0" href="Products/Details/@item.Product.Id">
+                        <ul class="d-flex flex-column justify-content-start p-0 m-0 text-capitalize">
+                        <li class=" m-0 opacity-75 text-primary" style="font-size:0.75rem !important; width:fit-content;">@(item.Product.Code + item.Product.Id)</li>
+                            <li class=" text-muted d-none d-lg-block">@(item.Product.Caption.Length > 20 ? item.Product.Caption.Substring(0,16) + " .." : item.Product.Caption)</li>
+                            <li class=" text-muted d-lg-none">@(item.Product.Caption.Length > 11 ? item.Product.Caption.Substring(0,8) + " .." : item.Product.Caption)</li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="col-1 d-none d-lg-block py-2 text-center ">
+                    @(AtStock)
+                </div>
+                <div class="col-lg-1 col-3 py-2 text-center text-primary">@item.QtyPurchased</div>
+                <div class="col-1 d-none d-lg-block py-2 text-center">@(AtStock + item.QtyPurchased)</div>
+                <div class="col-lg-2 col-4 py-1 text-start px-0 ps-2">
+                    <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                        <li class="text-primary">&#64; @(item.Cost.ToString("n0"))</li>
+                        <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">&sum; @((item.Cost * item.QtyPurchased).ToString("n0"))</li>
+                    </ul>
+                </div>
+                <div class="col-2 d-none d-lg-block py-1 text-md-start text-center ">
+                    <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                        <li class="text-success">&#64; @RetailPrice.ToString("n0")</li>
+                        <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">
+                            &sum; @((RetailPrice * (AtStock + item.QtyPurchased)).ToString("n0"))
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+    }
+
+<InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+            />
+@code{
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 10 ;
+        
+    // Parameter
+    [Parameter]
+    public GrnModel GrnToCheck {get;set;}
+    
+    [Parameter]
+    public int MoreId {get;set;}
+    
+    private string MoreVisual = "";
+    
+    private List<ProductGrn> TheseProductGrns = new();
+    private int OldStock = 0;
+    private int AtStock = 0;
+    private double RetailPrice = 0.0;
+    
+    
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await InnerNextPage();
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        
+        if(GrnToCheck.ProductGrn.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((double)(GrnToCheck.ProductGrn.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductGrns = GrnToCheck.ProductGrn
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            GrnToCheck.ProductGrn = new();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        if(GrnToCheck.ProductGrn.Any()){
+            InnerTotalPages = ((int)(Math.Ceiling((double)(GrnToCheck.ProductGrn.Count)/InnerPageSize)));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductGrns = GrnToCheck.ProductGrn
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+        }
+        else{
+            GrnToCheck.ProductGrn = new();
+        }
+        StateHasChanged();
+    }
+}
+

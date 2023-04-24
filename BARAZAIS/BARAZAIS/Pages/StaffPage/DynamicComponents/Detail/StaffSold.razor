@@ -1,0 +1,203 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+<div class="row text-start">
+    <div class="col-12 pt-2 pb-4  d-flex flex-row flex-wrap justify-content-start">
+        <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@FromDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control shadow-sm  bg-light border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="From Date" />
+                    <label for="floatingInput" class="text-unique">
+                        From Date
+                    </label>
+                </div>
+            </li>
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@ToDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control shadow-sm  bg-light border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="To Date" />
+                    <label for="floatingInput" class="text-unique">
+                        To Date
+                    </label>
+                </div>
+            </li>
+            <li class="py-2">
+                <button class="btn btn-sm btn-primary text-white rounded-0" @onclick="ChangeDate">filter</button>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row mb-2 text-unique">
+    <div class="col-1 py-2 text-center">#</div>
+    <div class="col-lg-2 col-3 py-1 text-start text-unique">
+        <NavLink class="p-0 m-0 text-unique" href="" >
+            <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                <li>BILL</li>
+                <li class=" p-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">Receipt</li>
+            </ul>
+        </NavLink>
+    </div>
+    <div class="col-lg-2 col-3 py-1 text-start text-unique">
+        <ul class=" m-0 p-0 text-start">
+            <li class="text-start">Total</li>
+            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Bill Sale</li>
+        </ul>
+    </div>
+    <div class=" col-lg-1 py-1 text-center text-unique d-none d-lg-block">
+        Items
+    </div>
+    <div class=" col-2 py-1 text-center text-unique">
+        <ul class=" m-0 p-0 text-start">
+            <li class="text-center">Qty</li>
+            <li class="opacity-75 text-center" style="font-size:0.7rem !important;">Pcs</li>
+        </ul>
+    </div>
+    <div class="col-lg-2 col-3 py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
+        <ul class=" m-0 p-0 text-start">
+            <li class="text-start">Date</li>
+            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Day & Time</li>
+        </ul>
+    </div>
+    <div class="col-lg-2 d-none d-lg-block py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
+        <ul class=" m-0 p-0 text-start">
+            <li class="text-start">Responsible</li>
+            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Code</li>
+        </ul>
+    </div>
+</div>
+@{
+    if(!FilteredBills.Any()){
+        <div class="container text-center">
+            <p class="p-3 fs-4 text-unique fw-lighter bg-light">--:--</p>
+        </div>
+    }
+    else{
+        foreach(var item in FilteredBills){
+            <div class="row bg-xss border-bottom text-unique" style="font-size:0.8rem !important;">
+                <div class="col-1 py-1 text-center">@(FilteredBills.IndexOf(item)+1)</div>
+                <div class="col-lg-2 col-3 py-1 text-start text-unique">
+                    <a href="Purchases/Details/@item.Id" class="p-0 m-0 text-unique"  style="font-size:0.8rem !important;">
+                        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                            <li class="fw-bolder text-primary opacity-75 txtshadow">@(item.Code + item.Id)</li>
+                            <li class=" opacity-75 fw-bolder" style="font-size:0.7rem !important; width:fit-content;">--</li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="col-lg-2 col-3 py-1 pe-0 text-start text-unique">
+                    &sum; @((item.ProductBill.Sum(x => (x.Qty * x.Price))).ToString("n0"))
+                </div>
+                <div class=" col-lg-1 py-1 text-center text-primary d-none d-lg-block">
+                    @(item.ProductBill.Count)
+                </div>
+                <div class="col-2 py-1 text-center txtshadow">
+                    @(item.ProductBill.Sum(x => x.Qty))
+                </div>
+                <div class="col-lg-2 col-3 py-1 ps-0  text-start text-unique" style="font-size:0.75rem !important; ">
+                    <ul class=" m-0 p-0">
+                        <li class="p-0 m-0 text-primary">@(item.DateCreated.ToString("dd MMM yy"))</li>
+                        <li class=" opacity-75 d-none d-sm-block p-0 m-0" style="font-size:0.7rem !important;">@(item.DateCreated.ToString("ddd hh : mm"))</li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 d-none d-lg-block py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
+                    <ul class=" m-0 p-0 text-start">
+                        <li class="text-start">@(item.User.Code + item.User.Id)</li>
+                        <li class="opacity-75 text-start text-capitalize" style="font-size:0.7rem !important;">@(item.User.FirstName + " " + item.User.LastName)</li>
+                    </ul>
+                </div>
+            </div>
+        }
+        <InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+        />
+    }
+}
+
+@code{
+    [Parameter]
+    public UserModel UserToCheck {get;set;}
+    
+    private List<BillModel>? FilteredBills = new();
+    private DateOnly FromDate;
+    private DateOnly ToDate;
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 10 ;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();  
+        FromDate = DateOnly.FromDateTime(UserToCheck.Bill.FirstOrDefault().DateCreated);
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        
+        FilteredBills = new();
+        await InnerNextPage();
+    }
+    
+    private async Task InnerNextPage(){
+        FilteredBills = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(UserToCheck.Bill.Any()){        
+                InnerTotalPages = (int)(Math.Ceiling((double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate, ToDate, UserToCheck.Id, 1, repo.Bills.GetNoRecords()))
+                .ToList().Count())/InnerPageSize));
+                
+                if(InnerCurrentPage < InnerTotalPages ){
+                    InnerCurrentPage ++ ;
+                }
+                else{
+                    InnerCurrentPage = InnerTotalPages; 
+                }
+                
+                FilteredBills = (await repo.Bills.GetAllBillsDetailedAsync(FromDate, ToDate, UserToCheck.Id, InnerCurrentPage, InnerPageSize))
+                .OrderBy(x => x.Id)
+                .Reverse()
+                .ToList();
+            }
+            else{
+                FilteredBills = new();
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        
+        FilteredBills = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(UserToCheck.Bill.Any()){        
+                InnerTotalPages = (int)(Math.Ceiling((double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate, ToDate, UserToCheck.Id, 1, repo.Bills.GetNoRecords()))
+                .ToList().Count())/InnerPageSize));
+                
+                if(InnerCurrentPage > 1 ){
+                    InnerCurrentPage -- ;
+                }
+                else{
+                    InnerCurrentPage = 1; 
+                }
+                
+                FilteredBills = (await repo.Bills.GetAllBillsDetailedAsync(FromDate, ToDate, UserToCheck.Id, InnerCurrentPage, InnerPageSize))
+                .OrderBy(x => x.Id)
+                .Reverse()
+                .ToList();
+            }
+            else{
+                FilteredBills = new();
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+    
+    private async void ChangeDate(){
+        InnerCurrentPage = 0;
+        await InnerNextPage();
+    }
+}

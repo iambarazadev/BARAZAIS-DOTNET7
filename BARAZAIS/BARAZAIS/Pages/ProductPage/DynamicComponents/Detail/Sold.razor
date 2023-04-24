@@ -1,0 +1,346 @@
+@{
+    if(ViewBill){         
+        <div class="modal fade " style="width:100vw !important;" id="Search" tabindex="-1" aria-labelledby="SearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog modal-dialog-scrollable modal-xl rounded-0">
+                <div class="modal-content border-0  bg-xss rounded-0">
+                    <div class="modal-header border-0 px-1 py-0 pb-1 my-0 text-capitalize"> 
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class="p-0" style="font-size:1.14rem !important; width:fit-content;"><p class="bg-xs py-1 px-2 fw-bolder"> @(ProductToCheck.Caption)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2">Code : @(ProductToCheck.Code + ProductToCheck.Id )</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi bi-bookmark-fill  txtshadow me-1"></i> @(ProductToCheck.Brand.Caption)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi-columns-gap me-1"></i> @(ProductToCheck.Category.Caption)</p></li>
+                        </ul>
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75 rounded-circle" style="font-size:1rem !important; width:fit-content; cursor:pointer;"> <p class=" text-white rounded-circle"><i class="bi-printer text-white fw-bolder me-1"></i></p></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body py-0">
+                        <div class="row">
+                            <div class="col-12 shadow-lg bg-light border border-5 rounded-3 p-3">
+                                <QuickViewBill GetThisProduct=@ProductToCheck BNum=@SendBillId/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+    }
+}
+
+<div class="row text-start bg-white">
+    <div class="col-lg-4 col-12 px-0 pt-2 d-flex flex-row flex-wrap justify-content-start">
+        <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@FromDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="From Date" />
+                    <label for="floatingInput" class="text-unique">
+                        From Date
+                    </label>
+                </div>
+            </li>
+            <li class="p-0 m-0 me-2">
+                <div class="form-floating mt-2 rounded-3">
+                    <input @bind=@ToDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="To Date" />
+                    <label for="floatingInput" class="text-unique">
+                        To Date
+                    </label>
+                </div>
+            </li>
+            <li class="py-2">
+                <ul class="p-0 m-0 d-flex flex-md-column flex-row">
+                    <li class="p-0 m-0 text-unique" >
+                        <button @onclick=@(()=>ChangeDate()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+                    </li>
+                    <li class="p-0 m-0 text-unique mt-1 ps-md-0 ps-3" >
+                        <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="col-lg-8 col-12">
+        <div class="row mt-3 mb-4" style="font-size:0.7rem !important">
+            <div class="col-md-4 col-12 rounded-3 px-0">
+                <ul class="p-2 m-0 text-start bg-xss rounded">
+                    <li class="p-2 m-0 text-unique" >
+                        TOTAL SALES
+                    </li>
+                    <li class="p-2 py-0 m-0 text-primary" >
+                        &sum; @((TotalBillSales).ToString("n0"))
+                    </li>
+                    <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                        @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4 col-12 mt-md-0 mt-3 px-md-3 px-0">
+                <ul class="p-2 bg-xss rounded m-0 text-start">
+                    <li class="p-2  m-0 text-unique" >
+                        TOTAL RETURN
+                    </li>
+                    <li class="p-2 py-0 m-0 text-success" >
+                        &sum; @((TotalBillReturn).ToString("n0"))
+                    </li>
+                    <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                        @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4 col-12 mt-md-0 mt-3 rounded-3 px-0">
+                <ul class="p-2 m-0 text-start bg-xss rounded">
+                    <li class="p-2 m-0 text-unique" >
+                        TOTAL COST
+                    </li>
+                    <li class="p-2 py-0 m-0 text-danger opacity-75" >
+                        &sum; @((TotalBillCosts).ToString("n0"))
+                    </li>
+                    <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
+                        @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*xxxxxxxxx*@
+
+<div class="row rounded py-2 border-bottom text-unique bg-xss">
+    <div class="col-md-1 d-none d-md-block py-2 text-center">#</div>
+    <div class="col-md-2 col-3 py-1 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Bill</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Receipt</li>
+        </ul>
+    </div>
+    <div class="col-md-1 col-2 py-1 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Sold</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Qty</li>
+        </ul>
+    </div>
+    <div class="col-md-2 ps-0 col-4 py-1 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>&#64; Retail</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">&sum; Retail</li>
+        </ul>
+    </div>
+    <div class="col-md-2 d-none d-md-block py-1 ps-0 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>&#64; Cost</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">&sum; Cost</li>
+        </ul>
+    </div>
+    <div class="col-xxl-1 col-md-2 col-3 py-1 px-0 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>&#64; Profit</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">&sum; Profit</li>
+        </ul>
+    </div>
+    <div class="col-lg-1 ps-0 col-md-2 d-md-block d-none py-1 text-start " style="font-size:0.8rem !important;">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Date</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Day & Time</li>
+        </ul>
+    </div>
+    <div class="col-lg-1 d-none d-lg-block py-1 text-center " style="font-size:0.8rem !important;">
+        <ul class="d-flex flex-column justify-content-center m-0 p-0">
+            <li>Stock</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Closed</li>
+        </ul>
+    </div>
+    <div class="col-xxl-1  d-none d-xxl-block text-start py-1 " style="font-size:0.82rem !important; ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Responsible</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">AccessLevel</li>
+        </ul>
+    </div>
+</div>
+@{
+    if(!TheseProductBills.Any()){
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique bg-light fw-lighter"> --:--</p>
+        </div>
+    }
+    else{
+        foreach(var item in TheseProductBills){
+            Profit = ((item.Price)-(item.Cost));
+            ProfitColor = ((item.Price)-(item.Cost)) > 0 ? "text-success" : "text-danger";
+            
+            <div class="row bg-xss border-bottom py-0 text-unique" style="font-size:0.8rem !important">
+                <div class="col-md-1 d-none d-md-block py-1 text-center">@(ProductToCheck.ProductBill.IndexOf(item) + 1)</div>
+                <div class="col-md-2 col-3 py-1 text-start text-unique">
+                    <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" onclick=@(()=>ViewBillAsap(item.Bill.Id)) class="d-flex flex-column justify-content-start p-0 m-0 text-unique" style="font-size:0.8rem !important; cursor:pointer;">
+                        <li class="fw-bolder text-primary opacity-75 txtshadow" style="font-size:0.8rem !important;">@(item.Bill.Code + item.Bill.Id)</li>
+                        <li class=" opacity-75 fw-bolder" style="font-size:0.7rem !important;">---</li>
+                    </ul>
+                </div>
+                <div class="col-md-1 col-2 py-1 text-start txtshadow">
+                    @item.Qty
+                </div>
+                <div class="col-md-2 col-4 py-1 ps-0 text-start text-unique">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                        <li class="fw-bolder text-primary"style="font-size:0.8rem !important;">&#64; @item.Price.ToString("n0")</li>
+                        <li class=" opacity-75 " style="font-size:0.7rem !important;">&sum; @((item.Price * item.Qty).ToString("n0"))</li>
+                    </ul>
+                </div>
+                <div class="col-md-2 d-none d-md-block py-1 ps-0 text-start text-unique">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                        <li class="text-unique fw-bolder"style="font-size:0.8rem !important;">&#64; @item.Cost.ToString("n0")</li>
+                        <li class=" opacity-75 " style="font-size:0.7rem !important;">&sum; @((item.Cost * item.Qty).ToString("n0"))</li>
+                    </ul>
+                </div>
+                <div class="col-xxl-1 col-md-2 col-3 py-1 ps-0 text-start text-unique">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                        <li class=" @ProfitColor fw-bolder"style="font-size:0.8rem !important;">&#64; @(((item.Price)-(item.Cost)).ToString("n0"))</li>
+                        <li class=" opacity-75" style="font-size:0.7rem !important;">&sum; @((((item.Price)-(item.Cost)) * item.Qty).ToString("n0"))</li>
+                    </ul>
+                </div>
+                <div class="col-lg-1 ps-0 col-md-2 d-md-block d-none py-1 text-start text-unique" style="font-size:0.75rem !important; ">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                        <li style="font-size:0.8rem !important;">@(item.Bill.DateCreated.ToString("dd MMM yy"))</li>
+                        <li class=" opacity-75 d-none d-sm-block" style="font-size:0.7rem !important;">@(item.Bill.DateCreated.ToString("ddd hh : mm"))</li>
+                    </ul>
+                </div>
+                <div class="col-lg-1 d-none d-lg-block py-1 text-center text-unique" style="font-size:0.8rem !important;">
+                    @(item.OldStock - item.Qty)
+                </div>
+                <div class="col-xxl-1 d-none d-xxl-block  text-start py-1" style="font-size:0.8rem !important; ">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0 text-capitalize">
+                        <li class=" d-none d-sm-block" style="font-size:0.8rem !important;">@(item.Bill.User.Code + item.Bill.User.Id)</li>
+                        <li class=" opacity-75 d-none d-sm-block" style="font-size:0.7rem !important;"> @(item.Bill.User.FirstName + " " + item.Bill.User.LastName)</li>
+                    </ul>
+                </div>
+            </div>
+        }
+        <InnerPagination 
+            InnerNextPage=@InnerNextPage
+            InnerPreviousPage=@InnerPreviousPage
+            InnerCurrentPage=@InnerCurrentPage
+            InnerTotalPages=@InnerTotalPages 
+        />
+    }
+}
+
+@code{
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 10 ;
+    
+    [Parameter]
+    public ProductModel ProductToCheck {get;set;}
+    private List<ProductBill> TheseProductBills = new();
+    
+    private decimal Profit = 0;
+    private string ProfitColor = "";
+    
+    //For Sales info fx
+    private int NumOfBills = 0;
+    private int NumOfPcs = 0;
+    private decimal TotalBillSales = 0;
+    private decimal TotalBillCosts = 0;
+    private decimal TotalBillReturn = 0;
+    
+    //forpopping modal
+    private bool ViewBill = false;
+    private int SendBillId = 0;
+    
+    private DateOnly FromDate;
+    private DateOnly ToDate;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();  
+        FromDate = DateOnly.FromDateTime(ProductToCheck.DateCreated);
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        
+        Reset();
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        if(ProductToCheck.ProductBill.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(ProductToCheck.ProductBill
+            .Where(x => (((DateOnly.FromDateTime(x.Bill.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Bill.DateCreated)) <= ToDate))).ToList().Count())/InnerPageSize));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductBills = ProductToCheck.ProductBill
+            .Where(x => (((DateOnly.FromDateTime(x.Bill.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Bill.DateCreated)) <= ToDate)))
+            .OrderBy(x => x.Bill.Id)
+            .Reverse()
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            
+            SalesInfo();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        if(ProductToCheck.ProductBill.Any()){
+            
+            InnerTotalPages = (int)(Math.Ceiling((double)(ProductToCheck.ProductBill
+            .Where(x => (((DateOnly.FromDateTime(x.Bill.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Bill.DateCreated)) <= ToDate))).ToList().Count())/InnerPageSize));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductBills = ProductToCheck.ProductBill
+            .Where(x => (((DateOnly.FromDateTime(x.Bill.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Bill.DateCreated)) <= ToDate)))
+            .OrderBy(x => x.Bill.Id)
+            .Reverse()
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            
+            SalesInfo();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task SalesInfo(){
+        NumOfBills = 0;
+        NumOfPcs = 0;
+        TotalBillCosts = 0;
+        TotalBillReturn = 0;
+        TotalBillSales = 0;
+        
+        NumOfBills = (ProductToCheck.ProductBill.Where(x => (((DateOnly.FromDateTime(x.Bill.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Bill.DateCreated)) <= ToDate)))).Count();
+        foreach(var pb in ProductToCheck.ProductBill.Where(x => (((DateOnly.FromDateTime(x.Bill.DateCreated)) >= FromDate) && ((DateOnly.FromDateTime(x.Bill.DateCreated)) <= ToDate)))){
+            NumOfPcs += pb.Qty;
+            TotalBillSales += (decimal)(pb.Qty * pb.Price);
+            TotalBillCosts += (decimal)(pb.Qty * pb.Cost);
+        }
+        
+        TotalBillReturn = TotalBillSales - TotalBillCosts;
+    }
+    
+    private void ChangeDate(){
+        InnerCurrentPage = 0;
+        InnerNextPage();
+    }
+    
+    private async Task Reset(){
+        FromDate = DateOnly.FromDateTime(ProductToCheck.DateCreated);
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        InnerCurrentPage = 0;
+        await InnerNextPage();
+    }
+    
+    private void ViewBillAsap(int G){
+        ViewBill = true;
+        SendBillId = G;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,268 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+    if(!TheseProductAdjustments.Any()){
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique bg-light fw-lighter"> --:--</p>
+        </div>
+    }
+    else{
+        foreach(var item in TheseProductAdjustments){
+            <div class="row">
+                <div class="col-lg-6 col-12 p-0">
+                    <ul class="d-flex flex-column p-0 m-0">
+                        <li>
+                            <h3 class="txtshadow fw-bold fs-4">Code : @(ThisAdjustment.Code + ThisAdjustment.Id)</h3>
+                        </li>
+                        <li class="me-2">
+                            <ul class="d-flex flex-column justify-content-start p-0">
+                                <li>Date Of Issue </li>
+                                <li class=" m-0 opacity-75 " style="font-size:0.8rem !important; width:fit-content;"> @ThisAdjustment.DateCreated.ToString("ddd, dd MMM yyyy") </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <InnerPagination 
+                            InnerNextPage=@InnerNextPage
+                            InnerPreviousPage=@InnerPreviousPage
+                            InnerCurrentPage=@InnerCurrentPage
+                            InnerTotalPages=@InnerTotalPages 
+                        />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row text-start mt-3">
+                        <div class="col-lg-4 mb-3 col-md-6 col-12 py-0">
+                            <div class="row text-start bg-xss">
+                                <div class="col-12 p-3  bg-xs shadow-sm ">
+                                    Cost Info [+ve Items]
+                                </div>
+                                <div class="col-12 p-3 ">
+                                    <ul class="p-0 m-0 text-start">
+                                        <li class="p-0 m-0 text-success">
+                                            <span class="text-dark me-1">Items [Pcs] : </span> @TotalUpQty
+                                        </li>
+                                        <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                            <span class="text-muted me-1">Total Cost : </span>@FullUpCost.ToString("n0")
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-3 col-md-6 col-12 py-0 ps-md-4">
+                            <div class="row text-start bg-xss">
+                                <div class="col-12 p-3  bg-xs shadow-sm ">
+                                    Cost Info [-ve Items]
+                                </div>
+                                <div class="col-12 p-3">
+                                    <ul class="p-0 m-0 text-start">
+                                        <li class="p-0 m-0 text-danger">
+                                            <span class="text-dark me-1">Items [Pcs] : </span> @TotalDownQty
+                                        </li>
+                                        <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                            <span class="text-muted me-1">Total Cost : </span> @FullDownCost.ToString("n0")
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-3 col-md-6 col-12 py-0 ps-md-4">
+                            <div class="row text-start bg-xss">
+                                <div class="col-12 p-3  bg-xs shadow-sm ">
+                                    Responsible
+                                </div>
+                                <div class="col-12 p-3">
+                                    <ul class="p-0 m-0 text-start">
+                                        <li class="p-0 m-0">
+                                            @ThisAdjustment.User.FirstName @ThisAdjustment.User.LastName , @ThisAdjustment.User.AccessLevel
+                                        </li>
+                                        <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                            Code : @(ThisAdjustment.User.Code + ThisAdjustment.User.Id) | Phone : @ThisAdjustment.User.Phone
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-start border border-1 mb-3">
+                        <div class="col-12 py-3 bg-xss">
+                            Description [Note]
+                        </div>
+                        <div class="col-12 py-2 text-capitalize text-muted" style="font-size:0.8rem !important">
+                            @(ThisAdjustment.Description != null ? ThisAdjustment.Description : "--:--")
+                        </div>
+                    </div>
+                    <div class="row ">
+                        <div class="col-12">
+                            <div class="row text-white  shadow-sm txtshadow bg-xs">
+                                <div class="col-1 text-center py-3 fw-bolder">#</div>
+                                <div class="col-lg-2 col-5 py-3 text-start">Product</div>
+                                <div class="col-2 d-none d-lg-block py-3 text-start ">Before</div>
+                                <div class="col-2 py-3 text-start ">Adjusted</div>
+                                <div class="col-2 py-3 d-none d-lg-block text-start">At Cost</div>
+                                <div class="col-lg-2 col-4 py-3 text-md-start text-start ">At Retail</div>
+                                <div class="col-1 d-none d-lg-block py-3 text-start">Stock After</div>
+                            </div>
+                            @*Dynamic component adjust list*@
+                                @{
+                                    if(this.ThisAdjustment.ProductAdjustment != null && this.ThisAdjustment.ProductAdjustment.Count > 0){
+                                            <InAdjust StockAdjustmentToCheck=@ThisAdjustment MoreId=@(GetThisProduct.Id)/>
+                                        }
+                                    else{
+                                        <p class="fs-6 text-center text-unique py-3 px-5  bg-xss my-3" style="width:fit-content; margin:1px auto;">--:--</p>
+                                        ThisAdjustment.ProductAdjustment = new();
+                                    }
+                                }
+                            @*end of dynamics*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        @*End header*@
+        }
+    }
+}
+
+@code{
+    [Parameter]
+    public ProductModel GetThisProduct {get;set;}
+    
+    [Parameter]
+    public int SNum {get;set;}
+    
+    //Data variables
+    private AdjustmentModel ThisAdjustment = new();
+    private List<ProductAdjustment> TheseProductAdjustments = new();
+    
+    private double FullUpCost = 0.0;
+    private double FullDownCost = 0.0;
+    private int TotalUpQty = 0;
+    private int TotalDownQty = 0;
+    
+    //  Inner Pagination 
+    private int InnerTotalPages = 1;
+    private int InnerCurrentPage = 0;
+    private int InnerPageSize = 1 ;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();  
+        
+        Refresh();
+        await Start((int)SNum);
+        StateHasChanged();
+    }
+    
+    private async Task Start(int Num){
+        if(Num > 0){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductAdjustment.Count())/InnerPageSize));
+        
+            TheseProductAdjustments = GetThisProduct.ProductAdjustment
+                .Where(x => x.AdjustmentId == (int)Num)
+                .OrderBy(x => x.Adjustment.Id)
+                .Skip((InnerCurrentPage - 1) * InnerPageSize)
+                .Take(InnerPageSize)
+                .ToList();
+            
+            var AdjustmentItem = GetThisProduct.ProductAdjustment
+                .OrderBy(x => x.Adjustment.Id)
+                .ToList();
+
+                await FetchAdjustmentData(TheseProductAdjustments.SingleOrDefault().AdjustmentId);
+            
+            InnerCurrentPage = AdjustmentItem.IndexOf(TheseProductAdjustments.SingleOrDefault())+1;
+             StateHasChanged();
+        }
+        else{
+            InnerCurrentPage = 0;
+            await InnerNextPage();
+            StateHasChanged();
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerNextPage(){
+        Refresh();
+        if(GetThisProduct.ProductAdjustment.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductAdjustment.Count())/InnerPageSize));
+            
+            if(InnerCurrentPage < InnerTotalPages ){
+                InnerCurrentPage ++ ;
+            }
+            else{
+                InnerCurrentPage = InnerTotalPages; 
+            }
+            
+            TheseProductAdjustments = GetThisProduct.ProductAdjustment
+            .OrderBy(x => x.Adjustment.Id)
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            await FetchAdjustmentData(TheseProductAdjustments.SingleOrDefault().AdjustmentId);
+        }
+        StateHasChanged();
+    }
+    
+    private async Task InnerPreviousPage(){
+        Refresh();
+        if(GetThisProduct.ProductAdjustment.Any()){
+            InnerTotalPages = (int)(Math.Ceiling((double)(GetThisProduct.ProductAdjustment.Count())/InnerPageSize));
+            
+            if(InnerCurrentPage > 1 ){
+                InnerCurrentPage -- ;
+            }
+            else{
+                InnerCurrentPage = 1; 
+            }
+            
+            TheseProductAdjustments = GetThisProduct.ProductAdjustment
+            .OrderBy(x => x.Adjustment.Id)
+            .Skip((InnerCurrentPage - 1) * InnerPageSize)
+            .Take(InnerPageSize)
+            .ToList();
+            await FetchAdjustmentData(TheseProductAdjustments.SingleOrDefault().AdjustmentId);
+        }
+        StateHasChanged();
+    }
+    
+    private async Task FetchAdjustmentData(int? SNumber){
+        Refresh();
+        FullDownCost = 0.0;
+        FullUpCost = 0.0;
+        TotalDownQty = 0;
+        TotalUpQty = 0;
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(SNumber > 0){
+                ThisAdjustment = await repo.Adjustments.GetDetailedStockAdjustmentAsync((int)SNumber);
+            }
+            
+            if(ThisAdjustment != null){
+                TotalUpQty = ThisAdjustment.ProductAdjustment.Where(x => x.QtyAdjusted > 0).Sum(x => x.QtyAdjusted);
+                TotalDownQty = ThisAdjustment.ProductAdjustment.Where(x => x.QtyAdjusted < 0).Sum(x => x.QtyAdjusted);
+                
+                foreach(var yitem in ThisAdjustment.ProductAdjustment){
+                    if(yitem.QtyAdjusted > 0){
+                        FullUpCost += (double)(yitem.Product.ProductGrn.Average(y => y.Cost)) * (yitem.QtyAdjusted);
+                    }
+                    else if(yitem.QtyAdjusted < 0){
+                        FullDownCost += (double)(yitem.Product.ProductGrn.Average(y => y.Cost)) * (yitem.QtyAdjusted);
+                    }
+                }
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+    
+    private void Refresh(){
+        ThisAdjustment = new();
+        ThisAdjustment.ProductAdjustment = new();
+        ThisAdjustment.User = new();
+         StateHasChanged();
+    }
+}

@@ -1,0 +1,373 @@
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+    if(ViewBill){ 
+
+        GetFullCostRetail(PopperBill);        
+        <div class="modal fade " style="width:100vw !important;" id="Search" tabindex="-1" aria-labelledby="SearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog modal-dialog-scrollable modal-xl rounded-0">
+                <div class="modal-content border-0 bg-xss rounded-0">
+                    <div class="modal-header border-0 px-1 py-0 pb-1 my-0 text-capitalize"> 
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class="p-0" style="font-size:1.14rem !important; width:fit-content;"><p class="bg-xs py-1 px-2 fw-bolder"> @(PopperBill.Code + PopperBill.Id)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2">Total Sale : @FullRetail.ToString("n0")</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi bi-dot  txtshadow me-1"></i> @((PopperBill.DateCreated).ToString("MMM dd yyyy, ddd HH:mm"))</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi-person-fill me-1"></i> @(PopperBill.User.FirstName + " " + PopperBill.User.LastName)</p></li>
+                        </ul>
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75 rounded-circle" style="font-size:1rem !important; width:fit-content; cursor:pointer;"> <p class=" text-white rounded-circle"><i class="bi-printer text-white fw-bolder me-1"></i></p></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body py-0">
+                        <div class="row">
+                            <div class="col-12 shadow-lg bg-light border border-5 rounded-3">
+                                <div class="row text-white  shadow-sm txtshadow bg-xs">
+                                    <div class="col-1 text-center py-3 fw-bolder">#</div>
+                                    <div class="col-lg-4 col-4 py-3 text-start">Product</div>
+                                    <div class="col-lg-1 col-3 py-3 text-center ">Sold</div>
+                                    <div class="col-2 d-none d-lg-block py-3 text-md-start text-center ">Retail Price</div>
+                                    <div class="col-lg-2 col-4 py-3 text-start">AtCostOf</div>
+                                    <div class="col-1 d-none d-lg-block py-3 text-center ">Before</div>
+                                    <div class="col-1 d-none d-lg-block py-3 text-center">After</div>
+                                </div>
+                                @{
+                                    foreach(var item in PopperBill.ProductBill){
+                                        <div class="row text-unique bg-xss border-bottom">
+                                            <div class="col-1 text-center py-1 fw-bolder">
+                                                @(PopperBill.ProductBill.IndexOf(item) + 1)
+                                            </div>
+                                            <div class="col-lg-4 col-4 py-1 text-start">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0 text-capitalize">
+                                                    <li class="text-primary d-none d-lg-block">@(item.Product.Caption.Length > 20 ? item.Product.Caption.Substring(0,16) + " .." : item.Product.Caption)</li>
+                                                    <li class="text-primary d-lg-none">@(item.Product.Caption.Length > 11 ? item.Product.Caption.Substring(0,8) + " .." : item.Product.Caption)</li>
+                                                    <li class=" m-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">@(item.Product.Code + item.Product.Id)</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-1 col-3 py-1 text-center text-success">
+                                                @item.Qty
+                                            </div>
+                                            <div class="col-2 d-none d-lg-block py-1 text-md-start text-center ">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0 text-success">
+                                                    <li>&#64; @((item.Price).ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">
+                                                        &sum; @((item.Price * (item.Qty)).ToString("n0"))
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-2 col-4 py-1 text-start px-0 ps-2 opacity-75">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                                                    <li>&#64; @(item.Cost.ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">&sum; @((item.Cost * item.Qty).ToString("n0"))</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-1 d-none d-lg-block py-1 text-center opacity-75 ">
+                                                @(item.OldStock)
+                                            </div>
+                                            <div class="col-1 d-none d-lg-block py-1 text-center opacity-75">
+                                                @(item.OldStock - item.Qty)
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+    }
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="row mt-2 bg-xs">
+            <div class="col-1 text-center py-3">
+                #
+            </div>
+            <div class="col-md-2 col-3 text-start py-3">
+                DateTime
+            </div>
+            <div class="col-md-3 col-4 text-start py-3">
+                Bill
+            </div>
+            <div class=" col-md-3 col-4 text-start py-3">
+                Retail
+            </div>
+            <div class=" col-md-3 d-none d-md-block text-start py-3">
+                Counter
+            </div>
+        </div>
+        @{
+            if(!TheseBills.Any()){
+                <div class="container text-center">
+                    <p class="p-3  fs-4 text-unique fw-lighter opacity-75 text-capitalize">-- : --</p>
+                </div>
+            }
+            else{
+                foreach(var Bill in TheseBills){
+                    FullCost = 0;
+                    FullRetail = 0;
+
+                    GetFullCostRetail(Bill);
+                    <div class="row border-bottom bg-xss">
+                        <div class="col-1 text-center py-1">
+                            @(TheseBills.IndexOf(Bill) + 1)
+                        </div>
+                        <div class="col-md-2 col-3 text-start py-1">
+                            <ul class="p-0 m-0 text-start">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    @((Bill.DateCreated).ToString("dd MMM yy"))
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                    @((Bill.DateCreated).ToString("ddd, HH:mm"))
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3 col-4 text-start py-1">
+                            <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" onclick=@(()=>ViewBillAsap(Bill.Id)) class="d-flex flex-column justify-content-start p-0 m-0 text-unique" style="font-size:0.8rem !important; cursor:pointer;">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    @(Bill.Code + Bill.Id)
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                    ---
+                                </li>
+                            </ul>
+                        </div>
+                        <div class=" col-md-3 col-4 text-start py-1">
+                            <ul class="p-0 m-0 text-start">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    &sum; @((FullRetail).ToString("n0"))
+                                </li>
+                                <li class="p-0 m-0 text-muted" style="font-size:0.75rem !important">
+                                    @(Bill.ProductBill.Count) @(Bill.ProductBill.Count > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(Bill.ProductBill.Sum(x => x.Qty)) @(Bill.ProductBill.Sum(x => x.Qty) > 1 ? "pcs" : "pc" )
+                                </li>
+                            </ul>
+                        </div>
+                        <div class=" col-md-3 d-none d-md-block text-start py-1">
+                            <ul class="p-0 m-0 text-start">
+                                <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
+                                    @(Bill.User.Code + Bill.User.Id)
+                                </li>
+                                <li class="p-0 m-0 text-muted text-capitalize" style="font-size:0.8rem !important">
+                                    @(Bill.User.FirstName + " " + Bill.User.LastName)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+                
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    TotalPages=@TotalPages
+                    CurrentPage=@CurrentPage
+                />
+            }
+        }
+    </div>
+</div>
+
+
+@code{
+    
+    [Parameter]
+    public int UserId {get;set;} = 0;
+    
+    [Parameter]
+    public DateOnly FromDate {get;set;} = DateOnly.FromDateTime(DateTime.Now);
+    
+    [Parameter]
+    public DateOnly ToDate {get;set;} = DateOnly.FromDateTime(DateTime.Now);
+
+    private List<UserModel> TheseUsers = new();
+    private List<BillModel> TheseBills = new();
+    private BillModel PopperBill = new();
+    
+    //forpopping modal
+    private bool ViewBill = false;
+    
+    //Paging
+    private int CurrentPage = 0;
+    private int PageSize = 10;
+    private int TotalPages = 0;
+    
+    private decimal FullCost = 0;
+    private decimal FullRetail = 0;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        TheseUsers = new();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseUsers = await repo.Users.GetAllRecords(repo.Users.GetNoRecords(),1);
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        FetchData();
+    }
+    
+    private async Task NextPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(UserId != null && (int)UserId > 0 ){
+                double Num = (double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate,(int)(UserId), 1,repo.Bills.GetNoRecords())).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            else{
+                double Num = (double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, 1,repo.Bills.GetNoRecords())).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            
+            if (CurrentPage < TotalPages)
+            {
+                CurrentPage ++;
+            }
+            else
+            {
+                CurrentPage = TotalPages;
+            }
+            
+            if(UserId != null && (int)UserId > 0 ){
+                TheseBills = (await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, (int)(UserId),CurrentPage,PageSize));
+            }
+            else{
+                TheseBills = await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, CurrentPage, PageSize);
+            }
+            
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+    
+    
+    private async Task PreviousPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(UserId != null && (int)UserId > 0 ){
+                double Num = (double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate,(int)(UserId), 1,repo.Bills.GetNoRecords())).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            else{
+                double Num = (double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, 1,repo.Bills.GetNoRecords())).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+
+            if (CurrentPage > 1)
+            {
+                CurrentPage --;
+            }
+            else
+            {
+                CurrentPage = 1;
+            }
+            
+            if(UserId != null && (int)UserId > 0){
+                TheseBills = await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, (int)(UserId),CurrentPage,PageSize);
+            }
+            else{
+                TheseBills = await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, CurrentPage, PageSize);
+            }
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+    
+    
+    private async Task FirstPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+           if(UserId != null && (int)UserId > 0 ){
+                double Num = (double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate,(int)(UserId), 1,repo.Bills.GetNoRecords())).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            else{
+                double Num = (double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, 1,repo.Bills.GetNoRecords())).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            CurrentPage = 1;
+
+            if(UserId != null && (int)UserId > 0){
+                TheseBills = await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, (int)(UserId),CurrentPage,PageSize);
+            }
+            else{
+                TheseBills = await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, CurrentPage, PageSize);
+            }
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LastPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            if(UserId != null && (int)UserId > 0 ){
+                double Num = (double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate,(int)(UserId), 1,repo.Bills.GetNoRecords())).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            else{
+                double Num = (double)((await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, 1,repo.Bills.GetNoRecords())).ToList().Count()) / PageSize;
+                TotalPages = (int)(Math.Ceiling(Num));
+            }
+            CurrentPage = TotalPages;
+
+            if(UserId != null && (int)UserId > 0){
+                TheseBills = await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, (int)(UserId),CurrentPage,PageSize);
+            }
+            else{
+                TheseBills = await repo.Bills.GetAllBillsDetailedAsync(FromDate,ToDate, CurrentPage, PageSize);
+            }
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+    
+    private void GetFullCostRetail(BillModel ThisData)
+    {
+        if (ThisData != null)
+        {
+            foreach (var xitem in ThisData.ProductBill)
+            {
+                FullCost += (decimal)((xitem.Qty) * (xitem.Cost));
+                FullRetail += (decimal)((xitem.Qty) * (xitem.Price));
+            }
+        }
+    }
+    
+    private async void FetchData(){
+        
+        if(ToDate >= FromDate){
+            CurrentPage = 0;
+            NextPage();
+        }else{
+            TheseBills = new();
+        }
+    }
+    
+    private void ViewBillAsap(int G){
+        FullCost = 0;
+        FullRetail = 0;
+        PopperBill = new();
+        PopperBill = TheseBills.Where(x => x.Id == G).SingleOrDefault();
+        ViewBill = true;
+        StateHasChanged();
+    }
+}

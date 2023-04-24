@@ -1,0 +1,431 @@
+@page "/Staffs/Details"
+@page "/Staffs/Details/{Sn:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<Header Title=@Title
+        LineText=@LineText
+        NewUrl=@NewUrl
+        EditUrl=@EditUrl
+        ViewUrl=@ViewUrl
+        ViewUrlIcon=@ViewUrlIcon />
+
+
+@{
+    if (ThisUser.Id < 1)
+    {
+        <div class="row">
+            <div class="text-unique txtshadow fs-4">
+                --:--
+            </div>
+        </div>
+    }
+    else
+    {   
+        <div class="row mt-lg-2 mt-3">
+            <div class="col-lg-6 col-md-12 p-0">
+                <ul class="d-flex flex-column p-0 m-0">
+                    <li>
+                        <h3 class="txtshadow text-capitalize fw-bold fs-4">@(ThisUser.FirstName + " " + ThisUser.LastName)</h3>
+                    </li>
+                    <li>
+                        <ul class="m-0 p-0 d-flex flex-row justify-content-start">
+                            <li class="me-2">
+                                <p>Code : @(ThisUser.Code + ThisUser.Id)</p>
+                            </li>
+                            <li class="me-2">
+                                <p><i class=" bi-dot"></i> </p>
+                            </li>
+                            <li class="me-2 text-capitalize">
+                                <p><i class="bi bi-person-fill txtshadow me-2 "></i>@(ThisUser.AccessLevel)</p>
+                            </li>
+                            <li class="me-2">
+                                <p> <i class=" bi-dot"></i></p>
+                            </li>
+                            <li class="me-2">
+                                <p><i class="bi-phone me-2"></i>@(ThisUser.Phone)</p>
+                            </li>
+                            <li class="me-2">
+                                <p><i class=" bi-dot"></i></p>
+                            </li>
+                            <li>
+                                <p>@(ThisUser.Email)</p>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    CurrentPage=@CurrentPage
+                    TotalPages=@TotalPages />
+            </div>
+        </div>
+        <div class="row mt-2 border-top">
+            <div class="col-12">
+                <div class="row text-start">
+                    <div class="col-md-5 col-12 text-md-start text-center pt-4">
+                        <img src="img/sketch.png" class="StaffImg border rounded-circle" />
+                    </div>
+                    <div class="col-md-7 col-12 py-0">
+                        <div class="row text-start">
+                            <div class="col-md-5 col-12 text-md-start text-center py-3">
+                                <ul class="p-0 m-0">
+                                    <li>
+                                        Address [Note]
+                                    </li>
+                                    <li class="text-muted text-capitalize">
+                                        <p>@(ThisUser.Address != null ? ThisUser.Address : "--:--") </p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-12" style="font-size:0.65rem !important;">
+                                <ul class="p-0 py-3 m-0 d-flex flex-row justify-content-md-start justify-content-center border-top">
+                                    <li class="p-0 m-0">
+                                        <p class="pb-0 ms-0 mb-0">Last Updated : @(ThisUser.DateUpdated.ToString("dd MMM yy, HH:mm"))</p>
+                                        <p class="pb-0 ms-0 mb-0">DateCreated : @(ThisUser.DateCreated.ToString("dd MMM yy, HH:mm"))</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="row text-start mt-3">
+                    <div class="col-12  bg-xs shadow-sm py-3">
+                        Associated Data
+                    </div>
+                    <div class="col-12">
+                        <ul class="m-0 p-0">
+                            <li class=" m-0 p-0">
+                                <div class="row text-start text-unique border-bottom border-2">
+                                    <div class="col-6 py-3 fs-6">
+                                        <i class=" @TabIcon "></i> @TabCaption
+                                    </div>
+                                    <div class="col-6">
+                                        <ul class="d-flex flex-row justify-content-end p-0 m-0">
+                                            <li @onclick=@(()=> SwitchToOpenTab()) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-layers"></i></li>
+                                            <li @onclick=@(()=> SwitchToPurchaseTab(FromDate, ToDate)) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-cart4"></i></li>
+                                            <li @onclick=@(()=> SwitchToAdjustTab()) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-toggles2"></i></li>
+                                            <li @onclick=@(()=> SwitchToSoldTab()) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-cart"></i></li>
+                                            <li @onclick=@(()=> SwitchToPriceTab()) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-cash-coin"></i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-12 bg-xss">
+                        <ul class="m-0 p-0">
+                            <li class=" m-0 p-0">
+                                @*Start Dynamic Pages Purchase, Adjustments and Sales*@
+                                    @{
+                                        if (PurchaseTab)
+                                        {
+                                            if (this.ThisUser.Grn != null && this.ThisUser.Grn.Count > 0)
+                                            {
+                                                <StaffPurchase UserToCheck=@(ThisUser) />
+                                                
+                                            }
+                                            else
+                                            {
+                                                <p class="fs-6 text-center text-muted opacity-75 py-3 px-5  bg-xss my-3 " style="width:fit-content; margin:1px auto;">--:--</p>
+                                                ThisUser.Grn = new();
+                                            }
+                                        }
+                                        else
+                                            if (PriceTab)
+                                        {
+                                            if (this.ThisUser.Price != null && this.ThisUser.Price.Count > 0)
+                                            {
+                                                <StaffPrice UserToCheck=@(ThisUser) />
+                                            }
+                                            else
+                                            {
+                                                <p class="fs-6 text-center text-muted opacity-75 py-3 px-5  bg-xss my-3 " style="width:fit-content; margin:1px auto;">--:--</p>
+                                                ThisUser.Price = new();
+                                            }
+                                        }
+                                        else
+                                            if (OpenTab)
+                                        {
+                                            if (this.ThisUser.Open != null && this.ThisUser.Open.Count > 0)
+                                            {
+                                                <StaffOpenStock UserToCheck=@(ThisUser) />
+                                            }
+                                            else
+                                            {
+                                                <p class="fs-6 text-center text-muted opacity-75 py-3 px-5  bg-xss my-3 " style="width:fit-content; margin:1px auto;">--:--</p>
+                                                ThisUser.Open = new();
+                                            }
+                                        }
+                                        else
+                                            if (SoldTab)
+                                        {
+                                            if (this.ThisUser.Bill != null && this.ThisUser.Bill.Count > 0)
+                                            {
+                                                <StaffSold UserToCheck=@(ThisUser) />
+                                            }
+                                            else
+                                            {
+                                                <p class="fs-6 text-center text-muted opacity-75 py-3 px-5  bg-xss my-3 " style="width:fit-content; margin:1px auto;">--:--</p>
+                                                ThisUser.Bill = new();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (this.ThisUser.Adjustment != null && this.ThisUser.Adjustment.Count > 0)
+                                            {
+                                                <StaffStock UserToCheck=@(ThisUser) />
+                                            }
+                                            else
+                                            {
+                                                <p class="fs-6 text-center text-muted opacity-75 py-3 px-5  bg-xss my-3 " style="width:fit-content; margin:1px auto;">--:--</p>
+                                                ThisUser.Adjustment = new();
+                                            }
+                                        }
+                                    }
+                                @*End Dynamic Pages Purchase, Adjustments and Sales*@
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    // Url User Id
+    [Parameter]
+    public int Sn { get; set; } = 0;
+
+    //Header Component
+    private string Title = "Official Staffs";
+    private string LineText = "Detail view";
+    private string NewUrl = "Users/New";
+    private string ViewUrl = "Staffs/ListView";
+    private string EditUrl = "Staffs/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //  Pagination
+    private int TotalPages = 1;
+    private int CurrentPage = 0;
+    private int PageSize = 1;
+
+    //  Tabs Variables
+    private bool PurchaseTab = true;
+    private bool AdjustTab = false;
+    private bool PriceTab = false;
+    private bool OpenTab = false;
+    private bool SoldTab = false;
+    private string TabCaption = "Purchases";
+    private string TabIcon = "bi-cart4";
+
+    //Data
+    private UserModel ThisUser = new();
+    private DateOnly FromDate = new();
+    private DateOnly ToDate = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Start((int)Sn);
+    }
+
+    private async Task Start(int Pid)
+    {
+        Refresh();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TotalPages = repo.Users.GetNoRecords();
+
+            if (Pid < 1 && TotalPages > 0)
+            {
+                ThisUser = (await repo.Users.GetAllUsersDetailedAsync(1,1)).SingleOrDefault();
+                CurrentPage = ((repo.Users.GetIndexOf(ThisUser)) + 1);
+                EditUrl = "Users/Edit/" + ThisUser.Id;
+            }
+            else if (Pid > 0 && Pid <= TotalPages)
+            {
+                ThisUser = await repo.Users.GetDetailedUserAsync(Pid);
+                CurrentPage = ((repo.Users.GetIndexOf(ThisUser)) + 1);
+                EditUrl = "Users/Edit/" + ThisUser.Id;
+            }
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+
+    private async Task NextPage()
+    {
+        Refresh();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TotalPages = repo.Users.GetNoRecords();
+
+            if (CurrentPage < TotalPages)
+            {
+                CurrentPage++;
+            }
+            else
+            {
+                CurrentPage = TotalPages;
+            }
+
+            ThisUser = (await repo.Users. GetAllUsersDetailedAsync(CurrentPage, 1)).SingleOrDefault();
+
+            await repo.CompleteAsync();
+            EditUrl = "Users/Edit/" + ThisUser.Id;
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+
+    private async Task PreviousPage()
+    {
+        Refresh();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TotalPages = repo.Users.GetNoRecords();
+
+            if (CurrentPage > 1)
+            {
+                CurrentPage--;
+            }
+            else
+            {
+                CurrentPage = 1;
+            }
+
+            ThisUser = (await repo.Users. GetAllUsersDetailedAsync(CurrentPage, 1)).SingleOrDefault();
+
+            await repo.CompleteAsync();
+            EditUrl = "Users/Edit/" + ThisUser.Id;
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+
+    private async Task FirstPage()
+    {
+        Refresh();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TotalPages = repo.Users.GetNoRecords();
+            CurrentPage = 1;
+            ThisUser = (await repo.Users. GetAllUsersDetailedAsync(CurrentPage, 1)).SingleOrDefault();
+
+            await repo.CompleteAsync();
+            EditUrl = "Users/Edit/" + ThisUser.Id;
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+
+
+    private async Task LastPage()
+    {
+        Refresh();
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TotalPages = repo.Users.GetNoRecords();
+            CurrentPage = TotalPages;
+            ThisUser = (await repo.Users. GetAllUsersDetailedAsync(CurrentPage, 1)).SingleOrDefault();
+
+            await repo.CompleteAsync();
+            EditUrl = "Users/Edit/" + ThisUser.Id;
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+
+    private void Refresh()
+    {
+        ThisUser = new();
+        ThisUser.Category = new();
+        ThisUser.Brand = new();
+        ThisUser.Barcode = new();
+        ThisUser.Supplier = new();
+        ThisUser.Tax = new();
+        ThisUser.Price = new();
+        ThisUser.Grn = new();
+        ThisUser.Adjustment = new();
+        ThisUser.Open = new();
+        ThisUser.Bill = new();
+        ThisUser.Hold = new();
+        ThisUser.Product = new();
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+    }
+
+    private void SwitchToPurchaseTab(DateOnly MinDate, DateOnly MaxDate)
+    {
+        PurchaseTab = true;
+        AdjustTab = false;
+        PriceTab = false;
+        OpenTab = false;
+        SoldTab = false;
+
+        TabCaption = "Purchases";
+        TabIcon = "bi-cart4";
+        
+        FromDate = MinDate;
+        ToDate = MaxDate;
+        
+        StateHasChanged();
+    }
+
+    private void SwitchToPriceTab()
+    {
+        PurchaseTab = false;
+        AdjustTab = false;
+        PriceTab = true;
+        OpenTab = false;
+        SoldTab = false;
+
+        TabCaption = "Prices";
+        TabIcon = "bi-cash-coin";
+    }
+
+    private void SwitchToAdjustTab()
+    {
+        PurchaseTab = false;
+        AdjustTab = true;
+        PriceTab = false;
+        OpenTab = false;
+        SoldTab = false;
+
+        TabCaption = "Adjustments";
+        TabIcon = "bi-toggles2";
+    }
+    private void SwitchToOpenTab()
+    {
+        PurchaseTab = false;
+        OpenTab = true;
+        PriceTab = false;
+        AdjustTab = false;
+        SoldTab = false;
+
+        TabCaption = "Open Stock";
+        TabIcon = "bi-layers";
+    }
+    private void SwitchToSoldTab()
+    {
+        SoldTab = true;
+        AdjustTab = false;
+        PriceTab = false;
+        OpenTab = false;
+        PurchaseTab = false;
+
+        TabCaption = "Sold";
+        TabIcon = "bi-cart";
+    }
+}

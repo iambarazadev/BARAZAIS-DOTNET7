@@ -1,0 +1,285 @@
+@page "/Adjustments/Prices/ListView"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<div class="row pb-3 mt-2 rounded bg-white shadow-sm">
+    <div class="col-12">
+        <Header
+        Title=@Title
+        LineText=@LineText
+        NewUrl=@NewUrl
+        ViewUrl=@ViewUrl
+        ViewUrlIcon=@ViewUrlIcon
+        />
+    </div>
+    <div class="col-12">
+        <hr class="text-muted" />
+    </div>
+    <div class="col-md-2 col-6  mt-md-0 mt-3">
+        <div class="form-floating rounded-3">
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <label for="floatingInput" class="">
+                From Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-6 mt-md-0 mt-3 ">
+        <div class="form-floating rounded-3">
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <label for="floatingInput" class="">
+                To Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-1 col-4  mt-md-0 mt-3">
+        <ul class="p-0 m-0 text-center">
+            <li class="p-0 m-0 text-unique" >
+                <button @onclick=@(()=>Filter()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+            <li class="p-0 m-0 text-unique mt-1 " >
+                <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-4 col-6 mt-md-0 mt-2 ">
+        
+    </div>
+    <div class="col-md-3 col-12 mt-md-0 mt-2">
+        <div class="form-floating rounded-0">
+            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-xss border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
+            <label for="floatingInput">
+                <i class="bi bi-search txtshadow fs-6 me-2 "></i> <span class="text-muted opacity-75">PAD#</span>
+            </label>
+        </div>
+    </div>
+</div>
+<div class="row bg-white my-3 rounded shadow-sm">
+    <div class="col-12 px-3 bg-xs rounded-top shadow-sm">
+        <div class="row bg-xs">
+            <div class="col-1 text-center py-3 fw-bolder">#</div>
+            <div class="col-3 py-3 text-start">Adjust Id</div>
+            <div class="col-2 py-3 text-center">Items</div>
+            <div class="col-lg-4 col-md-3 col-6 py-3 text-md-start text-start">Reason</div>
+            <div class="col-lg-2 col-md-3 d-none d-md-block py-3 text-start">By</div>
+        </div>
+    </div>
+    <div class="col-12 px-3 pt-2">
+    @{
+        if(!ThesePrices.Any()){
+            <div class="container text-center">
+                <p class="p-3  fs-4 text-unique text-center opacity-75" >-- : --</p>
+            </div>
+        }
+        else{
+            foreach(var item in ThesePrices){
+                <div class="row text-unique border-bottom bg-xss" style="font-size:0.8rem !important">
+                    <div class="col-1 text-center py-2 ">@(ThesePrices.IndexOf(item) + 1)</div>
+                    <div class="col-3 py-1 text-start">
+                        <a href="Adjustments/Prices/Details/@item.Id" class="p-0 m-0">
+                            <ul class="p-0 m-0 d-flex flex-column text-center">
+                                <li class="p-0 m-0 text-start text-primary">@(item.Code + item.Id)</li>
+                                <li class=" m-0 text-muted d-none d-lg-block " style="font-size:0.8rem !important; width:fit-content;">@(item.DateCreated.ToString("ddd, dd MMM yy"))</li>
+                                <li class=" m-0 text-muted d-lg-none " style="font-size:0.8rem !important; width:fit-content;">@(item.DateCreated.ToString("dd MMM yy"))</li>
+                            </ul>
+                        </a>
+                    </div>
+                    <div class="col-2 py-1 text-center text-primary">@item.ProductPrice.Count</div>
+                    <div class="col-lg-4 col-md-3 col-6 text-start py-1 text-capitalize"style="font-size:0.8rem !important;">@item.Description</div>
+                    <div class="col-lg-2 col-md-3 d-none d-md-block py-1 text-unique text-start">
+                        <ul class="p-0 m-0 d-flex flex-column text-center">
+                            <li class="p-0 m-0 text-start text-primary">@(item.User.Code + item.User.Id)</li>
+                            <li class=" m-0 opacity-75 text-capitalize" style="font-size:0.8rem !important; width:fit-content;">@(item.User.FirstName + " " + item.User.LastName)</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            <Pagination FirstPage=@FirstPage
+                LastPage=@LastPage
+                NextPage=@NextPage
+                PreviousPage=@PreviousPage
+                TotalPages=@TotalPages
+                CurrentPage=@CurrentPage />
+        }
+    }
+    </div>
+</div>
+
+@code{
+        //Header Component
+    private string Title = "Price Adjustments";
+    private string LineText = "List view";
+    private string NewUrl = "Adjustments/Prices/New";
+    private string ViewUrl = "Adjustments/Prices/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+    
+     // Data Variables
+    private List<PriceModel> ThesePrices = new();
+    
+    //Filter
+    private DateOnly FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+    private DateOnly ToDate = DateOnly.FromDateTime(DateTime.Now);
+    private int? SearchId = null;
+    
+    //Pagination
+    private int CurrentPage = 0;
+    private int PageSize = 50;
+    private int TotalPages = 1;
+    
+    protected override async Task OnInitializedAsync(){
+        
+        await base.OnInitializedAsync();
+        
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        Reset();
+        
+        await NextPage();
+    }
+    
+    private async Task NextPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            double Num = (double)(repo.Prices.GetNoRecords())/PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            if(CurrentPage < TotalPages ){
+               CurrentPage ++ ;
+            }
+            else{
+                CurrentPage = TotalPages; 
+            }
+            
+            ThesePrices = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords(),true))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .ToList();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task PreviousPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            double Num = (double)(repo.Prices.GetNoRecords())/PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            if(CurrentPage > 1 ){
+               CurrentPage -- ;
+            }
+            else{
+                CurrentPage = 1; 
+            }
+            
+            ThesePrices = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords(),true))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .ToList();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task FirstPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            double Num = (double)(repo.Prices.GetNoRecords())/PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            CurrentPage = 1;
+            
+            ThesePrices = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords(),true))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .ToList();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task LastPage(){
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            
+            double Num = (double)(repo.Prices.GetNoRecords())/PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            
+            CurrentPage = TotalPages;
+            
+            ThesePrices = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords(),true))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .ToList();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task Filter(){
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            ThesePrices = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords(),true))
+            .OrderBy(x=> x.Id)
+            .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
+            .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
+            .Reverse()
+            .ToList();
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+    }
+    
+    private async Task InnerSearch(){ 
+        if(SearchId > 0){
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                ThesePrices = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords(),true))
+                .OrderBy(x=> x.Id)
+                .Where(x => (x.Id == (int)SearchId))
+                .ToList();
+                
+                if(ThesePrices.Any()){
+                    FromDate = DateOnly.FromDateTime(ThesePrices.FirstOrDefault().DateCreated);
+                    ToDate = DateOnly.FromDateTime(ThesePrices.FirstOrDefault().DateCreated);
+                }
+                else{
+                    ThesePrices = new();
+                }
+                
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }else{
+            await Reset();
+        }
+    }
+    
+    private async Task Reset(){
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        SearchId = null;
+        CurrentPage = 0;
+        await NextPage();
+    }
+}

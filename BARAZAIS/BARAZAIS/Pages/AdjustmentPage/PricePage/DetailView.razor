@@ -1,0 +1,274 @@
+﻿@page "/Adjustments/Prices/Details"
+@page "/Adjustments/Prices/Details/{Sn:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+    if (ThisPrice.Id < 1)
+    {
+        <div class="row">
+            <div class="text-unique txtshadow fs-4">
+                --:--
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mt-2 bg-white shadow-sm rounded">
+            <div class="col-12">
+                <Header Title=@Title
+                LineText=@LineText
+                NewUrl=@NewUrl
+                ViewUrl=@ViewUrl
+                ViewUrlIcon=@ViewUrlIcon />
+            </div>
+            <div class="col-12">
+                <hr class="text-muted"/>
+            </div>
+            <div class="col-lg-6 col-12">
+                <ul class="d-flex flex-column p-0 pb-3 m-0">
+                    <li>
+                        <h3 class="txtshadow fw-bold fs-4">Code : @(ThisPrice.Code + ThisPrice.Id)</h3>
+                    </li>
+                    <li class="me-2">
+                        <ul class="d-flex flex-column justify-content-start p-0">
+                            <li>Date Of Issue </li>
+                            <li class=" m-0 opacity-75 " style="font-size:0.8rem !important; width:fit-content;"> @ThisPrice.DateCreated.ToString("ddd, dd MMM yyyy") </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <Pagination FirstPage=@FirstPage
+                    LastPage=@LastPage
+                    NextPage=@NextPage
+                    PreviousPage=@PreviousPage
+                    CurrentPage=@CurrentPage
+                    TotalPages=@TotalPages />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row text-start mt-3">
+                    <div class="col-lg-4 mb-3 col-md-6 col-12 py-0">
+                        <div class="row text-start bg-white shadow-sm rounded">
+                            <div class="col-12 p-3  bg-xs shadow-sm rounded-top">
+                                Price Rise Items Info
+                            </div>
+                            <div class="col-12 p-3 ">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0 text-success">
+                                        <span class="text-muted me-1">Items [Pcs] : </span> @ThisPrice.ProductPrice.Where(a => (a.OldPrice - a.LatestPrice) < 0).ToList().Count
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        <span class="text-muted me-1"> </span> --
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3 col-md-6 col-12 py-0 ps-md-4">
+                        <div class="row text-start bg-white shadow-sm rounded">
+                            <div class="col-12 p-3  bg-xs shadow-sm rounded-top">
+                                Price Fall Items Info
+                            </div>
+                            <div class="col-12 p-3">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0 text-danger">
+                                         <span class="text-muted me-1">Items [Pcs] : </span> @ThisPrice.ProductPrice.Where(a => (a.OldPrice - a.LatestPrice) > 0).ToList().Count
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        <span class="text-muted me-1"> </span> --
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3 col-md-6 col-12 py-0 ps-lg-4">
+                        <div class="row text-start bg-white shadow-sm rounded">
+                            <div class="col-12 p-3  bg-xs shadow-sm rounded-top ">
+                                Responsible
+                            </div>
+                            <div class="col-12 p-3">
+                                <ul class="p-0 m-0 text-start">
+                                    <li class="p-0 m-0 text-capitalize">
+                                        @ThisPrice.User.FirstName @ThisPrice.User.LastName 
+                                    </li>
+                                    <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                                        Code : @(ThisPrice.User.Code + ThisPrice.User.Id) 
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-start mb-3 bg-white shadow-sm rounded">
+                    <div class="col-12 py-2 pt-3">
+                        Description [Note]
+                    </div>
+                    <div class="col-12 py-2 text-capitalize">
+                        <p class="p-0 py-2 m-0 text-muted border-top" style="font-size:0.8rem !important">
+                            @(ThisPrice.Description.Any() ? ThisPrice.Description : "--:--")
+                        </p>
+                    </div>
+                </div>
+                <div class="row bg-white rounded shadow-sm mb-3">
+                    <div class="col-12 text-white  shadow-sm txtshadow bg-xs rounded-top px-3">
+                        <div class="row">
+                            <div class="col-1 text-center py-3 fw-bolder">#</div>
+                            <div class="col-md-2 col-5 py-3 text-start">Product</div>
+                            <div class="col-md-2 col-3 py-3 text-start ">PriceBefore</div>
+                            <div class="col-md-2 d-none d-md-block py-3 text-start ">Variance</div>
+                            <div class="col-md-2 col-3 py-3 text-start">NewPrice</div>
+                            <div class="col-md-2 d-none d-md-block py-3  text-start">AtCostOf</div>
+                            <div class="col-md-1 d-none d-md-block py-3  text-center">AtStock</div>
+                        </div>
+                    </div>
+                    <div class="col-12 px-3">
+                        @*Dynamic component adjust list*@
+                            @{
+                                if(this.ThisPrice.ProductPrice != null && this.ThisPrice.ProductPrice.Count > 0){
+                                        <InPriceDetail PriceToCheck=@ThisPrice />
+                                    }
+                                else{
+                                    <p class="fs-6 text-center text-primary py-3 px-5  bg-blue opacity-75 my-3 border border-0" style="width:fit-content; margin:1px auto;">No PriceProducts info</p>
+                                    ThisPrice.ProductPrice = new();
+                                }
+                            }
+                        @*end of dynamics*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*End header*@
+    }
+}
+
+
+@code {
+    // Url product Id
+    [Parameter]
+    public int Sn { get; set; } = 0;
+
+    //Header Component
+    private string Title = "Price Adjustments";
+    private string LineText = "Detail view";
+    private string NewUrl = "Adjustments/Prices/New";
+    private string ViewUrl = "Adjustments/Prices/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //  Pagination
+    private int TotalPages = 1;
+    private int CurrentPage = 1;
+    private int PageSize = 1;
+    
+    // Data Variables
+    private PriceModel ThisPrice = new();
+    private decimal PriceVarianceBefore = 0;
+    private string Status = "";
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        ThisPrice.ProductPrice = new();
+        ThisPrice.User = new();
+        await Start(Sn);
+    }
+    
+    private async Task Start(int cid = 0){
+        ThisPrice.ProductPrice = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords())).ToList().Count();
+            
+            if(cid < 1 && TotalPages > 0){
+                ThisPrice = (await repo.Prices.GetAllPricesDetailedAsync(1,1)).SingleOrDefault();
+                //CurrentPage = (repo.Prices.GetIndexOf(ThisPrice) + 1 );
+                CurrentPage = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords())).IndexOf(ThisPrice) + 1;
+            }
+            else if(cid > 0 && cid <= TotalPages){
+                ThisPrice = await repo.Prices.GetDetailedPriceAsync(cid);
+                //CurrentPage = (repo.Prices.GetIndexOf(ThisPrice) + 1 );
+                CurrentPage = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords())).IndexOf(ThisPrice) + 1;
+            }
+            else{
+                ThisPrice = new();
+                ThisPrice.ProductPrice = new();
+            }
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task NextPage(){
+        
+        ThisPrice.ProductPrice = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords())).ToList().Count();
+            
+            if(CurrentPage < TotalPages ){
+                CurrentPage ++ ;
+            }
+            else{
+                CurrentPage = TotalPages; 
+            }
+            
+            ThisPrice = (await repo.Prices.GetAllPricesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+    }
+    
+    private async Task PreviousPage(){
+        ThisPrice.ProductPrice = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords())).ToList().Count();
+            
+            if(CurrentPage > 1 ){
+                CurrentPage -- ;
+            }
+            else{
+                CurrentPage = 1; 
+            }
+            
+            ThisPrice = (await repo.Prices.GetAllPricesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+    }
+    
+    private async Task FirstPage(){
+        ThisPrice.ProductPrice = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords())).ToList().Count();
+            
+            CurrentPage = 1; 
+            
+            ThisPrice = (await repo.Prices.GetAllPricesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+    }
+    
+    private async Task LastPage(){
+        ThisPrice.ProductPrice = new();
+        using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
+            TotalPages = (await repo.Prices.GetAllPricesDetailedAsync(1, repo.Prices.GetNoRecords())).ToList().Count();
+            
+            CurrentPage = TotalPages; 
+            
+            ThisPrice = (await repo.Prices.GetAllPricesDetailedAsync(CurrentPage, PageSize)).SingleOrDefault();
+            
+            await repo.CompleteAsync();
+            repo.Dispose(); 
+        }
+    }
+}
+
+

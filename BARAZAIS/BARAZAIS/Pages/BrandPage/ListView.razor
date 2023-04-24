@@ -1,0 +1,277 @@
+﻿@page "/Brands/ListView"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+
+<div class="row pb-3 mt-2 rounded bg-white shadow-sm">
+    <div class="col-12">
+        <Header Title=@Title
+                LineText=@LineText
+                NewUrl=@NewUrl
+                ViewUrl=@ViewUrl
+                ViewUrlIcon=@ViewUrlIcon />
+    </div>
+    <div class="col-md-7 mt-md-0 mt-2" style="font-size:0.8rem !important">
+            @{
+                if(TheseBrands.Any()){
+                    <p class="p-3 m-0 bg-xss fs-6 rounded-3" style="width:fit-content;"><span class="text-muted">Total Brands : </span> <span class="text-unique"> @(TheseBrands.Count) </span></p>
+                }else{
+                    <p class="p-3 m-0 bg-xss fs-6 rounded-3" style="width:fit-content;"><span class="text-muted">--:--</span></p>
+                }
+            }
+        </div>
+    <div class="col-2 pt-2 mt-md-0 text-md-end" style="font-size:0.8rem !important">
+            <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0"><i class="bi bi-arrow-clockwise text-muted opacity-75 fs-5"></i></button>
+        </div>
+    <div class="col-md-3 col-12 mt-md-0 mt-2" style="font-size:0.8rem !important">
+            <div class="form-floating rounded-0">
+                <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-xss border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
+                <label for="floatingInput">
+                    <i class="bi bi-search txtshadow fs-6 me-2 "></i> <span class="text-muted opacity-75">BRD#</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+<div class="row bg-white my-3 rounded shadow-sm">
+    <div class="col-12 px-3 bg-xs rounded-top shadow-sm">
+        <div class="row bg-xs">
+            <div class="col-1 text-center py-3">
+                #
+            </div>
+            <div class="col-4 text-start py-3">
+                Brand
+            </div>
+            <div class="col-2 text-center py-3">
+                Products
+            </div>
+            <div class="col-2 text-center py-3">
+                Categories
+            </div>
+            <div class="col-3 col-lg-2 text-md-start text-center py-3">
+                Date Updated
+            </div>
+            <div class="d-none d-lg-block col-lg-1 text-start py-3">
+                Action
+            </div>
+        </div>
+    </div>
+    <div class="col-12 px-3 pt-2">
+@{
+    if (!TheseBrands.Any())
+    {
+        <div class="container text-center">
+            <p class="p-3  fs-4 text-unique fw-lighter opacity-75 text-capitalize">-- : --</p>
+        </div>
+    }
+    else
+    {
+        foreach (var item in TheseBrands)
+        {
+            <div class="row border-bottom bg-xss" style="font-size:0.8rem !important">
+                <div class="col-1 text-center py-1">
+                    @(item.Id)
+                </div>
+                <div class="col-4 text-start py-1">
+                    <a href=@("Brands/Details/"+(item.Id)) class="p-0 m-0">
+                        <ul class="p-0 m-0 text-start">
+                            <li class="p-0 m-0 text-primary" style="font-size:0.7rem !important">
+                                @(item.Code + item.Id)
+                            </li>
+                            <li class="p-0 m-0 text-capitalize text-muted" style="font-size:0.8rem !important">
+                                @item.Caption
+                            </li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="col-2 text-center py-1">
+                    @item.Product.Count
+                </div>
+                <div class="col-2 text-center py-1">
+                    @{  
+                        @((item.Product).GroupBy(a => a.Category)
+                            .Select(b => new{
+                                Category = b.Key,
+                        }).ToList().Count);
+                    }
+                </div>
+                <div class="col-3 col-lg-2 text-md-start text-center py-1">
+                    <ul class="p-0 m-0 text-start">
+                        <li class="p-0 m-0 text-primary">
+                            @((item.DateCreated).ToString("dd MMM yy"))
+                        </li>
+                        <li class="p-0 m-0 text-muted" style="font-size:0.8rem !important">
+                            @(item.DateCreated.ToString("ddd, hh : mm"))
+                        </li>
+                    </ul>
+                </div>
+                <div class="d-none d-lg-block col-lg-1 text-start pt-2" style="padding-top:1rem !important;">
+                    <ul class="p-0 m-0 ">
+                        <li class="p-0 m-0">
+                            <a href="Brands/Edit/@item.Id" class=" text-primary px-md-3 px-2 py-1 border border-2 " style="width:fit-content; margin:1px auto;">Edit</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <Pagination FirstPage=@FirstPage
+            LastPage=@LastPage
+            NextPage=@NextPage
+            PreviousPage=@PreviousPage
+            TotalPages=@TotalPages
+            CurrentPage=@CurrentPage
+            />
+    }
+}
+</div>
+</div>
+
+@code {
+    //Header Component
+    private string Title = "Brands";
+    private string LineText = "List view";
+    private string NewUrl = "Brands/New";
+    private string ViewUrl = "Brands/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+
+    //BrandModel Variables
+    private List<BrandModel> TheseBrands = new();
+
+    //Pagination Variables
+    private int PageSize = 50;
+    private int TotalPages = 1;
+    private int CurrentPage = 0;
+
+    //BrandPrice Variable
+    private decimal RetailPrice = 0;
+
+    //Brand Cost Variable
+    private decimal CostPrice = 0;
+
+    //Brand Stock Variable
+    private int Stock = 0;
+    
+    // Search
+    private int? SearchId = null;
+
+
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await NextPage();
+    }
+
+    private async Task NextPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Brands.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            if (CurrentPage < TotalPages)
+            {
+                CurrentPage ++;
+            }
+            else
+            {
+                CurrentPage = TotalPages;
+            }
+
+            //TheseBrands = await repo.Brands.GetAllRecords(PageSize, CurrentPage);
+            TheseBrands = await repo.Brands.GetAllBrandsDetailedAsync(CurrentPage, PageSize);
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task PreviousPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Brands.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+
+            if (CurrentPage > 1)
+            {
+                CurrentPage --;
+            }
+            else
+            {
+                CurrentPage = 1;
+            }
+
+            //TheseBrands = await repo.Brands.GetAllRecords(PageSize, CurrentPage);
+            TheseBrands = await repo.Brands.GetAllBrandsDetailedAsync(CurrentPage, PageSize);
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task FirstPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Brands.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            CurrentPage = 1;
+
+            //TheseBrands = await repo.Brands.GetAllRecords(PageSize, CurrentPage);
+            TheseBrands = await repo.Brands.GetAllBrandsDetailedAsync(CurrentPage, PageSize);
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LastPage()
+    {
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            double Num = (double)(repo.Brands.GetNoRecords()) / PageSize;
+            TotalPages = (int)(Math.Ceiling(Num));
+            CurrentPage = TotalPages;
+
+            //TheseBrands = await repo.Brands.GetAllRecords(PageSize, CurrentPage);
+            TheseBrands = await repo.Brands.GetAllBrandsDetailedAsync(CurrentPage, PageSize);
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+
+        StateHasChanged();
+    }
+    
+    private async Task InnerSearch(){ 
+        if(SearchId > 0){
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                TheseBrands = (await repo.Brands.GetAllBrandsDetailedAsync(1, repo.Brands.GetNoRecords()))
+                .OrderBy(x=> x.Id)
+                .Where(x => (x.Id == (int)SearchId))
+                .ToList();
+                
+                SearchId = null;
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+        }else{
+            SearchId = null;
+            CurrentPage = 0;
+            await NextPage();
+        }
+    }
+    
+    private async Task Reset(){
+        SearchId = null;
+        await NextPage();
+    }
+}

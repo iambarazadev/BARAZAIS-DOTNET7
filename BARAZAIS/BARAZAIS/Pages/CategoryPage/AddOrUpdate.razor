@@ -1,0 +1,137 @@
+@page "/Categories/New"
+@page "/Categories/Edit/{Sn:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<Header
+    Title=@Title
+    LineText=@LineText
+    ViewUrl=@ViewUrl
+    ViewUrlIcon=@ViewUrlIcon
+    />
+
+<EditForm Model="ThisCategory" OnValidSubmit="ProcessAndSave" autocomplete="off">
+    <div class="row text-unique mb-3 p-3 bg-white">
+        <div class="col-lg-3 col-md-2 col-12">
+            @{
+                if(ThisCategory.Id > 0){
+                    <div class="container pb-3">
+                        <p class="mt-3 p-3 border border-2">
+                            <i class="bi bi-upc-scan " style="font-size:0.75rem !important;"></i>  @(ThisCategory.Id > 0 ? ThisCategory.Id : "--:--")
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-lg-6 col-md-8 col-12 ps-md-0 pb-3 text-start">
+            <div class="container pt-2 pb-3">
+                <div class="form-floating my-2 rounded-0">
+                    <input type="text" required @bind="ThisCategory.Caption" class="form-control bg-xss border-0 text-unique fw-bolder rounded-0 text-capitalize " id="floatingInput" placeholder="Category Name (Caption / Short Description)" />
+                    <label for="floatingInput">
+                        Category Name
+                    </label>
+                    @*<ValidationMessage For=" () => Fx.CategoryCaption " />*@
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-12 text-start pb-2 px-0">
+                        <div class="form-floating rounded-0">
+                            <textarea @bind="ThisCategory.Description" class="form-control rounded-0 border-0 w-100 fw-bolder text-unique text-capitalize bg-xss h-50" rows="3" placeholder="Add Description" required></textarea>
+                            <label for="floatingInput">
+                                Description [Note]
+                            </label>
+                            @*<ValidationMessage For=" () => Fx.Description " />*@
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-12 text-start pb-2 px-0 d-flex flex-row justify-content-between">
+                        <button class="btn btn-md btn-outline-light text-muted border-0 rounded-0" @onclick=@(()=> CancelEntry())>Cancel</button>
+                        <button class="btn btn-md btn-primary border-0 rounded-0">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-2 col-12">
+            @*Empty Div for centering*@
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    //Url Parameter Variables
+    [Parameter]
+    public int Sn { get; set; } = 0;
+
+    //Header Component
+    private string Title = "Categories";
+    private string LineText = "Add New";
+    private string ViewUrl = "Categories/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //Category Model Variable
+    private CategoryModel ThisCategory = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await Start(Sn);
+    }
+
+    private async Task Start(int TheKey)
+    {
+        if (TheKey < 1)
+        {
+            ThisCategory = new();
+        }
+        else
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                ThisCategory = await repo.Categories.GetDetailedCategoryAsync(TheKey);
+                
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+            LineText = "Edit Category";
+        }
+    }
+    
+    private async Task ProcessAndSave()
+    {
+        if (ThisCategory != null)
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                if (ThisCategory.Id > 0)
+                {
+                    ThisCategory.DateUpdated = DateTime.Now;
+                    await Task.Run(() => repo.Categories.Update(this.ThisCategory));
+                    await repo.CompleteAsync();
+                    repo.Dispose();
+
+                    Navigation.NavigateTo("Categories/ListView");
+                }
+                else
+                {
+                    ThisCategory.UserId = 1;
+                    ThisCategory.CompanyId = 1;
+
+                    await repo.Categories.AddAsync(ThisCategory);
+                    await repo.CompleteAsync();
+                    repo.Dispose();
+                }
+            }
+        }
+
+        ThisCategory = new();
+        StateHasChanged();
+    }
+
+    private void CancelEntry()
+    {
+        Navigation.NavigateTo("Categories/ListView");
+        //ThisCategory = new();
+    }
+}

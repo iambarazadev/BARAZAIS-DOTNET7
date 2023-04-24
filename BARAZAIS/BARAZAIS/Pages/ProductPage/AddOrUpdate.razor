@@ -1,0 +1,384 @@
+﻿@page "/Products/New"
+@page "/Products/Edit/{Sn:int}"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+@{
+    if(OnFly != null){         
+        <div class="modal fade " style="width:100vw !important;" id="Search" tabindex="-1" aria-labelledby="SearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog modal-dialog-scrollable modal-xl rounded-0">
+                <div class="modal-content border-0 bg-xss rounded-0">
+                    <div class="modal-header border-0 px-1 py-0 pb-1 my-0 text-capitalize"> 
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi-dot"></i></p></li>
+                            <li class="p-0" style="font-size:1.14rem !important; width:fit-content;"><p class="bg-xs py-1 px-2 fw-bolder"> New @OnFly</p></li>
+                        </ul>
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75 rounded-circle" style="font-size:1rem !important; width:fit-content; cursor:pointer;"> </li>
+                        </ul>
+                    </div>
+                    <div class="modal-body py-0">
+                        <div class="row">
+                            <div class="col-12 shadow-lg bg-light border border-5 rounded-3">
+                                @{
+                                    if(OnFly == "Category"){
+                                        <OnFlyCategory />
+                                    }
+                                    else if(OnFly == "Brand"){
+                                        <OnFlyBrand />
+                                    }
+                                    else if(OnFly == "Tax"){
+                                        <OnFlyTax />
+                                    }
+                                    else{
+                                        
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+    }
+}
+
+<Header
+    Title=@Title
+    LineText=@LineText
+    ViewUrl=@ViewUrl
+    ViewUrlIcon=@ViewUrlIcon
+    />
+<EditForm Model="ThisProduct" OnValidSubmit="ProcessAndSave" autocomplete="off">
+    <div class="row text-unique mb-3 p-3 bg-white">
+        <div class="col-lg-3 col-md-2 col-12">
+            @{
+                if(ThisProduct.Id > 0){
+                    <div class="container pb-3">
+                        <p class="mt-3 p-3 border border-2">
+                            <i class="bi bi-upc-scan " style="font-size:0.75rem !important;"></i>  @(ThisProduct.Id > 0 ? ThisProduct.Code + ThisProduct.Id : "--:--")
+                        </p>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-lg-6 col-md-8 col-12 ps-md-0 pb-3 text-start">
+            <div class="container pt-2 pb-3">
+                <div class="row">
+                    <div class="col-md-10 col-9 pe-0">
+                        <div class="form-floating mt-2 rounded-0 py-0">
+                            <select @bind="ThisProduct.CategoryId"  @bind:event="onchange" onclick=@(()=> ReloadCats()) required  class="form-select text-capitalize border-0 bg-xss text-unique fw-bolder rounded-0 " id="floatingSelect" aria-label="Floating label select example">
+                                <option>--:--</option>
+                                
+                                @{
+                                    if(TheseCategories != null && TheseCategories.Count > 0){
+                                        foreach(var cat in TheseCategories){
+                                            <option class="text-unique text-capitalize" value=@cat.Id>@cat.Caption</option>
+                                        }
+                                    }
+                                }
+                                <span><i class="bi bi-bookmark-fill txtshadow me-2"></i> Add Category</span>
+                            </select>
+                            <label for="floatingSelect">Category</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-3">
+                        <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" class=" p-0 m-0 mt-2" onclick=@(()=> MakeOnFly("Category"))>
+                            <li type="button" class="text-center py-3 bg-xss" style="cursor:pointer;"> 
+                                <i class="bi bi-plus-circle fs-6 txtshadow "></i> 
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10 col-9 pe-0">
+                        <div class="form-floating mt-2 rounded-0">
+                            <select @bind="ThisProduct.BrandId" @bind:event="onchange" onclick=@(()=> ReloadBrands()) required class="form-select border-0 bg-xss text-capitalize text-unique fw-bolder rounded-0 " id="floatingSelect" aria-label="Floating label select example"> 
+                                <option>--:--</option>
+                                
+                                @{  
+                                    if(TheseBrands != null && TheseBrands.Count > 0){
+                                        foreach(var bra in TheseBrands){
+                                            <option class="text-unique text-capitalize" value="@bra.Id">@bra.Caption</option>
+                                        }
+                                    }
+                                }
+                                
+                            </select>
+                            <label for="floatingSelect">Brand</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-3">
+                        <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" class=" p-0 m-0 mt-2" onclick=@(()=> MakeOnFly("Brand"))>
+                            <li class="text-center py-3 bg-xss" style="cursor:pointer;"> 
+                                <i class="bi bi-plus-circle fs-6 txtshadow "></i> 
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10 col-9 pe-0">
+                        <div class="form-floating mt-2 rounded-0 py-0">
+                            <select @bind="ThisProduct.TaxId" @bind:event="onchange" onclick=@(()=> ReloadTaxes()) required  class="form-select text-capitalize border-0 bg-xss text-unique fw-bolder rounded-0 " id="floatingSelect" aria-label="Floating label select example">
+                                <option>--:--</option>
+                                
+                                @{
+                                    if(TheseTaxes != null && TheseTaxes.Count > 0){
+                                        foreach(var tx in TheseTaxes){
+                                            <option class="text-unique text-capitalize" value=@tx.Id>@(tx.Percentage)%  @tx.Caption</option>
+                                        }
+                                    }
+                                }
+                                
+                            </select>
+                            <label for="floatingSelect">Tax Level</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-3">
+                        <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" class=" p-0 m-0 mt-2" onclick=@(()=> MakeOnFly("Tax"))>
+                            <li class="text-center py-3 bg-xss" style="cursor:pointer;"> <i class="bi bi-plus-circle fs-6 txtshadow "></i> </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-floating mt-2 rounded-0">
+                    <input type="text" required @bind="ThisProduct.Caption" class="form-control bg-xss border-0 text-unique fw-bolder rounded-0 text-capitalize " id="floatingInput" placeholder="Product Name (Caption / Short Description)" />
+                    <label for="floatingInput">
+                        Product Name
+                    </label>
+                    <ValidationMessage For=" () => ThisProduct.Caption " />
+                </div>
+                <div class="form-floating mt-2 rounded-0">
+                    <input type="text" @bind="ThisScan" @onfocusout=@(()=> AppendScan(ThisScan))  class="form-control bg-xss border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="Product Name (Caption / Short Description)"/>
+                    <label for="floatingInput">
+                        Barcode
+                    </label>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <ul class="d-flex flex-row justify-content-sm-start justify-content-center flex-wrap p-0 m-0 pt-2">
+                            
+                            @{
+                                if(TheseBarcodes != null){
+                                    foreach (var item in TheseBarcodes)
+                                    {
+                                        <li class="p-0 m-0 me-3 mb-3">
+                                            <button @onclick=@(()=>this.RemoveBarcode(item)) class="btn btn-primary position-relative fw-bolder rounded-0 border-0">
+                                                @item.Scan
+                                                <span @onclick=@(()=>this.RemoveBarcode(item)) class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                    x
+                                                </span>
+                                            </button>
+                                        </li>
+                                    }
+                                }
+                            }
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-12 text-start pb-2 px-0">
+                        <div class="form-floating rounded-0">
+                            <textarea @bind="ThisProduct.Description" class="form-control rounded-0 border-0 w-100 fw-bolder text-unique text-capitalize bg-xss h-50" rows="3" placeholder="Add Description" required></textarea>
+                            <label for="floatingInput">
+                                Description [Note]
+                            </label>
+                        </div>
+                        <ValidationMessage For=" () => ThisProduct.Description " />
+                    </div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-12 text-start pb-2 px-0 d-flex flex-row justify-content-between">
+                        <button class="btn btn-md btn-outline-light text-muted border-0 rounded-0" @onclick=@(()=> CancelEntry())>Cancel</button>
+                        <button type="submit" class="btn btn-md btn-primary border-0 rounded-0">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-2 col-12">
+            @*Empty Div for centering*@
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    //Url Parameter Variables
+    [Parameter]
+    public int Sn { get; set; } = 0;
+    
+    private string? OnFly = null;
+    //Header Component
+    private string Title = "Products";
+    private string LineText = "Add New";
+    private string ViewUrl = "Products/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
+    //Product Model Variable
+    private ProductModel ThisProduct = new();
+
+    //Associative Records
+    private List<CategoryModel> TheseCategories = new();
+    private List<BrandModel> TheseBrands = new();
+    private List<TaxModel> TheseTaxes = new();
+    private string? ThisScan = null;
+    private BarcodeModel ThisBarcode = new();
+    private List<BarcodeModel> TheseBarcodes = new();
+    private CategoryModel CategoryForUpdate = new();
+    private BrandModel BrandForUpdate = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseCategories = (await repo.Categories.GetAllRecords(repo.Categories.GetNoRecords(), 1))
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .ToList();
+            
+            TheseBrands = (await repo.Brands.GetAllRecords(repo.Brands.GetNoRecords(), 1))
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .ToList();
+            
+            TheseTaxes = (await repo.Taxes.GetAllRecords(repo.Taxes.GetNoRecords(), 1))
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .ToList();
+            
+            ThisScan = null;
+            ThisBarcode = new();
+
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        await Start(Sn);
+    }
+
+    private async Task Start(int TheKey)
+    {
+        if (TheKey < 1){
+            ThisProduct = new();
+        }
+        else
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                ThisProduct = await repo.Products.GetDetailedProductAsync(TheKey);
+                
+                if(ThisProduct.Barcode != null){
+                    TheseBarcodes = ThisProduct.Barcode;
+                }else{
+                    TheseBarcodes = new();
+                }
+                
+                await repo.CompleteAsync();
+                repo.Dispose();
+            }
+            LineText = "Edit Product";
+        }
+    }
+    
+    private void AppendScan(string Scan){
+        
+        ThisBarcode.Scan = Scan;
+        TheseBarcodes.Add(ThisBarcode);
+        
+        ThisScan = null;
+        ThisBarcode = new();
+    }
+    
+    private void RemoveBarcode(BarcodeModel code){
+       TheseBarcodes.Remove(code);
+    }
+    
+    private async Task ProcessAndSave()
+    {
+        if (this.ThisProduct != null)
+        {
+            using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+            {
+                if (this.ThisProduct.Id > 0)
+                {
+                    ThisProduct.DateUpdated = DateTime.Now;
+                    repo.Products.Update(this.ThisProduct);
+                    
+                    await repo.CompleteAsync();
+                    repo.Dispose();
+
+                    Navigation.NavigateTo("Products/ListView");
+                }
+                else
+                {
+                    this.ThisProduct.UserId = 1;
+                    this.ThisProduct.CompanyId = 1;
+                    
+                    this.ThisProduct.Barcode = TheseBarcodes;
+                    await repo.Products.AddAsync(ThisProduct);
+                    
+                    await repo.CompleteAsync();
+                    repo.Dispose();
+                }
+            }
+        }
+
+        ThisProduct = new();
+        TheseBarcodes = new();
+        StateHasChanged();
+    }
+
+    private void CancelEntry()
+    {
+        Navigation.NavigateTo("Products/ListView");
+        StateHasChanged();
+    }
+    
+    private void MakeOnFly(string? Data){
+        OnFly = Data;
+    }
+    
+    private async void ReloadCats(){
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseCategories = (await repo.Categories.GetAllRecords(repo.Categories.GetNoRecords(), 1))
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .ToList();
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+    
+    private async void ReloadBrands(){
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseBrands = (await repo.Brands.GetAllRecords(repo.Brands.GetNoRecords(), 1))
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .ToList();
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+    
+    private async void ReloadTaxes(){
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseTaxes = (await repo.Taxes.GetAllRecords(repo.Taxes.GetNoRecords(), 1))
+            .OrderBy(x => x.Id)
+            .Reverse()
+            .ToList();
+            
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        StateHasChanged();
+    }
+}

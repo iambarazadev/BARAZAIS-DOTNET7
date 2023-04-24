@@ -1,0 +1,163 @@
+@page "/Sales/ListView"
+
+@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+        
+<div class="row pb-3 mt-2 rounded bg-white shadow-sm">
+    <div class="col-12">
+        <Header Title=@Title
+        LineText=@LineText
+        NewUrl=@NewUrl
+        ViewUrl=@ViewUrl
+        ViewUrlIcon=@ViewUrlIcon />
+    </div>
+    <div class="col-12">
+        <hr class="text-muted" />
+    </div>
+    <div class="col-md-2 col-4">
+        <div class="form-floating rounded-0 py-0">
+            <select @bind=@Selection @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="summary" class="text-unique">Summary</option>
+                <option value="billwise" class="text-unique">Bill Wise</option>
+                <option value="itemwise" class="text-unique">Item Wise</option>
+            </select>
+            <label for="floatingSelect">Selection</label>
+        </div>
+    </div>
+    <div class="col-md-4 col-8">
+        <div class="form-floating rounded-0 py-0 @DisplayCashier">
+            <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+                <option value="0" class="text-unique">All</option>
+                @{
+                    foreach(var ThisUser in TheseUsers){
+                        <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                    }
+                }
+            </select>
+            <label for="floatingSelect">Cashier</label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4 mt-md-0 mt-2">
+        <div class="form-floating rounded-3">
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <label for="floatingInput" class="">
+                From Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4 mt-md-0 mt-2">
+        <div class="form-floating rounded-3">
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <label for="floatingInput" class="">
+                To Date
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 col-4  mt-md-0 mt-2">
+        <ul class="p-0 m-0 text-center">
+            <li class="p-0 m-0 text-unique" >
+                <button @onclick=@(()=>Filter()) class="btn btn-sm btn-primary text-white rounded border-0"><i class="bi bi-funnel text-white"></i></button>
+            </li>
+            <li class="p-0 m-0 text-unique mt-1 " >
+                <button @onclick=@(()=>Reset()) class="btn btn-sm text-white rounded border-0 py-0 px-1 ms-1"><i class="bi bi-arrow-clockwise text-muted" style="font-size:0.75rem !important"></i></button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+@{
+    if(ShowSummary){
+        <ShowSummaryFilter DateA=@(FromDate) DateB=@(ToDate) Uid=@(UserId)/>
+        ShowSummary = false;
+    }
+    else if(ShowBillwise){
+        <BillWise FromThisDate=@FromDate ToThisDate=@ToDate ThisUserId=@(UserId)/>
+        ShowBillwise = false;
+    }
+    else if(ShowItemwise){
+        <ShowItemWiseFilter FromThisDate=@FromDate ToThisDate=@ToDate />
+        ShowItemwise = false;
+    }
+    else{
+        <p class="py-3 fs-6">--:--</p>
+        LineText = "List view";
+    }
+}
+
+@code {
+    
+    //Header Component
+    private string Title = "Sales";
+    private string LineText = "List view";
+    private string NewUrl = "Pos/0";
+    private string ViewUrl = "Sales/Details";
+    private string ViewUrlIcon = "bi bi-ui-checks-grid";
+
+    //Filter
+    private string Selection;
+    private int UserId;
+    private int CurrentUserId;
+    private List<UserModel> TheseUsers = new();
+    private DateOnly FromDate;
+    private DateOnly ToDate;
+    private string DisplayCashier = "";
+    private string CustomMargin = "";
+    
+    //logic 
+    private bool ShowSummary = false;
+    private bool ShowBillwise = false;
+    private bool ShowItemwise = false;
+    
+    protected override async Task OnInitializedAsync(){
+        await base.OnInitializedAsync();
+        await Reset();
+    }
+    
+    private async Task Filter(){
+        if(Selection == "summary"){
+            ShowSummary = true;
+            ShowBillwise = false;
+            ShowItemwise = false;
+            LineText = "Summary view";
+            CustomMargin = "";
+        }
+        else if(Selection == "billwise"){
+            ShowSummary = false;
+            ShowBillwise = true;
+            ShowItemwise = false;
+            LineText = "Bill wise";
+            CustomMargin = "";
+        }
+        else if(Selection == "itemwise"){
+            ShowSummary = false;
+            ShowBillwise = false;
+            ShowItemwise = true;
+            LineText = "Item wise";
+            CustomMargin = "mb-2";
+        }
+        else{
+            Selection = "summary";
+            ShowSummary = true;
+            ShowBillwise = false;
+            ShowItemwise = false;
+            LineText = "Summary view";
+            CustomMargin = "";
+        }
+    }
+    
+    private async Task Reset(){
+        UserId = 0;
+        Selection = "summary";
+        ShowSummary = true;
+        FromDate = DateOnly.FromDateTime((DateTime.Today.AddDays(-1)));
+        ToDate = DateOnly.FromDateTime(DateTime.Now);
+        using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+        {
+            TheseUsers = await repo.Users.GetAllUsersAsync(1, repo.Users.GetNoRecords());
+            await repo.CompleteAsync();
+            repo.Dispose();
+        }
+        StateHasChanged();
+        await Filter();
+    }
+}
