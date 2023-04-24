@@ -10,5 +10,5 @@ public class BarazaDbContext : IdentityDbContext<UserModel>
         : base(options)
     {}
 
-    public override DbSet<UserModel> Users { get; set; }
+    public DbSet<UserModel> AppUsers { get; set; }
 }

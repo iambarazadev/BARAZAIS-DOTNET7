@@ -6,11 +6,14 @@ namespace BARAZAIS.Data.Models;
 
 public class UserModel : IdentityUser
 {
-#nullable enable
-
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int UserId { get; private set; }
+
+    public DateTime DateUpdated { get; private set; }
+    public DateTime DateCreated { get; set; }
+
+#nullable enable
 
     [Required]
     public string? FirstName { get; set; }
@@ -24,8 +27,6 @@ public class UserModel : IdentityUser
 
     [Required]
     public string? Address { get; set; }
-
-    public DateTime DateUpdated { get; private set; }
 
     public UserModel() 
     {
