@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BARAZAIS.Data.Models;
 
-public class UserModel : IdentityUser
+public class UserModel : IdentityUser<int>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int UserId { get; private set; }
+    public override int Id { get; set; }
 
     public DateTime DateUpdated { get; private set; }
     public DateTime DateCreated { get; set; }
@@ -31,5 +31,6 @@ public class UserModel : IdentityUser
     public UserModel() 
     {
         this.DateUpdated = DateTime.Now;
+        this.Address = null;
     }
 }

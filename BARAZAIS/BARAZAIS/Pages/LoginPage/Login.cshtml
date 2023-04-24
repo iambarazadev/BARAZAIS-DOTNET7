@@ -1,4 +1,4 @@
-﻿@page
+﻿@page 
 @model LoginModel
 
 @{
@@ -12,7 +12,7 @@
             <hr />
         </div>
         <div class="col-12">
-            <EditForm method="post">
+            <form method="post" autocomplete="off">
                 <div class="row">
                     <div class="col-12">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -20,15 +20,15 @@
                     <div class="col-md-6 col-12 ">
                         <div class=" rounded-3 p-3">
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="email" asp-for="Input.Email" class="form-control border bg-xss text-unique fw-bolder rounded " id="floatingInput" placeholder="User name" />
-                                <label for="floatingInput" class="text-unique">
+                                <input type="email" asp-for="Input.Email" class="form-control border bg-xss text-unique fw-bolder rounded " id="Input.Email" placeholder="User name" />
+                                <label for="Input.Email" class="text-unique">
                                     <span class="bi-person me-2"></span> Email
                                 </label>
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="password" asp-for="Input.Password" class="form-control border bg-xss text-unique fw-bolder rounded " id="floatingInput" placeholder="Password" />
-                                <label for="floatingInput" class="text-unique">
+                                <input type="password" asp-for="Input.Password" class="form-control border bg-xss text-unique fw-bolder rounded " id="Input.Password" placeholder="Password" />
+                                <label for="Input.Password" class="text-unique">
                                     <span class="bi-lock me-2"></span> Password
                                 </label>
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                 </div>
-            </EditForm>
+            </form>
         </div>
     </div>
 </div>

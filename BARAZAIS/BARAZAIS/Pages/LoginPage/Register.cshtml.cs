@@ -33,13 +33,14 @@ public class RegisterModel : PageModel
         ReturnUrl = Url.Content("~/");
         if(ModelState.IsValid)
         {
-            var ThisUser = new UserModel { 
+            var ThisUser = new UserModel {
                 UserName = Input.Email,
                 FirstName = Input.FirstName,
                 LastName = Input.LastName,
                 Email = Input.Email,
                 Password = Input.Password,
                 DateCreated = DateTime.Now,
+                Address = "",
             };
 
             var Result = await UserManager.CreateAsync(ThisUser, ThisUser.Password);

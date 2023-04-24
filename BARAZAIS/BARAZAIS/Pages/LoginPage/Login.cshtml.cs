@@ -4,6 +4,7 @@ using BARAZAIS.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BARAZAIS.Pages.LoginPage;
 
@@ -18,7 +19,6 @@ public class LoginModel : PageModel
 
     [BindProperty]
     public UserMapper Input { get; set; }
-
     private string ReturnUrl { get; set; }
 
     public void OnGet()
@@ -30,7 +30,7 @@ public class LoginModel : PageModel
     {
         ReturnUrl = Url.Content("~/");
 
-        var Result = await SignInManager.PasswordSignInAsync(Input?.Email, Input.Password, false, false);
+        var Result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, false, false);
         if (Result.Succeeded)
         {
             return LocalRedirect(ReturnUrl);
