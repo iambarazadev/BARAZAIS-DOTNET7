@@ -1,0 +1,68 @@
+html, body {
+    font-family: "NunitoRegular" !important;
+    font-size: 0.91rem !important;
+    color: #0b243a !important;
+    font-weight: 800 !important;
+    /*background-color: #f4f6f61e ;*/
+    background-color: #f7f7f7;
+}
+
+.BgImg {
+    background: url(../img/bg.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+a,i{
+    text-decoration: none;
+    text-decoration-line: none !important;
+    color: #4a5e70;
+}
+li{
+    list-style: none !important;
+}
+
+.text-unique{
+    color: #0b243a !important;
+    font-weight: 800 !important;
+}
+.bg-unique{
+    background-color: rgb(8, 130, 170);
+    color: #fff !important;
+}
+.bg-xss {
+    background-color: rgba(119, 119, 119, 0.068);
+    
+}
+.bg-xs {
+   /* background-color: #f4f6f6;*/
+    background-color: #1f5081;
+    color : #fff !important;
+    font-weight:500 !important;
+    opacity:0.95;
+}
+
+.bg-xy{
+    background-color: rgba(255, 255, 255, 0.678);
+}
+
+.bg-green{
+    background-color:#0df02052;
+}
+
+.bg-blue{
+    background-color: #b9dcf12c;
+}
+.bg-inside{
+    background-color: #0e4f8f;
+}
+.StaffImg {
+  width:100px;  
+}
+
+/**
+.txtshadow{
+    text-shadow:  0.4px 0.4930px #CECECE !important;
+}
+*/

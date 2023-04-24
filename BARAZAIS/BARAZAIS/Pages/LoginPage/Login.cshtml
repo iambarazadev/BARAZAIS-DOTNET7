@@ -1,4 +1,46 @@
 ﻿@page
 @model BARAZAIS.Pages.LoginPage.LoginModel
+
 @{
+    ViewData["Title"] = "Login";
 }
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>Login Local</h2>
+            <hr />
+        </div>
+        <div class="col-12">
+            <form method="post">
+                <div class="row">
+                    <div class="col-12">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    </div>
+                    <div class="col-md-6 col-12 ">
+                        <div class=" rounded-3 p-3">
+                            <div class="form-floating mt-2 rounded-3">
+                                <input type="email" asp-for="Input.Email" class="form-control border bg-xss text-unique fw-bolder rounded " id="floatingInput" placeholder="User name" />
+                                <label for="floatingInput" class="text-unique">
+                                    <span class="bi-person me-2"></span> Email
+                                </label>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mt-2 rounded-3">
+                                <input type="password" asp-for="Input.Password" class="form-control border bg-xss text-unique fw-bolder rounded " id="floatingInput" placeholder="Password" />
+                                <label for="floatingInput" class="text-unique">
+                                    <span class="bi-lock me-2"></span> Password
+                                </label>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+                            <button class="btn btn-md btn-primary rounded mt-2 border-0">
+                                Log In
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

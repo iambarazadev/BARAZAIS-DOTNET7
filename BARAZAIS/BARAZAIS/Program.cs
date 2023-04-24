@@ -30,7 +30,6 @@ builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
 
