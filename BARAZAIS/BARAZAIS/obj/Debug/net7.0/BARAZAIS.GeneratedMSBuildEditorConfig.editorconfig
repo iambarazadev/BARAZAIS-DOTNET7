@@ -52,14 +52,6 @@ build_metadata.AdditionalFiles.CssScope = b-qncckgdykw
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-ktsvoz6fsx
 
-[E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Areas/Identity/Pages/Account/LogOut.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxMb2dPdXQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Areas/Identity/Pages/Shared/_LoginPartial.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcU2hhcmVkXF9Mb2dpblBhcnRpYWwuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
