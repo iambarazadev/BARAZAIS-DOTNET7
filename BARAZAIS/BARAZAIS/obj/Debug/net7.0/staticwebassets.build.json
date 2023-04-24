@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "HPDb2ynjR3rPEIPATdBO3Us7sndfkPGF6RAuhyYhtrg=",
+  "Hash": "tBS2+kvvwbtkHXHuh7Qng9+AxkTd+qjSnMR+pl31gjo=",
   "Source": "BARAZAIS",
   "BasePath": "_content/BARAZAIS",
   "Mode": "Default",
@@ -2276,40 +2276,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\_scrollbars.css"
-    },
-    {
-      "Identity": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
-      "SourceId": "BARAZAIS",
-      "SourceType": "Discovered",
-      "ContentRoot": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\",
-      "BasePath": "_content/BARAZAIS",
-      "RelativePath": "css/bootstrap/bootstrap.min.css",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css"
-    },
-    {
-      "Identity": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
-      "SourceId": "BARAZAIS",
-      "SourceType": "Discovered",
-      "ContentRoot": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\",
-      "BasePath": "_content/BARAZAIS",
-      "RelativePath": "css/bootstrap/bootstrap.min.css.map",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
       "Identity": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\css\\bootstrap\\css\\bootstrap.css",
