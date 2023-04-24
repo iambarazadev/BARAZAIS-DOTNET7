@@ -1,6 +1,22 @@
-﻿<div class="top-row ps-2 navbar navbar-dark ">
-	<div class="container-fluid">
-		<a class="navbar-brand text-white" href="">BIS</a>
+﻿<div class=" navbar navbar-dark UserData">
+	<div class="container-fluid py-2">
+		<a href="" class="p-0 m-0">
+			<ul class="p-0 m-0 d-flex flex-row justify-content-center">
+				<li class="m-0 p-0 text-center">
+					<img src="img/sketch.png" class="rounded-circle" width="40" style="margin: 1px auto;" />
+				</li>
+				<li class="m-0 p-0 @SwitchString ms-3">
+					<ul class="p-0 m-0">
+						<li class="p-0 m-0 text-white">
+							Razack baraza
+						</li>
+						<li class="p-0 m-0 text-white-50" style="font-size:0.8rem;">
+							Admin
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</a>
 		<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -8,62 +24,67 @@
 </div>
 
 <div id="Alone" class="@NavMenuCssClass fw-bold opacity-75  h-100" >
-	<nav class="flex-column">
+	<nav class="flex-column px-3">
 		<div class="nav-item px-3 mb-2" >
 			<NavLink class="nav-link text-white rounded-0 ps-3" href="/Home" Match="NavLinkMatch.All" >
-				 <span class="fs-4 bi-house-fill text-white opacity-75" aria-hidden="true" ></span><span class="fs-6 bi-dot mx-1"></span><span class="fs-6">Home</span>
+				<span class="fs-4 bi-house-fill text-white opacity-75" aria-hidden="true"></span><span class="fs-6 bi-dot mx-1 @SwitchString"></span><span class="fs-6 @SwitchString">Home</span>
 			</NavLink>
 		</div>
 		<div class="nav-item px-3  mb-2 ">
 			<NavLink class="nav-link text-white rounded-0 ps-3" href="Pos/0">
-				<span class="bi-display fs-4 text-white opacity-75" aria-hidden="true"></span><span class="fs-6 bi-dot mx-1"></span><span class="fs-6">Pos</span>
+				<span class="bi-display fs-4 text-white opacity-75" aria-hidden="true"></span><span class="fs-6 bi-dot mx-1 @SwitchString"></span><span class="fs-6 @SwitchString">Pos</span>
 			</NavLink>
 		</div>
 		<div class="nav-item px-3  mb-2 ">
 			<a data-bs-toggle="collapse" href="#CollapseFinance" role="button" aria-expanded="false" aria-controls="CollapseFinance" class="a text-white rounded-0 ps-3">
-				<span class=" bi-cash-coin fs-4 text-white opacity-75" aria-hidden="true"></span> <span class="fs-6 bi-dot mx-1"></span><span class="fs-6">Finance</span> <i class="bi bi-caret-down-fill ms-2 text-white "></i>
+				<span class=" bi-cash-coin fs-4 text-white opacity-75" aria-hidden="true"></span> <span class="fs-6 bi-dot mx-1 @SwitchString"></span><span class="fs-6 @SwitchString">Finance</span> <i class="bi bi-caret-down-fill ms-2 text-white "></i>
 			</a>
 			<div class="collapse p-0 m-0 text-start pt-2" id="CollapseFinance">
 				<ul class="p-0 m-0 rounded p-2 border bg-xss" >
-					<li class="mb-2" ><NavLink class="nav-link rounded-0 ps-3 text-white" href="Sales/ListView"><span class="bi-cart-check-fill" aria-hidden="true"> Sales</span></NavLink></li>
-					<li class="mb-2" ><NavLink class="nav-link rounded-0 ps-3 text-white" href="Purchases/ListView"><span class=" bi-cart4" aria-hidden="true"> Purchases</span></NavLink></li>
-					<li class="mb-2" ><NavLink class="nav-link rounded-0 ps-3 text-white" href="Taxes/ListView"><span class="" aria-hidden="true">% Taxes</span></NavLink></li>
+					<li class="mb-2 px-1" ><NavLink class="nav-link rounded-0 ps-2 pe-1 text-white" href="Sales/ListView"><span class="bi-cart-check-fill" aria-hidden="true"> Sales</span></NavLink></li>
+					<li class="mb-2 px-1" ><NavLink class="nav-link rounded-0 ps-2 pe-1 text-white" href="Purchases/ListView"><span class=" bi-cart4" aria-hidden="true"> Purchases</span></NavLink></li>
+					<li class="mb-2 px-1" ><NavLink class="nav-link rounded-0 ps-2 pe-1 text-white" href="Taxes/ListView"><span class="" aria-hidden="true">% Taxes</span></NavLink></li>
 				</ul>
 			</div> 
 		</div>
 		<div class="nav-item px-3  mb-2 ">
 			<a data-bs-toggle="collapse" href="#CollapseProduct" role="button" aria-expanded="false" aria-controls="CollapseProduct" class="a text-white rounded-0 ps-3">
-				<span class=" bi-stack fs-4 text-white opacity-75" aria-hidden="true"></span> <span class="fs-6 bi-dot mx-1"></span><span class="fs-6">Products</span> <i class="bi bi-caret-down-fill ms-2 text-white "></i>
+				<span class=" bi-stack fs-4 text-white opacity-75" aria-hidden="true"></span> <span class="fs-6 bi-dot mx-1 @SwitchString"></span><span class="fs-6 @SwitchString">Products</span> <i class="bi bi-caret-down-fill ms-2 text-white "></i>
 			</a>
 			<div class="collapse p-0 m-0 text-start pt-2" id="CollapseProduct">
 				<ul class="p-0 m-0 rounded p-2 bg-xss border p-2">
-					<li class="mb-2"><NavLink class="nav-link text-white rounded-0 ps-3" href="Products/ListView"><span class=" bi-stack" aria-hidden="true"> Stock</span></NavLink></li>
-					<li class="mb-2"><NavLink class="nav-link text-white rounded-0 ps-3" href="Brands/ListView"><span class="bi bi-bookmark-fill" aria-hidden="true"> Brands</span></NavLink></li>
-					<li class="mb-2"><NavLink class="nav-link text-white rounded-0 ps-3" href="Categories/ListView"><span class="bi-columns-gap " aria-hidden="true"> Categories</span></NavLink></li>
+					<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Products/ListView"><span class=" bi-stack" aria-hidden="true"> Stock</span></NavLink></li>
+					<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Brands/ListView"><span class="bi bi-bookmark-fill" aria-hidden="true"> Brands</span></NavLink></li>
+					<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Categories/ListView"><span class="bi-columns-gap " aria-hidden="true"> Categories</span></NavLink></li>
 				</ul>
 			</div> 
 		</div>
 		<div class="nav-item px-3  mb-2 ">
-			<a data-bs-toggle="collapse" href="#CollapseAdjust" role="button" aria-expanded="false" aria-controls="CollapseAdjust" class="a text-white rounded-0 ps-3">
-				<span class="bi-toggles2 fs-4 text-white opacity-75" aria-bs-hidden="true"></span> <span class="fs-6 bi-dot mx-1"></span><span class="fs-6">Adjustments</span> <i class="bi bi-caret-down-fill ms-2 text-white "></i>
+			<a data-bs-toggle="collapse" href="#CollapseAdjust" role="button" aria-expanded="false" aria-controls="CollapseAdjust" class="a text-white rounded-0 px-3">
+				<span class="bi-toggles2 fs-4 text-white opacity-75" aria-bs-hidden="true"></span> <span class="fs-6 bi-dot mx-1 @SwitchString"></span><span class="fs-6 @SwitchString">Adjustments</span> <i class="bi bi-caret-down-fill ms-2 text-white "></i>
 			</a>
 			<div class="collapse p-0 m-0 text-start pt-2" id="CollapseAdjust">
 				<ul class="p-0 m-0 rounded p-2 bg-xss border p-2">
-					<li class="mb-2"><NavLink class="nav-link text-white rounded-0 ps-3" href="Adjustments/Stock/ListView"><span class="bi bi-activity fs-6 "> Stock Adjustment</span> </NavLink></li>
-					<li class="mb-2"><NavLink class="nav-link text-white rounded-0 ps-3" href="Adjustments/Prices/ListView"><span class="bi bi-tag fs-6 "> Price Adjustment</span></NavLink></li>
-					<li class="mb-2"><NavLink class="nav-link text-white rounded-0 ps-3" href="Adjustments/Opens/ListView"><span class="bi bi-layers fs-6"> Open Stock</span> </NavLink></li>
+					<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Adjustments/Stock/ListView"><span class="bi bi-activity fs-6 "> Stock Adjustment</span> </NavLink></li>
+					<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Adjustments/Prices/ListView"><span class="bi bi-tag fs-6 "> Price Adjustment</span></NavLink></li>
+					<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Adjustments/Opens/ListView"><span class="bi bi-layers fs-6"> Open Stock</span> </NavLink></li>
 				</ul>
 			</div> 
 		</div>
 		<div class="nav-item px-3  mb-2">
 			<NavLink class="nav-link text-white rounded-0 ps-3" href="Suppliers/ListView">
-				<span class="fs-4 bi-truck-flatbed text-white opacity-75" aria-hidden="true"></span><span class="fs-6 bi-dot mx-1"></span><span class="fs-6">Suppliers</span>
+				<span class="fs-4 bi-truck-flatbed text-white opacity-75" aria-hidden="true"></span><span class="fs-6 bi-dot mx-1 @SwitchString"></span><span class="fs-6 @SwitchString">Suppliers</span>
 			</NavLink>
 		</div>
 		<div class="nav-item px-3  mb-2">
 			<NavLink class="nav-link text-white rounded-0 ps-3" href="Staffs/ListView">
-				<span class="bi bi-people text-white opacity-75 fs-4" aria-hidden="true"></span><span class="fs-6 bi-dot mx-1"></span><span class="fs-6">Staff</span>
+				<span class="bi bi-people text-white opacity-75 fs-4" aria-hidden="true"></span><span class="fs-6 bi-dot mx-1 @SwitchString"></span><span class="fs-6 @SwitchString">Staff</span>
 			</NavLink>
+		</div>
+		<div class="nav-item px-3  mt-3 mb-2">
+			<button class="btn btn-md text-white-50 w-100 border-0" @onclick=@(()=>SwitchToggle())>
+				<span class="bi bi-arrow-left-right text-white opacity-75 fs-4" aria-hidden="true"></span>
+			</button>
 		</div>
 	</nav>
 </div>
@@ -71,10 +92,24 @@
 @code {
 	private bool collapseNavMenu = false;
 
+	private string SwitchString = "d-inline";
+
 	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
 	private void ToggleNavMenu()
 	{
 		collapseNavMenu = !collapseNavMenu;
+	}
+
+	private void SwitchToggle()
+	{
+		if (SwitchString == "d-inline")
+		{
+			SwitchString = "d-none";
+		}
+		else
+		{
+			SwitchString = "d-inline";
+		}
 	}
 }
