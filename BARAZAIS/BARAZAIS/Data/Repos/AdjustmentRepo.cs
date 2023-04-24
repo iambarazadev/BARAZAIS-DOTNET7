@@ -16,7 +16,7 @@ public class AdjustmentRepo : BaseRepo<AdjustmentModel>, IAdjustmentService
     
     public async Task<AdjustmentModel> GetDetailedStockAdjustmentAsync(int sn)
     {
-        AdjustmentModel Nothing = new();
+        AdjustmentModel Nothing = new(); 
 
         if (sn > 0 && MyDbSet.Any())
         {

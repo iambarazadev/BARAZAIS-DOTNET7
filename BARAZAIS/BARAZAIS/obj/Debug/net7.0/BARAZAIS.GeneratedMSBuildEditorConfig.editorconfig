@@ -344,6 +344,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVGF4UGFnZVxMaXN0Vmlldy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Shared/Callers/LoginCaller.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXENhbGxlcnNcTG9naW5DYWxsZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Shared/FlatLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXEZsYXRMYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -358,10 +362,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Shared/LoginDisplay.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXExvZ2luRGlzcGxheS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Shared/LoginIndex.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXExvZ2luSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Shared/Paging/InnerPagination.razor]
