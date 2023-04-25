@@ -38,6 +38,9 @@ public class UserModel : IdentityUser<int>
     [Required(ErrorMessage = "Please, Assign User Access Level")]
     public string AccessLevel { get; set; }
 
+    [Required]
+    public string? Phone { get; set; }
+
     //FOREIGN KEYS
     [ForeignKey("CompanyModel")]
     public int? CompanyId { get; set; }

@@ -240,6 +240,8 @@ public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int
         .WithMany(p => p.User);
 
     }
+
+    public DbSet<UserModel> AppUsers { get; set; }
     public virtual DbSet<CompanyModel> Companies { get; set; }
     public virtual DbSet<ProductModel> Products { get; set; }
     public virtual DbSet<CategoryModel> Categories { get; set; }
@@ -259,5 +261,4 @@ public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int
     public virtual DbSet<ProductBill> ProductBills { get; set; }
     public virtual DbSet<HoldModel> Holds { get; set; }
     public virtual DbSet<ProductHold> ProductHolds { get; set; }
-    public DbSet<UserModel> AppUsers { get; set; }
 }

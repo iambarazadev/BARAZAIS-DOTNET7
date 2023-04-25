@@ -2,7 +2,7 @@
     <div class="col-12 pt-1 px-0">
         <ul class="p-0 m-0 d-flex flex-row justify-content-end">
             <li @onclick=@(InnerPreviousPage) class="btn btn-md btn-primary px-3 py-2 shadow-sm text-white border-0 rounded" style="width:fit-content;" href=""><i class="fs-6 bi-arrow-left-circle text-white"></i></li>
-            <label class="p-2 mx-3">@InnerCurrentPage / @InnerTotalPages</label>
+            <li class="p-0 m-0"><label class="p-2 mx-3">@InnerCurrentPage / @InnerTotalPages</label></li>
             <li @onclick=@(InnerNextPage) class="btn btn-md btn-primary px-3 py-2 shadow-sm text-white border-0 rounded" style="width:fit-content;"  href=""><i class="fs-6 bi-arrow-right-circle text-white"></i></li>
         </ul>
     </div>

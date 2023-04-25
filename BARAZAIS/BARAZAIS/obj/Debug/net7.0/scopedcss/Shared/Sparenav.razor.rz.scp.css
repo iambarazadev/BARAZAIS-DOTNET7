@@ -1,0 +1,31 @@
+.nav-item[b-m2ed9lwwzv] {
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+    .nav-item:first-of-type[b-m2ed9lwwzv] {
+        padding-top: 1rem;
+    }
+
+    .nav-item:last-of-type[b-m2ed9lwwzv] {
+        padding-bottom: 1rem;
+    }
+
+    .nav-item[b-m2ed9lwwzv]  a {
+        color: #d7d7d7;
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+    }
+
+.nav-item[b-m2ed9lwwzv]  a.active {
+    background-color: rgba(255,255,255,0.25);
+    color: white;
+}
+
+.nav-item[b-m2ed9lwwzv]  a:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+}
