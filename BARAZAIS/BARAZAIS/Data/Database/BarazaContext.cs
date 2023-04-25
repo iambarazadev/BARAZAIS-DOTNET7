@@ -259,6 +259,5 @@ public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int
     public virtual DbSet<ProductBill> ProductBills { get; set; }
     public virtual DbSet<HoldModel> Holds { get; set; }
     public virtual DbSet<ProductHold> ProductHolds { get; set; }
-}
-public DbSet<UserModel> AppUsers { get; set; }
+    public DbSet<UserModel> AppUsers { get; set; }
 }
