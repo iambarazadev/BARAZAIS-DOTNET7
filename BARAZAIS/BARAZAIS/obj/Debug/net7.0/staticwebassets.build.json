@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ubi+OVC+9Hx/N0zM5sEKJFcp6t2vsvsvOCzyztVfs2I=",
+  "Hash": "Nz7Gx7y9mnStjLqgQIfoPSEsyYnONOmTLI/pyvExw7U=",
   "Source": "BARAZAIS",
   "BasePath": "_content/BARAZAIS",
   "Mode": "Default",
@@ -61436,6 +61436,40 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.png"
+    },
+    {
+      "Identity": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\blob.svg",
+      "SourceId": "BARAZAIS",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\",
+      "BasePath": "_content/BARAZAIS",
+      "RelativePath": "img/blob.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\img\\blob.svg"
+    },
+    {
+      "Identity": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\gallery.svg",
+      "SourceId": "BARAZAIS",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\",
+      "BasePath": "_content/BARAZAIS",
+      "RelativePath": "img/gallery.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\img\\gallery.svg"
     }
   ]
 }

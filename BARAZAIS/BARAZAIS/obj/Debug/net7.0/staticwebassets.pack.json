@@ -14209,6 +14209,14 @@
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
+      "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\blob.svg",
+      "PackagePath": "staticwebassets\\img\\blob.svg"
+    },
+    {
+      "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\gallery.svg",
+      "PackagePath": "staticwebassets\\img\\gallery.svg"
+    },
+    {
       "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.BARAZAIS.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },
