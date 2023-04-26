@@ -46,25 +46,22 @@
           }
         }
       },
-      "ClosedXML/0.97.0": {
+      "ClosedXML/0.101.0": {
         "type": "package",
         "dependencies": {
           "DocumentFormat.OpenXml": "2.16.0",
           "ExcelNumberFormat": "1.1.0",
-          "Microsoft.CSharp": "4.7.0",
-          "SixLabors.Fonts": "1.0.0-beta18",
-          "System.Buffers": "4.5.1",
-          "System.IO.Packaging": "4.7.0",
-          "System.Memory": "4.5.4",
+          "SixLabors.Fonts": "1.0.0-beta19",
+          "System.IO.Packaging": "6.0.0",
           "XLParser": "1.5.2"
         },
         "compile": {
-          "lib/netstandard2.0/ClosedXML.dll": {
+          "lib/netstandard2.1/ClosedXML.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/ClosedXML.dll": {
+          "lib/netstandard2.1/ClosedXML.dll": {
             "related": ".xml"
           }
         }
@@ -245,7 +242,7 @@
           }
         }
       },
-      "Microsoft.CSharp/4.7.0": {
+      "Microsoft.CSharp/4.5.0": {
         "type": "package",
         "compile": {
           "ref/netcoreapp2.0/_._": {}
@@ -1191,7 +1188,7 @@
           }
         }
       },
-      "SixLabors.Fonts/1.0.0-beta18": {
+      "SixLabors.Fonts/1.0.0-beta19": {
         "type": "package",
         "compile": {
           "lib/netcoreapp3.1/SixLabors.Fonts.dll": {
@@ -1571,17 +1568,20 @@
           "lib/netstandard1.3/System.IO.FileSystem.Primitives.dll": {}
         }
       },
-      "System.IO.Packaging/4.7.0": {
+      "System.IO.Packaging/6.0.0": {
         "type": "package",
         "compile": {
-          "ref/netstandard2.0/System.IO.Packaging.dll": {
+          "lib/net6.0/System.IO.Packaging.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/System.IO.Packaging.dll": {
+          "lib/net6.0/System.IO.Packaging.dll": {
             "related": ".xml"
           }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
         }
       },
       "System.Linq/4.3.0": {
@@ -2593,17 +2593,19 @@
         "lib/netstandard2.0/Azure.Identity.xml"
       ]
     },
-    "ClosedXML/0.97.0": {
-      "sha512": "L+uiMgnyd5s11YSGmPWmJ30Rg57BNqgOxabfYmFaqVjqOGM5TQv2olc9E/1qiEZzxyR8pgFIGAEcK4yFzN2S6g==",
+    "ClosedXML/0.101.0": {
+      "sha512": "PHirYTGFZ0a9MGXzZi6zrICrlKV7zdhtKMnto0gv+nqPpfX8mt/u/hw8st+0vPdgAxrpfXz9JCpRLueJc7blUw==",
       "type": "package",
-      "path": "closedxml/0.97.0",
+      "path": "closedxml/0.101.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "closedxml.0.97.0.nupkg.sha512",
+        "closedxml.0.101.0.nupkg.sha512",
         "closedxml.nuspec",
         "lib/netstandard2.0/ClosedXML.dll",
         "lib/netstandard2.0/ClosedXML.xml",
+        "lib/netstandard2.1/ClosedXML.dll",
+        "lib/netstandard2.1/ClosedXML.xml",
         "nuget-logo.png"
       ]
     },
@@ -2904,10 +2906,10 @@
         "version.txt"
       ]
     },
-    "Microsoft.CSharp/4.7.0": {
-      "sha512": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA==",
+    "Microsoft.CSharp/4.5.0": {
+      "sha512": "kaj6Wb4qoMuH3HySFJhxwQfe8R/sJsNJnANrvv8WdFPMoNbKY5htfNscv+LHCu5ipz+49m2e+WQXpLXr9XYemQ==",
       "type": "package",
-      "path": "microsoft.csharp/4.7.0",
+      "path": "microsoft.csharp/4.5.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2920,7 +2922,6 @@
         "lib/netcoreapp2.0/_._",
         "lib/netstandard1.3/Microsoft.CSharp.dll",
         "lib/netstandard2.0/Microsoft.CSharp.dll",
-        "lib/netstandard2.0/Microsoft.CSharp.xml",
         "lib/portable-net45+win8+wp8+wpa81/_._",
         "lib/uap10.0.16299/_._",
         "lib/win8/_._",
@@ -2930,7 +2931,7 @@
         "lib/xamarinmac20/_._",
         "lib/xamarintvos10/_._",
         "lib/xamarinwatchos10/_._",
-        "microsoft.csharp.4.7.0.nupkg.sha512",
+        "microsoft.csharp.4.5.0.nupkg.sha512",
         "microsoft.csharp.nuspec",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
@@ -4222,10 +4223,10 @@
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
       ]
     },
-    "SixLabors.Fonts/1.0.0-beta18": {
-      "sha512": "evykNmy/kEE9EAEKgZm3MNUYXuMHFfmcLUNPw7Ho5q7OI96GFkkIxBm+QaKOTPBKw+L0AjKOs+ArVg8P40Ac9g==",
+    "SixLabors.Fonts/1.0.0-beta19": {
+      "sha512": "ECJoayRT54VkJNoKBwZZllGvBIvxmnUFXsUCqHU8uAjAFrcdtxNpQ5Auyzw3d4+B+Q3KivKIrd7uO0qiNx/glg==",
       "type": "package",
-      "path": "sixlabors.fonts/1.0.0-beta18",
+      "path": "sixlabors.fonts/1.0.0-beta19",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4235,7 +4236,7 @@
         "lib/netstandard2.0/SixLabors.Fonts.xml",
         "lib/netstandard2.1/SixLabors.Fonts.dll",
         "lib/netstandard2.1/SixLabors.Fonts.xml",
-        "sixlabors.fonts.1.0.0-beta18.nupkg.sha512",
+        "sixlabors.fonts.1.0.0-beta19.nupkg.sha512",
         "sixlabors.fonts.128.png",
         "sixlabors.fonts.nuspec"
       ]
@@ -5286,31 +5287,27 @@
         "system.io.filesystem.primitives.nuspec"
       ]
     },
-    "System.IO.Packaging/4.7.0": {
-      "sha512": "9VV4KAbgRQZ79iEoG40KIeZy38O30oWwewScAST879+oki8g/Wa2HXZQgrhDDxQM4GkP1PnRJll05NMiVPbYAw==",
+    "System.IO.Packaging/6.0.0": {
+      "sha512": "C7OkTRIjqIjAKu6ef/fuj8ynCZTPcTYZnvHaq48bniACgXXJogmEoIc56YCDNTc14xhsbLmgpS3KP+evbsUa2g==",
       "type": "package",
-      "path": "system.io.packaging/4.7.0",
+      "path": "system.io.packaging/6.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "Icon.png",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
-        "lib/net46/System.IO.Packaging.dll",
-        "lib/net46/System.IO.Packaging.xml",
-        "lib/netstandard1.3/System.IO.Packaging.dll",
-        "lib/netstandard1.3/System.IO.Packaging.xml",
+        "buildTransitive/netcoreapp2.0/System.IO.Packaging.targets",
+        "buildTransitive/netcoreapp3.1/_._",
+        "lib/net461/System.IO.Packaging.dll",
+        "lib/net461/System.IO.Packaging.xml",
+        "lib/net6.0/System.IO.Packaging.dll",
+        "lib/net6.0/System.IO.Packaging.xml",
         "lib/netstandard2.0/System.IO.Packaging.dll",
         "lib/netstandard2.0/System.IO.Packaging.xml",
-        "ref/net46/System.IO.Packaging.dll",
-        "ref/net46/System.IO.Packaging.xml",
-        "ref/netstandard1.3/System.IO.Packaging.dll",
-        "ref/netstandard1.3/System.IO.Packaging.xml",
-        "ref/netstandard2.0/System.IO.Packaging.dll",
-        "ref/netstandard2.0/System.IO.Packaging.xml",
-        "system.io.packaging.4.7.0.nupkg.sha512",
+        "system.io.packaging.6.0.0.nupkg.sha512",
         "system.io.packaging.nuspec",
-        "useSharedDesignerContext.txt",
-        "version.txt"
+        "useSharedDesignerContext.txt"
       ]
     },
     "System.Linq/4.3.0": {
@@ -7993,6 +7990,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
+      "ClosedXML >= 0.101.0",
       "ClosedXML.Report >= 0.2.6",
       "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore >= 7.0.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 7.0.0",
@@ -8047,6 +8045,10 @@
       "net7.0": {
         "targetAlias": "net7.0",
         "dependencies": {
+          "ClosedXML": {
+            "target": "Package",
+            "version": "[0.101.0, )"
+          },
           "ClosedXML.Report": {
             "target": "Package",
             "version": "[0.2.6, )"
