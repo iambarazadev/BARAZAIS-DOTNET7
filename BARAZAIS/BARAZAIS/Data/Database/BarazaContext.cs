@@ -1,8 +1,8 @@
 ﻿using BARAZAIS.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 
 namespace BARAZAIS.Data.Database;
@@ -15,11 +15,14 @@ public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int
    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         // Configuring UserModel to override auto key increment as primary key
         modelBuilder.Entity<UserModel>()
-            .Property(u => u.Id)
-            .ValueGeneratedOnAdd()
-            .UseIdentityColumn();
+        .Property(u => u.Id)
+        .ValueGeneratedOnAdd()
+        .UseMySqlIdentityColumn();
+        //.UseIdentityColumn();
         
         //Many To Many Product To Grn Via ProductGrns  
         modelBuilder.Entity<ProductGrn>()

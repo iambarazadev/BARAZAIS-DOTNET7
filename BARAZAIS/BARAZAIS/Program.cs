@@ -1,22 +1,15 @@
-
-using BARAZAIS.Data;
 using BARAZAIS.Data.Database;
 using BARAZAIS.Data.Models;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// ConnectionString and Option to user MySqlDatabase
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContextFactory<BarazaContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentity<UserModel, IdentityRole<int>>(options =>
 {
@@ -25,7 +18,9 @@ builder.Services.AddIdentity<UserModel, IdentityRole<int>>(options =>
     options.Password.RequireUppercase = true;
     options.SignIn.RequireConfirmedEmail = false;
 
-}).AddEntityFrameworkStores<BarazaContext>().AddDefaultTokenProviders();
+})
+    .AddEntityFrameworkStores<BarazaContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -53,7 +48,9 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.MapBlazorHub();
+
 app.MapFallbackToPage("/_Host");
 
 app.Run();

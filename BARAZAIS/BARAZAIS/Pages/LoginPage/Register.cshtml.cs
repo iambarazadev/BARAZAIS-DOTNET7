@@ -41,6 +41,7 @@ public class RegisterModel : PageModel
                 Password = Input.Password,
                 DateCreated = DateTime.Now,
                 Address = "",
+                Phone = "",
             };
 
             var Result = await UserManager.CreateAsync(ThisUser, ThisUser.Password);
