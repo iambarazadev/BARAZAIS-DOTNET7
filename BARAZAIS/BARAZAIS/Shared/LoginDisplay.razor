@@ -1,12 +1,35 @@
 ﻿<AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
-        <form method="post" action="LoginPage/Logout">
-            <button type="submit" class="nav-link btn btn-link">Log out</button>
-        </form>
+		<a href="" class="p-0 m-0">
+			<ul class="p-0 m-0 d-flex flex-row justify-content-center">
+				<li class="m-0 p-0 text-center">
+					<img src="img/sketch.png" class="rounded-circle" width="40" style="margin: 1px auto;" />
+				</li>
+				<li class="m-0 p-0  ms-3">
+					<ul class="p-0 m-0">
+						<li class="p-0 m-0 text-white">
+							@context.User.Identity?.Name
+						</li>
+						<li class="p-0 m-0 text-white-50" style="font-size:0.8rem;">
+							Admin
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</a>
+		<ul class="p-0 m-0 d-flex flex-row">
+			<li class="p-0 m-0">
+				<form method="post" action="LoginPage/Logout">
+					<button type="submit" class="nav-link btn btn-link text-white">
+						<span class="bi bi-box-arrow-in-right text-white fs-4"></span>
+					</button>
+				</form>
+			</li>
+		</ul>
     </Authorized>
     <NotAuthorized>
         <a href="LoginPage/Register">Register</a>
         <a href="LoginPage/Login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
+

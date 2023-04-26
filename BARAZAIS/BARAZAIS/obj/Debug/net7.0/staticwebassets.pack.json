@@ -14209,12 +14209,28 @@
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
+      "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\a.JPG",
+      "PackagePath": "staticwebassets\\img\\a.JPG"
+    },
+    {
+      "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\b.jpg",
+      "PackagePath": "staticwebassets\\img\\b.jpg"
+    },
+    {
+      "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\bg.jpg",
+      "PackagePath": "staticwebassets\\img\\bg.jpg"
+    },
+    {
       "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\blob.svg",
       "PackagePath": "staticwebassets\\img\\blob.svg"
     },
     {
       "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\gallery.svg",
       "PackagePath": "staticwebassets\\img\\gallery.svg"
+    },
+    {
+      "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\img\\sketch.png",
+      "PackagePath": "staticwebassets\\img\\sketch.png"
     },
     {
       "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.BARAZAIS.Microsoft.AspNetCore.StaticWebAssets.props",
