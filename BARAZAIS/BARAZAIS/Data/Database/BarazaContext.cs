@@ -12,10 +12,16 @@ public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int
     public BarazaContext(DbContextOptions<BarazaContext> options)
         : base(options)
     {}
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
-        // Many To Many Product To Grn Via ProductGrns  
+        // Configuring UserModel to override auto key increment as primary key
+        modelBuilder.Entity<UserModel>()
+            .Property(u => u.Id)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
+        
+        //Many To Many Product To Grn Via ProductGrns  
         modelBuilder.Entity<ProductGrn>()
         .HasKey(sc => new { sc.ProductId, sc.GrnId });
 
