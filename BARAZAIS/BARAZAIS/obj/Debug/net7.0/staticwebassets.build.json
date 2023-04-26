@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "tBS2+kvvwbtkHXHuh7Qng9+AxkTd+qjSnMR+pl31gjo=",
+  "Hash": "ubi+OVC+9Hx/N0zM5sEKJFcp6t2vsvsvOCzyztVfs2I=",
   "Source": "BARAZAIS",
   "BasePath": "_content/BARAZAIS",
   "Mode": "Default",
@@ -61232,6 +61232,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\icons-1.8.0\\svg-sprite.json"
+    },
+    {
+      "Identity": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\css\\LoginPageCss.css",
+      "SourceId": "BARAZAIS",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\",
+      "BasePath": "_content/BARAZAIS",
+      "RelativePath": "css/LoginPageCss.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\LoginPageCss.css"
     },
     {
       "Identity": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",

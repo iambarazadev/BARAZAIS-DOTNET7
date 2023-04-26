@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets\\css\\Custom.css"
     },
     {
+      "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\css\\LoginPageCss.css",
+      "PackagePath": "staticwebassets\\css\\LoginPageCss.css"
+    },
+    {
       "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\css\\_CustomFonts\\Lato\\Lato-Black.ttf",
       "PackagePath": "staticwebassets\\css\\_CustomFonts\\Lato\\Lato-Black.ttf"
     },

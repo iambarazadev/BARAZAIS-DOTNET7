@@ -6,17 +6,98 @@
     <title> BARAZAIS : @ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/bootstrap/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/LoginPageCss.css" />
+    <link rel="stylesheet" href="~/css/_scrollbars.css" />
     <link rel="stylesheet" href="~/css/icons-1.8.0/font/bootstrap-icons.css" />
 </head>
-<body>
-    <div class="container-fluid">
+<body class="" style="position:relative;">
+    <div class="container-fluid vh-100" >
         <div class="container">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
     </div>
-
+    <div class="container-fluid border-top bg-light" style="position:sticky; bottom:0;">
+        <div class="container py-3">
+            <div class="row" style="font-size:0.7rem!important;">
+                <div class="col-md-3">
+                    <ul class="p-0 m-0 list-unstyled">
+                        <li class="p-0 m-0 fs-5 mb-2 UniqueText">
+                            <span class="bi bi-app me-2"></span>App info.
+                        </li>
+                        <li class="p-0 m-0">
+                            <span class="bi bi-globe2 me-2"></span> www.dropcode.co.tz/barazais
+                        </li>
+                        <li class="p-0 m-0">
+                            <span class="me-2">&copy;</span> 2023, All right reserved.
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-9 col-12 mt-md-0 mt-3">
+                    <div class="row">
+                        <div class="col-12">
+                            <ul class="p-0 m-0 list-unstyled">
+                                <li class="p-0 m-0 fs-5 UniqueText">
+                                    <ul class="p-0 m-0 d-flex flex-row justify-content-between list-unstyled">
+                                        <li class="p-0 m-0">
+                                            <span class="bi bi-code me-2"></span>Developer info.
+                                        </li>
+                                        <li class="p-0 m-0 mt-3" style="font-size:0.75rem">
+                                            PoweredBy : .Net[C#], Blazor.
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="p-0 m-0">
+                                    <hr />
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 col-6 my-md-0 my-2">
+                            <ul class="p-0 m-0 list-unstyled">
+                                <li class="p-0 m-0">
+                                    <ul class="p-0 m-0 list-unstyled d-flex flex-row">
+                                        <li class="p-0 m-0 me-2">
+                                            <span class="bi bi-person me-2"></span> Razackreds
+                                        </li>
+                                        <li class="p-0 m-0 me-2">
+                                            <a href="" class="p-0 m-0"><span class="bi bi-linkedin"></span></a>
+                                        </li>
+                                        <li class="p-0 m-0 me-2">
+                                            <a href="" class="p-0 m-0"><span class="bi bi-github"></span></a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="p-0 m-0">
+                                    <span class="bi bi-globe me-2"></span> razackreds.dropcode.co.tz
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 col-6  my-md-0 my-2">
+                            <ul class="p-0 m-0 list-unstyled">
+                                <li class="p-0 m-0">
+                                    <span class="bi bi-headset me-2"></span> +255 754 99 99 54
+                                </li>
+                                <li class="p-0 m-0">
+                                    <span class="bi bi-send me-2"></span> razackreds@dropcode.co.tz
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 col-12 mt-md-0 mt-2">
+                            <ul class="p-0 m-0 list-unstyled">
+                                <li class="p-0 m-0">
+                                    <span class="bi bi-pin-map-fill me-2"></span> Ubungo Plaza, FirstFloor 231 door
+                                </li>
+                                <li class="p-0 m-0">
+                                    <span class="bi bi-map me-2"></span> Po. Box 127, Ubungo, Dar es salaam
+                                </li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="~/css/bootstrap/js/bootstrap.bundle.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

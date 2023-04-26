@@ -7,13 +7,13 @@
 
 <div class="container py-3">
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 ">
             <ul class="list-unstyled">
                 <li>
-                    <h2 class="">BARAZA IS</h2>
+                    <h2 class="UniqueText">BARAZA IS</h2>
                 </li>
                 <li>
-                    <p class=""><span class="bi-person-fill me-2"></span> User Login</p>
+                    <p class="UniqueText"><span class="bi-person-fill me-2"></span> User Login</p>
                 </li>
             </ul>
             <hr />
@@ -25,17 +25,17 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     </div>
                     <div class="col-md-6 col-12 ">
-                        <div class=" rounded-3 p-3">
+                        <div class=" rounded-3 py-3">
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="email" asp-for="Input.Email" class="form-control border bg-xss text-unique fw-bolder rounded " id="Input.Email" placeholder="User name" />
-                                <label for="Input.Email" class="text-unique">
+                                <input type="email" asp-for="Input.Email" class="form-control border UniqueText rounded-0 " id="Input.Email" placeholder="User name" />
+                                <label for="Input.Email" class="">
                                     <span class="bi-person me-2"></span> Email
                                 </label>
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="password" asp-for="Input.Password" class="form-control border bg-xss text-unique fw-bolder rounded " id="Input.Password" placeholder="Password" />
-                                <label for="Input.Password" class="text-unique">
+                                <input type="password" asp-for="Input.Password" class="form-control border UniqueText rounded-0 " id="Input.Password" placeholder="Password" />
+                                <label for="Input.Password" class="">
                                     <span class="bi-lock me-2"></span> Password
                                 </label>
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
@@ -43,15 +43,24 @@
                             <div>
                                 <ul class="d-flex flex-row m-0 p-0 justify-content-between list-unstyled">
                                     <li class="p-0 m-0">
-                                        <button class="btn btn-md btn-primary rounded mt-2 border-0">
+                                        <button class="btn btn-md btn-primary rounded-0 mt-2 border-0">
                                             Log In
                                         </button>
                                     </li>
-                                    <li class="p-0 m-0">
-                                        <a class="text-muted btn btn-md mt-2 fst-italic" href="Register">New User</a>
-                                    </li>
                                 </ul>
                             </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12 mt-md-0 mt-2">
+                        <div class=" rounded-3 py-3">
+                            <ul class=" m-0 p-0 list-unstyled text-md-end text-start">
+                                <li class="p-0 m-0">
+                                    <a class="text-muted btn btn-md  mb-2 border rounded" href="Register">.. Forgot Password?, <span class="text-primary">Reset</span></a>
+                                </li>
+                                <li class="p-0 m-0">
+                                    <a class="text-muted btn btn-md  mt-2 border rounded" href="Register">.. New User?, <span class="text-primary">Registration</span></a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>

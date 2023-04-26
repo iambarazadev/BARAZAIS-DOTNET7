@@ -10,10 +10,10 @@
         <div class="col-12">
             <ul class="list-unstyled">
                 <li>
-                    <h2 class="">BARAZA IS</h2>
+                    <h2 class="UniqueText">BARAZA IS</h2>
                 </li>
                 <li>
-                    <p class=""><span class="bi-person-fill me-2"></span> User Registration</p>
+                    <p class="UniqueText"><span class="bi-person-fill me-2"></span> User Registration</p>
                 </li>
             </ul>
             <hr />
@@ -25,50 +25,58 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     </div>
                     <div class="col-md-6 col-12 ">
-                        <div class=" rounded-3 p-3">
+                        <div class=" rounded-3 py-3">
                             <div class="form-floating rounded-3">
-                                <input type="text" asp-for="Input.FirstName" class="form-control border bg-xss text-unique fw-bolder rounded " id="FirstName" placeholder="User name" />
-                                <label for="FirstName" class="text-unique">
+                                <input type="text" asp-for="Input.FirstName" class="form-control UniqueText border rounded-0 " id="FirstName" placeholder="User name" />
+                                <label for="FirstName" class="">
                                     <span class="bi-person me-2"></span> First Name
                                 </label>
                                 <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="text" asp-for="Input.LastName" class="form-control border bg-xss text-unique fw-bolder rounded " id="LastName" placeholder="User name" />
-                                <label for="LastName" class="text-unique">
+                                <input type="text" asp-for="Input.LastName" class="form-control UniqueText border rounded-0 " id="LastName" placeholder="User name" />
+                                <label for="LastName" class="">
                                     <span class="bi-person me-2"></span> Last Name
                                 </label>
                                 <span asp-validation-for="Input.LastName" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="email" asp-for="Input.Email" class="form-control border bg-xss text-unique fw-bolder rounded " id="Email" placeholder="User name" />
-                                <label for="Email" class="text-unique">
+                                <input type="email" asp-for="Input.Email" class="form-control UniqueText border rounded-0 " id="Email" placeholder="User name" />
+                                <label for="Email" class="">
                                     <span class="bi-at me-2"></span> Email
                                 </label>
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="password" asp-for="Input.Password" class="form-control border bg-xss text-unique fw-bolder rounded " id="Password" placeholder="Password" />
-                                <label for="Password" class="text-unique">
+                                <input type="password" asp-for="Input.Password" class="form-control UniqueText border rounded-0 " id="Password" placeholder="Password" />
+                                <label for="Password" class="">
                                     <span class="bi-lock me-2"></span> Password
                                 </label>
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="password" asp-for="Input.ConfirmPassword" class="form-control border bg-xss text-unique fw-bolder rounded " id="ConfirmPassword" placeholder="ConfirmPassword" />
-                                <label for="ConfirmPassword" class="text-unique">
+                                <input type="password" asp-for="Input.ConfirmPassword" class="form-control UniqueText border rounded-0 " id="ConfirmPassword" placeholder="ConfirmPassword" />
+                                <label for="ConfirmPassword" class="">
                                     <span class="bi-lock me-2"></span> Confirm Password
                                 </label>
                                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                             </div>
                             <ul class="d-flex flex-row m-0 p-0 justify-content-between list-unstyled">
                                 <li class="p-0 m-0">
-                                    <button type="submit" class="btn btn-md btn-primary rounded mt-2 border-0">
+                                    <button type="submit" class="btn btn-md btn-primary rounded-0 mt-2 border-0">
                                         Register
                                     </button>
                                 </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12 mt-md-0 mt-2">
+                        <div class=" rounded-3 py-3">
+                            <ul class=" m-0 p-0 list-unstyled d-flex flex-row justify-content-start justify-content-md-end">
                                 <li class="p-0 m-0">
-                                    <a class="text-muted btn btn-md mt-2 fst-italic" href="Login">Login here</a>
+                                    <a class="text-muted btn btn-md border rounded" href="Login" style="width:fit-content">
+                                        .. Already have an Account?, <span class="text-primary">Login</span>
+                                    </a>
                                 </li>
                             </ul>
                         </div>
