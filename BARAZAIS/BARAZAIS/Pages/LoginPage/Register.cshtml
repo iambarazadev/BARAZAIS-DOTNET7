@@ -13,7 +13,7 @@
                     <h2 class="UniqueText">BARAZA IS</h2>
                 </li>
                 <li>
-                    <p class="UniqueText"><span class="bi-person-fill me-2"></span> User Registration</p>
+                    <p class="UniqueText"><span class="bi-person-fill me-2"></span> User Registration <span class="opacity-75">(New Business Owner)</span></p>
                 </li>
             </ul>
             <hr />
@@ -61,6 +61,24 @@
                                 </label>
                                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                             </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class=" rounded-3 py-3">
+                            <div class="form-floating rounded-3">
+                                <input type="text" asp-for="Input.BussinesName" class="form-control UniqueText border rounded-0 " id="BussinesName" placeholder="Bussines Name" />
+                                <label for="BussinesName" class="">
+                                    <span class="bi-briefcase me-2"></span> Business Name
+                                </label>
+                                <span asp-validation-for="Input.BussinesName" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mt-2 rounded-3">
+                                <textarea asp-for="Input.Location" rows="3" class="form-control UniqueText border rounded-0 h-50" id="Location" placeholder="Location" > </textarea>
+                                <label for="Location" class="">
+                                    <span class="bi-pin-map me-2"></span> Location
+                                </label>
+                                <span asp-validation-for="Input.Location" class="text-danger"></span>
+                            </div>
                             <ul class="d-flex flex-row m-0 p-0 justify-content-between list-unstyled">
                                 <li class="p-0 m-0">
                                     <button type="submit" class="btn btn-md btn-primary rounded-0 mt-2 border-0">
@@ -68,12 +86,9 @@
                                     </button>
                                 </li>
                             </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-12 mt-md-0 mt-2">
-                        <div class=" rounded-3 py-3">
-                            <ul class=" m-0 p-0 list-unstyled d-flex flex-row justify-content-start justify-content-md-end">
-                                <li class="p-0 m-0">
+                            <div class="py-4"></div>
+                            <ul class=" m-0 p-0 list-unstyled d-flex flex-row justify-content-start border-top">
+                                <li class="p-0 m-0 pt-3">
                                     <a class="text-muted btn btn-md border rounded" href="Login" style="width:fit-content">
                                         .. Already have an Account?, <span class="text-primary">Login</span>
                                     </a>

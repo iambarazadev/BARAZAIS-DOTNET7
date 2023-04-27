@@ -18,7 +18,7 @@ public class LoginModel : PageModel
     }
 
     [BindProperty]
-    public UserMapper Input { get; set; }
+    public RegistrationMapper Input { get; set; }
     private string ReturnUrl { get; set; }
 
     public void OnGet()
