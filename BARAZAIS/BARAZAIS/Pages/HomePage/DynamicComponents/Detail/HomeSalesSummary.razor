@@ -18,8 +18,12 @@
             <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
-                    foreach(var ThisUser in TheseUsers){
-                        <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                    if(TheseUsers != null && TheseUsers.Count > 0)
+                    {
+                        foreach (var ThisUser in TheseUsers)
+                        {
+                            <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                        }
                     }
                 }
             </select>

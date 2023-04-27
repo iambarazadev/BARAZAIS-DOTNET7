@@ -11,7 +11,8 @@ public interface IUserService : IBaseService<UserModel>
 {
     Task<UserModel> CheckUserAsync(string mail, string pwd);
     Task<UserModel> GetDetailedUserAsync(int sn);
-    Task<List<UserModel>> GetAllUsersAsync();
+	Task<UserModel> GetDetailedUserAsync(string UserName);
+	Task<List<UserModel>> GetAllUsersAsync();
     Task<List<UserModel>> GetAllUsersDetailedAsync(int CurrentPage, int PageSize);
     Task<List<UserModel>> GetAllUsersAsync(int CurrentPage, int PageSize);
 }

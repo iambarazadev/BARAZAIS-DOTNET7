@@ -207,7 +207,7 @@
     //Url Parameter Variables
     [Parameter]
     public int Sn { get; set; } = 0;
-    
+
     private string? OnFly = null;
     //Header Component
     private string Title = "Products";
@@ -234,21 +234,45 @@
 
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
-            TheseCategories = (await repo.Categories.GetAllRecords(repo.Categories.GetNoRecords(), 1))
-            .OrderBy(x => x.Id)
-            .Reverse()
-            .ToList();
-            
-            TheseBrands = (await repo.Brands.GetAllRecords(repo.Brands.GetNoRecords(), 1))
-            .OrderBy(x => x.Id)
-            .Reverse()
-            .ToList();
-            
-            TheseTaxes = (await repo.Taxes.GetAllRecords(repo.Taxes.GetNoRecords(), 1))
-            .OrderBy(x => x.Id)
-            .Reverse()
-            .ToList();
-            
+            var CategoryTemp = await repo.Categories.GetAllRecords(repo.Categories.GetNoRecords(), 1);
+            if(CategoryTemp != null && CategoryTemp.Count > 0)
+            {
+                TheseCategories = (CategoryTemp)
+               .OrderBy(x => x?.Id)
+               .Reverse()
+               .ToList();
+            }
+            else
+            {
+                TheseCategories = new();
+            }
+
+            var BrandTemp = await repo.Brands.GetAllRecords(repo.Brands.GetNoRecords(), 1);
+            if (BrandTemp != null && BrandTemp.Count > 0)
+            {
+                TheseBrands = (BrandTemp)
+                .OrderBy(x => x?.Id)
+                .Reverse()
+                .ToList();
+            }
+            else
+            {
+                BrandTemp = new();
+            }
+
+            var TaxTemp = await repo.Taxes.GetAllRecords(repo.Taxes.GetNoRecords(), 1);
+            if(TaxTemp != null && TaxTemp.Count > 0)
+            {
+                TheseTaxes = (TaxTemp)
+                .OrderBy(x => x?.Id)
+                .Reverse()
+                .ToList();
+            }
+            else
+            {
+                TheseTaxes = new();
+            }
+
             ThisScan = null;
             ThisBarcode = new();
 
@@ -268,33 +292,33 @@
             using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
             {
                 ThisProduct = await repo.Products.GetDetailedProductAsync(TheKey);
-                
+
                 if(ThisProduct.Barcode != null){
                     TheseBarcodes = ThisProduct.Barcode;
                 }else{
                     TheseBarcodes = new();
                 }
-                
+
                 await repo.CompleteAsync();
                 repo.Dispose();
             }
             LineText = "Edit Product";
         }
     }
-    
+
     private void AppendScan(string Scan){
-        
+
         ThisBarcode.Scan = Scan;
         TheseBarcodes.Add(ThisBarcode);
-        
+
         ThisScan = null;
         ThisBarcode = new();
     }
-    
+
     private void RemoveBarcode(BarcodeModel code){
-       TheseBarcodes.Remove(code);
+        TheseBarcodes.Remove(code);
     }
-    
+
     private async Task ProcessAndSave()
     {
         if (this.ThisProduct != null)
@@ -305,7 +329,7 @@
                 {
                     ThisProduct.DateUpdated = DateTime.Now;
                     repo.Products.Update(this.ThisProduct);
-                    
+
                     await repo.CompleteAsync();
                     repo.Dispose();
 
@@ -315,10 +339,10 @@
                 {
                     this.ThisProduct.UserId = 1;
                     this.ThisProduct.CompanyId = 1;
-                    
+
                     this.ThisProduct.Barcode = TheseBarcodes;
                     await repo.Products.AddAsync(ThisProduct);
-                    
+
                     await repo.CompleteAsync();
                     repo.Dispose();
                 }
@@ -343,10 +367,18 @@
     private async void ReloadCats(){
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
-            TheseCategories = (await repo.Categories.GetAllRecords(repo.Categories.GetNoRecords(), 1))
-            .OrderBy(x => x.Id)
-            .Reverse()
-            .ToList();
+            var CategoryTemp = await repo.Categories.GetAllRecords(repo.Categories.GetNoRecords(), 1);
+            if (CategoryTemp != null && CategoryTemp.Count > 0)
+            {
+                TheseCategories = (CategoryTemp)
+               .OrderBy(x => x?.Id)
+               .Reverse()
+               .ToList();
+            }
+            else
+            {
+                TheseCategories = new();
+            }
             
             await repo.CompleteAsync();
             repo.Dispose();
@@ -357,10 +389,18 @@
     private async void ReloadBrands(){
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
-            TheseBrands = (await repo.Brands.GetAllRecords(repo.Brands.GetNoRecords(), 1))
-            .OrderBy(x => x.Id)
-            .Reverse()
-            .ToList();
+            var BrandTemp = await repo.Brands.GetAllRecords(repo.Brands.GetNoRecords(), 1);
+            if (BrandTemp != null && BrandTemp.Count > 0)
+            {
+                TheseBrands = (BrandTemp)
+                .OrderBy(x => x?.Id)
+                .Reverse()
+                .ToList();
+            }
+            else
+            {
+                BrandTemp = new();
+            }
             
             await repo.CompleteAsync();
             repo.Dispose();
@@ -371,10 +411,18 @@
     private async void ReloadTaxes(){
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
-            TheseTaxes = (await repo.Taxes.GetAllRecords(repo.Taxes.GetNoRecords(), 1))
-            .OrderBy(x => x.Id)
-            .Reverse()
-            .ToList();
+            var TaxTemp = await repo.Taxes.GetAllRecords(repo.Taxes.GetNoRecords(), 1);
+            if (TaxTemp != null && TaxTemp.Count > 0)
+            {
+                TheseTaxes = (TaxTemp)
+                .OrderBy(x => x?.Id)
+                .Reverse()
+                .ToList();
+            }
+            else
+            {
+                TheseTaxes = new();
+            }
             
             await repo.CompleteAsync();
             repo.Dispose();

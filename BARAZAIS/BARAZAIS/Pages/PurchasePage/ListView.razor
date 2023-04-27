@@ -35,8 +35,12 @@
             <select @bind=@SupplierId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
-                    foreach(var ThisSupplier in TheseSuppliers){
-                        <option value=@ThisSupplier.Id class="text-unique">@(ThisSupplier.Caption)</option>
+                    if(TheseSuppliers != null && TheseSuppliers.Count > 0)
+                    {
+                        foreach (var ThisSupplier in TheseSuppliers)
+                        {
+                            <option value=@ThisSupplier.Id class="text-unique">@(ThisSupplier.Caption)</option>
+                        }
                     }
                 }
             </select>
@@ -48,8 +52,12 @@
            <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
-                    foreach(var ThisUser in TheseUsers){
-                        <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                    if(TheseUsers != null && TheseUsers.Count > 0)
+                    {
+                        foreach (var ThisUser in TheseUsers)
+                        {
+                            <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                        }
                     }
                 }
             </select>
@@ -205,17 +213,17 @@
     //GrnModel Variables
     private List<GrnModel> ThesePurchases = new();
     private List<GrnModel> TheseTempPurchases = new();
-    
+
     //filtering
     private List<SupplierModel> TheseSuppliers = new();
     private List<UserModel> TheseUsers = new();
     private int SupplierId = 0;
     private int UserId = 0;
     private int? SearchId = null;
-    
+
     private decimal TotalPurchases = 0;
     private int NumOfPurchases = 0;
-    
+
     private DateOnly FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
     private DateOnly ToDate = DateOnly.FromDateTime(DateTime.Now);
 
@@ -238,23 +246,23 @@
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
             TheseTempPurchases = await repo.Grns.GetAllGrnsDetailedAsync(FromDate, ToDate, true, UserId, SupplierId);
-            
+
             double Num = (double)(TheseTempPurchases.Count()) / PageSize;
             TotalPages = (int)(Math.Ceiling(Num));
-            
+
             if(CurrentPage < TotalPages){
                 CurrentPage ++;
             }else{
                 CurrentPage = TotalPages;
             }
-            
+
             ThesePurchases = TheseTempPurchases
             .OrderBy(x=> x.Id)
             .Reverse()
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();
-            
+
             PurchaseInfo();
             await repo.CompleteAsync();
             repo.Dispose();
@@ -268,23 +276,23 @@
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
             TheseTempPurchases = await repo.Grns.GetAllGrnsDetailedAsync(FromDate, ToDate, true, UserId, SupplierId);
-            
+
             double Num = (double)(TheseTempPurchases.Count()) / PageSize;
             TotalPages = (int)(Math.Ceiling(Num));
-            
+
             if(CurrentPage > 1){
                 CurrentPage --;
             }else{
                 CurrentPage = 1;
             }
-            
+
             ThesePurchases = TheseTempPurchases
             .OrderBy(x=> x.Id)
             .Reverse()
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();
-            
+
             PurchaseInfo();
             await repo.CompleteAsync();
             repo.Dispose();
@@ -298,18 +306,18 @@
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
             TheseTempPurchases = await repo.Grns.GetAllGrnsDetailedAsync(FromDate, ToDate, true, UserId, SupplierId);
-            
+
             double Num = (double)(TheseTempPurchases.Count()) / PageSize;
             TotalPages = (int)(Math.Ceiling(Num));
             CurrentPage = 1;
-            
+
             ThesePurchases = TheseTempPurchases
             .OrderBy(x=> x.Id)
             .Reverse()
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();
-            
+
             PurchaseInfo();
             await repo.CompleteAsync();
             repo.Dispose();
@@ -323,18 +331,18 @@
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
             TheseTempPurchases = await repo.Grns.GetAllGrnsDetailedAsync(FromDate, ToDate, true, UserId, SupplierId);
-            
+
             double Num = (double)(TheseTempPurchases.Count()) / PageSize;
             TotalPages = (int)(Math.Ceiling(Num));
             CurrentPage = TotalPages;
-            
+
             ThesePurchases = TheseTempPurchases
             .OrderBy(x=> x.Id)
             .Reverse()
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();
-            
+
             PurchaseInfo();
             await repo.CompleteAsync();
             repo.Dispose();
@@ -347,9 +355,12 @@
     {
         if (ThisData != null)
         {
-            foreach (var xitem in ThisData.ProductGrn)
+            if(ThisData.ProductGrn != null && ThisData.ProductGrn.Count > 0)
             {
-                FullCost += (double)((xitem.QtyPurchased) * (xitem.Cost));
+                foreach (var xitem in ThisData.ProductGrn)
+                {
+                    FullCost += (double)((xitem.QtyPurchased) * (xitem.Cost));
+                }
             }
         }
     }

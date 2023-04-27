@@ -1,4 +1,7 @@
-﻿<AuthorizeView>
+﻿@inject IDbContextFactory<BarazaContext> MyFactory
+@inject NavigationManager Navigation
+
+<AuthorizeView>
     <Authorized>
 		<a href="" class="p-0 m-0">
 			<ul class="p-0 m-0 d-flex flex-row justify-content-center">
@@ -6,14 +9,27 @@
 					<img src="img/sketch.png" class="rounded-circle" width="40" style="margin: 1px auto;" />
 				</li>
 				<li class="m-0 p-0  ms-3">
-					<ul class="p-0 m-0">
-						<li class="p-0 m-0 text-white">
-							@context.User.Identity?.Name
-						</li>
-						<li class="p-0 m-0 text-white-50" style="font-size:0.8rem;">
-							Admin
-						</li>
-					</ul>
+					@{
+						if(ThisUser != null)
+						{
+							<ul class="p-0 m-0">
+								<li class="p-0 m-0 text-white text-capitalize">
+									<ul class="p-0 m-0 d-flex flex-row justify-content-start">
+										<li class="m-0 me-2">
+											@(ThisUser.FirstName)
+										</li>
+										<li class="m-0">
+											@(ThisUser.LastName)
+										</li>
+									</ul>
+								</li>
+								<li class="p-0 m-0 text-white-50 text-capitalize" style="font-size:0.8rem;">
+									@(ThisUser.AccessLevel)
+								</li>
+							</ul>
+						}
+						
+					}
 				</li>
 			</ul>
 		</a>
@@ -33,3 +49,14 @@
     </NotAuthorized>
 </AuthorizeView>
 
+@code{
+
+	[Parameter]
+	public UserModel ThisUser { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+	}
+}

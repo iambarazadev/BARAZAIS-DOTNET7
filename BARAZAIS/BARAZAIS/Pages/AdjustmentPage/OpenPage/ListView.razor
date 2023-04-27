@@ -7,12 +7,12 @@
 <div class="row pb-3 mt-2 rounded bg-white shadow-sm">
     <div class="col-12">
         <Header
-    Title=@Title
-    LineText=@LineText
-    NewUrl=@NewUrl
-    ViewUrl=@ViewUrl
-    ViewUrlIcon=@ViewUrlIcon
-    />
+        Title=@Title
+        LineText=@LineText
+        NewUrl=@NewUrl
+        ViewUrl=@ViewUrl
+        ViewUrlIcon=@ViewUrlIcon
+        />
     </div>
     <div class="col-12">
         <hr class="text-muted" />
@@ -38,8 +38,12 @@
            <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
-                    foreach(var ThisUser in TheseUsers){
-                        <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                    if(TheseUsers != null && TheseUsers.Count > 0)
+                    {
+                        foreach (var ThisUser in TheseUsers)
+                        {
+                            <option value=@ThisUser.Id class="text-unique">@(ThisUser.FirstName + " " + ThisUser.LastName)</option>
+                        }
                     }
                 }
             </select>
@@ -148,159 +152,163 @@
 
 
 @code{
-        //Header Component
+    //Header Component
     private string Title = "Open Stock Adjustments";
     private string LineText = "List view";
     private string NewUrl = "Adjustments/Opens/New";
     private string ViewUrl = "Adjustments/Opens/Details";
     private string ViewUrlIcon = "bi bi-ui-checks-grid";
-    
- // Data Variables
+
+    // Data Variables
     private List<OpenModel> TheseOpens = new();
     private int CurrentPage = 0;
     private int PageSize = 50;
     private int TotalPages = 1;
     private double FullCost = 0.0;
-    
+
     //filtering
     private List<UserModel> TheseUsers = new();
     private int UserId = 0;
     private int? SearchId = null;
-    
+
     private decimal TotalOpens = 0;
     private int NumOfOpens = 0;
-    
+
     private DateOnly FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
     private DateOnly ToDate = DateOnly.FromDateTime(DateTime.Now);
-    
+
     protected override async Task OnInitializedAsync(){
-        
+
         await base.OnInitializedAsync();
-        
+
         FromDate = DateOnly.FromDateTime((DateTime.Today.AddMonths(-1)));
         ToDate = DateOnly.FromDateTime(DateTime.Now);
         Reset();
-        
+
         using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
         {
             TheseUsers = await repo.Users.GetAllRecords(repo.Users.GetNoRecords(),1);
-            
+
             await repo.CompleteAsync();
             repo.Dispose();
         }
     }
-    
+
     private async Task NextPage(){
         using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
-            
+
             double Num = (double)(repo.Opens.GetNoRecords())/PageSize;
             TotalPages = (int)(Math.Ceiling(Num));
-            
+
             if(CurrentPage < TotalPages ){
-               CurrentPage ++ ;
+                CurrentPage ++ ;
             }
             else{
                 CurrentPage = TotalPages; 
             }
-            
+
             TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
             .OrderBy(x=> x.Id)
             .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
             .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
             .Reverse()
             .ToList();
-            
+
             OpensInfo();
-            
+
             await repo.CompleteAsync();
             repo.Dispose(); 
         }
-        
+
         StateHasChanged();
     }
-    
+
     private async Task PreviousPage(){
         using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
-            
+
             double Num = (double)(repo.Opens.GetNoRecords())/PageSize;
             TotalPages = (int)(Math.Ceiling(Num));
-            
+
             if(CurrentPage > 1 ){
-               CurrentPage -- ;
+                CurrentPage -- ;
             }
             else{
                 CurrentPage = 1; 
             }
-            
+
             TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
             .OrderBy(x=> x.Id)
             .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
             .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
             .Reverse()
             .ToList();
-            
+
             OpensInfo();
-            
+
             await repo.CompleteAsync();
             repo.Dispose(); 
         }
-        
+
         StateHasChanged();
     }
-    
+
     private async Task FirstPage(){
         using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
-            
+
             double Num = (double)(repo.Opens.GetNoRecords())/PageSize;
             TotalPages = (int)(Math.Ceiling(Num));
-            
+
             CurrentPage = 1;
-            
+
             TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
             .OrderBy(x=> x.Id)
             .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
             .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
             .Reverse()
             .ToList();
-            
+
             OpensInfo();
-            
+
             await repo.CompleteAsync();
             repo.Dispose(); 
         }
-        
+
         StateHasChanged();
     }
-    
+
     private async Task LastPage(){
         using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
-            
+
             double Num = (double)(repo.Opens.GetNoRecords())/PageSize;
             TotalPages = (int)(Math.Ceiling(Num));
-            
+
             CurrentPage = TotalPages;
-            
+
             TheseOpens = (await repo.Opens.GetAllOpensDetailedAsync(1, repo.Opens.GetNoRecords()))
                     .OrderBy(x=> x.Id)
                     .Where(x => ((DateOnly.FromDateTime(x.DateCreated) >= FromDate)))
                     .Where(x=> (DateOnly.FromDateTime(x.DateCreated) <= ToDate))
                     .Reverse()
                     .ToList();
-                    
-                    OpensInfo();
-            
+
+            OpensInfo();
+
             await repo.CompleteAsync();
             repo.Dispose(); 
         }
-        
+
         StateHasChanged();
     }
-    
+
     private void GetFullOpenCost(OpenModel ThisData){
-        
+
         if(ThisData != null){
-            foreach(var xitem in ThisData.ProductOpen){
-                FullCost += (double)((xitem.Qty) * (xitem.Cost));
+            if (ThisData.ProductOpen != null && ThisData.ProductOpen.Count > 0)
+            {
+                foreach (var xitem in ThisData.ProductOpen)
+                {
+                    FullCost += (double)((xitem.Qty) * (xitem.Cost));
+                }
             }
         } 
     }

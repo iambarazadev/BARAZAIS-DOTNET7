@@ -7,7 +7,7 @@ using Microsoft.VisualBasic;
 
 namespace BARAZAIS.Data.Database;
 
-public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int>
+public class BarazaContext : IdentityDbContext<UserModel, AccessLevelModel, int>
 {
     public BarazaContext(DbContextOptions<BarazaContext> options)
         : base(options)
@@ -22,10 +22,17 @@ public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int
         .Property(u => u.Id)
         .ValueGeneratedOnAdd()
         .UseMySqlIdentityColumn();
-        //.UseIdentityColumn();
-        
-        //Many To Many Product To Grn Via ProductGrns  
-        modelBuilder.Entity<ProductGrn>()
+		//.UseIdentityColumn();
+
+		// Configuring AccessLevelModel to override auto key increment as primary key
+		modelBuilder.Entity<AccessLevelModel>()
+		.Property(a => a.Id)
+		.ValueGeneratedOnAdd()
+		.UseMySqlIdentityColumn();
+		//.UseIdentityColumn();
+
+		//Many To Many Product To Grn Via ProductGrns  
+		modelBuilder.Entity<ProductGrn>()
         .HasKey(sc => new { sc.ProductId, sc.GrnId });
 
         modelBuilder.Entity<ProductGrn>()
@@ -108,8 +115,13 @@ public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int
         .WithMany(s => s.ProductHold)
         .HasForeignKey(sc => sc.HoldId);
 
-        // One Product must have one category, while one category can have more than one product to Many
-        modelBuilder.Entity<ProductModel>()
+		// One User must have One AccessLevel, while One AccessLevel can have more than one User to Many
+		modelBuilder.Entity<UserModel>()
+		.HasOne(c => c.AccessLevel)
+		.WithMany(p => p.Users);
+
+		// One Product must have one category, while one category can have more than one product to Many
+		modelBuilder.Entity<ProductModel>()
         .HasOne(c => c.Category)
         .WithMany(p => p.Product);
 
@@ -251,7 +263,8 @@ public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int
     }
 
     public DbSet<UserModel> AppUsers { get; set; }
-    public virtual DbSet<CompanyModel> Companies { get; set; }
+	public DbSet<AccessLevelModel> AccessLevels { get; set; }
+	public virtual DbSet<CompanyModel> Companies { get; set; }
     public virtual DbSet<ProductModel> Products { get; set; }
     public virtual DbSet<CategoryModel> Categories { get; set; }
     public virtual DbSet<GrnModel> Grns { get; set; }

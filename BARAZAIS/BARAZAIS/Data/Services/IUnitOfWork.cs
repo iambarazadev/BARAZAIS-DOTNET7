@@ -9,7 +9,8 @@ namespace BARAZAIS.Data.Services;
 
 public interface IUnitOfWorkService : IDisposable
 {
-    ICompanyService Companies { get; }
+	IAccessLevelService AccessLevels { get; }
+	ICompanyService Companies { get; }
     ICategoryService Categories { get; }
     IBrandService Brands { get; }
     IBarcodeService Barcodes { get; }

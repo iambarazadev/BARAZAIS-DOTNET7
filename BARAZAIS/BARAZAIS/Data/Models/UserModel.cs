@@ -35,9 +35,6 @@ public class UserModel : IdentityUser<int>
 
     public string? ImageUrl { get; set; }
 
-    [Required(ErrorMessage = "Please, Assign User Access Level")]
-    public string AccessLevel { get; set; }
-
     [Required]
     public string? Phone { get; set; }
 
@@ -46,8 +43,12 @@ public class UserModel : IdentityUser<int>
     public int? CompanyId { get; set; }
     public CompanyModel? Company { get; set; }
 
-    //COLLECTIONS
-    public virtual List<PriceModel>? Price { get; set; }
+	[ForeignKey("AccessLevelModel")]
+	public int? AccessLevelId { get; set; }
+	public virtual AccessLevelModel? AccessLevel { get; set; }
+
+	//COLLECTIONS
+	public virtual List<PriceModel>? Price { get; set; }
     public virtual List<ProductModel>? Product { get; set; }
     public virtual List<BrandModel>? Brand { get; set; }
     public virtual List<BarcodeModel>? Barcode { get; set; }
@@ -68,6 +69,5 @@ public class UserModel : IdentityUser<int>
         this.Address = null;
         this.Code = "EMP";
         this.ImageUrl = null;
-        this.AccessLevel = string.Empty;
     }
 }

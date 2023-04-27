@@ -65,8 +65,36 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
             return Nothing;
         }
     }
-    
-    public async Task<List<UserModel>> GetAllUsersDetailedAsync(int CurrentPage, int PageSize){
+
+	public async Task<UserModel> GetDetailedUserAsync(string UserName)
+	{
+		UserModel Nothing = new();
+
+		if ( (UserName != "" || UserName != null) && MyDbSet.Any())
+		{
+			return (UserModel)await MyDbSet
+			.OrderBy(o => o.Id)
+			.Where(x => x.UserName == UserName)
+			.Include(a => a.Product)
+			.Include(b => b.Grn)
+			.Include(c => c.Supplier)
+			.Include(d => d.Category)
+			.Include(e => e.Brand)
+			.Include(f => f.Price)
+			.Include(g => g.Adjustment)
+			.Include(i => i.Tax)
+			.Include(j => j.Bill)
+			.Include(k => k.Open)
+			.Include(l => l.Hold)
+			.SingleOrDefaultAsync();
+		}
+		else
+		{
+			return Nothing;
+		}
+	}
+
+	public async Task<List<UserModel>> GetAllUsersDetailedAsync(int CurrentPage, int PageSize){
         List<UserModel> Nothing = new();
         
         if(MyDbSet.Any()){
