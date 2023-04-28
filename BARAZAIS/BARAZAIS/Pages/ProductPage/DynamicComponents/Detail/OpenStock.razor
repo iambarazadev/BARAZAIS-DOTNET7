@@ -60,11 +60,11 @@
     </div>
     <div class="col-md-6 col-12 py-3 px-0">
         <ul class="p-2 m-0 text-start bg-xss rounded" style="font-size:0.7rem !important">
-            <li class="p-2 m-0 text-unique" >
-                TOTAL SALES
+            <li class="p-2 m-0 text-unique bg-primary bg-opacity-50 rounded" style="font-size:0.6rem !important; width:fit-content;">
+                TOTAL AS OPEN STOCK
             </li>
-            <li class="p-2 py-0 m-0 text-primary" >
-                &sum; @((TotalOpens).ToString("n0"))
+            <li class="p-2 py-0 m-0 fs-5 fw-normal">
+                @((TotalOpens).ToString("n0"))
             </li>
             <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                 @(NumOfOpens) <span class="bi bi-dot"></span> @(NumOfOpens > 1 ? "As Open Stocks" : "As Open Stock").

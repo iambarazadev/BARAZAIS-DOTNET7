@@ -280,6 +280,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2FsZXNQYWdlXFNob3dGaWx0ZXJzXFNob3dTdW1tYXJ5RmlsdGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Pages/StaffPage/AddOrUpdate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3RhZmZQYWdlXEFkZE9yVXBkYXRlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/PROJECTS/_REPOS/BLAZOR PROJECTS/BARAZAIS-NET7-AUTHENTICATION/BARAZAIS/BARAZAIS/Pages/StaffPage/DetailView.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3RhZmZQYWdlXERldGFpbFZpZXcucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
