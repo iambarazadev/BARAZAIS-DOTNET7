@@ -2,6 +2,8 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
 
 <Header Title=@Title
         LineText=@LineText
@@ -329,8 +331,9 @@
 
                 ThisPrice.Description = "From New purchase";
 
-                ThisGrn.UserId = ThisPrice.UserId = 2;
-                ThisGrn.CompanyId = ThisPrice.CompanyId = 1;
+                var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
+                ThisGrn.UserId = ThisPrice.UserId = Tempuser.Id;
+                ThisGrn.CompanyId = Tempuser.CompanyId;
                 
                 foreach (var xx in PurchasePoccoList)
                 {

@@ -13,19 +13,35 @@ namespace BARAZAIS.Data.Repos;
 public class BrandRepo : BaseRepo<BrandModel> , IBrandService
 {
     public BrandRepo(BarazaContext ctx) : base(ctx) { }
-    
-    public async Task<BrandModel> GetDetailedBrandAsync(int sn){
-        BrandModel Nothing = new();
-        
-        if(sn > 0 && MyDbSet.Any()){
+
+    public async Task<List<BrandModel>> GetAllBrandsDetailedAsync()
+    {
+        List<BrandModel> Nothing = new();
+
+        if (MyDbSet.Any())
+        {
             return await MyDbSet
-            .Where(x => x.Id == sn)
+            .OrderBy(x => x.Id)
             .Include(g => g.User)
             .Include(a => a.Product)
                 .ThenInclude(b => b.Category)
             .Include(a => a.Product)
                 .ThenInclude(c => c.Barcode)
-            .SingleOrDefaultAsync();
+            .ToListAsync();
+        }
+        else
+        {
+            return Nothing;
+        }
+    }
+
+    public async Task<BrandModel> GetDetailedBrandAsync(int sn){
+        BrandModel Nothing = new();
+        
+        if(sn > 0 && (await GetAllBrandsDetailedAsync()).Any()){
+            return (await GetAllBrandsDetailedAsync())
+            .Where(x => x.Id == sn)
+            .SingleOrDefault();
         }
         else{
             return Nothing;
@@ -35,17 +51,11 @@ public class BrandRepo : BaseRepo<BrandModel> , IBrandService
     public async Task<List<BrandModel>> GetAllBrandsDetailedAsync(int CurrentPage, int PageSize){
         List<BrandModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
-            .OrderBy(x => x.Id)
+        if((await GetAllBrandsDetailedAsync()).Any()){
+            return (await GetAllBrandsDetailedAsync())
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(g => g.User)
-            .Include(a => a.Product)
-                .ThenInclude(b => b.Category)
-            .Include(a => a.Product)
-                .ThenInclude(c => c.Barcode)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -55,12 +65,12 @@ public class BrandRepo : BaseRepo<BrandModel> , IBrandService
     public async Task<List<BrandModel>> GetBrandsOfThisCategory(CategoryModel ThisCategory, int CurrentPage, int PageSize){
         List<BrandModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
+        if((await GetAllBrandsDetailedAsync()).Any())
+        {
+            return (await GetAllBrandsDetailedAsync())
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(g => g.User)
-            .ToListAsync();
+            .ToList();
         }else{
             return Nothing;
         }

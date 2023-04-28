@@ -4,6 +4,9 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
 
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
+
 <Header
     Title=@Title
     LineText=@LineText
@@ -115,8 +118,9 @@
                 }
                 else
                 {
-                    ThisBrand.UserId = 1;
-                    ThisBrand.CompanyId = 1;
+                    var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
+                    this.ThisBrand.UserId = Tempuser.Id;
+                    this.ThisBrand.CompanyId = Tempuser.CompanyId;
 
                     await repo.Brands.AddAsync(ThisBrand);
                     await repo.CompleteAsync();

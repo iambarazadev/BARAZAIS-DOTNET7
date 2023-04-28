@@ -13,41 +13,8 @@ namespace BARAZAIS.Data.Repos;
 public class GrnRepo : BaseRepo<GrnModel> , IGrnService
 {
     public GrnRepo(BarazaContext ctx) : base(ctx) { }
-    
-    public async Task<GrnModel> GetDetailedGrnAsync(int sn)
-    {
-        GrnModel Nothing = new();
 
-        if (sn > 0 && MyDbSet.Any())
-        {
-            return await MyDbSet
-            .Where(x => x.Id == sn)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(e => e.ProductAdjustment)
-                        .ThenInclude(f => f.Adjustment)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(g => g.ProductPrice)
-                        .ThenInclude(h => h.Price)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductOpen)
-            .Include(c => c.Supplier)
-            .Include(d => d.User)
-           
-            .SingleOrDefaultAsync();
-        }
-        else
-        {
-            return Nothing;
-        }
-    }
-
-    public async Task<List<GrnModel>> GetAllGrnsDetailedAsync(int CurrentPage, int PageSize)
+    public async Task<List<GrnModel>> GetAllGrnsDetailedAsync()
     {
         List<GrnModel> Nothing = new();
 
@@ -55,8 +22,6 @@ public class GrnRepo : BaseRepo<GrnModel> , IGrnService
         {
             return await MyDbSet
             .OrderBy(x => x.Id)
-            .Skip((CurrentPage - 1) * PageSize)
-            .Take(PageSize)
             .Include(a => a.ProductGrn)
                 .ThenInclude(b => b.Product)
                     .ThenInclude(e => e.ProductAdjustment)
@@ -74,6 +39,40 @@ public class GrnRepo : BaseRepo<GrnModel> , IGrnService
             .Include(c => c.Supplier)
             .Include(d => d.User)
             .ToListAsync();
+        }
+        else
+        {
+            return Nothing;
+        }
+    }
+
+    public async Task<GrnModel> GetDetailedGrnAsync(int sn)
+    {
+        GrnModel Nothing = new();
+
+        if (sn > 0 && (await GetAllGrnsDetailedAsync()).Any())
+        {
+            return (await GetAllGrnsDetailedAsync())
+            .Where(x => x.Id == sn)
+            .SingleOrDefault();
+        }
+        else
+        {
+            return Nothing;
+        }
+    }
+
+    public async Task<List<GrnModel>> GetAllGrnsDetailedAsync(int CurrentPage, int PageSize)
+    {
+        List<GrnModel> Nothing = new();
+
+        if ((await GetAllGrnsDetailedAsync()).Any())
+        {
+            return (await GetAllGrnsDetailedAsync())
+            .OrderBy(x => x.Id)
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
         }
         else
         {
@@ -87,30 +86,14 @@ public class GrnRepo : BaseRepo<GrnModel> , IGrnService
     {
         List<GrnModel> Nothing = new();
 
-        if (MyDbSet.Any())
+        if ((await GetAllGrnsDetailedAsync()).Any())
         {
-            return await MyDbSet
+            return (await GetAllGrnsDetailedAsync())
             .Where(yy => yy.ProductGrn.All(xx => xx.ProductId == ProductId))
             .OrderBy(x => x.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(e => e.ProductAdjustment)
-                        .ThenInclude(f => f.Adjustment)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(g => g.ProductPrice)
-                        .ThenInclude(h => h.Price)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductOpen)
-            .Include(c => c.Supplier)
-            .Include(d => d.User)
-            .ToListAsync();
+            .ToList();
         }
         else
         {
@@ -122,31 +105,15 @@ public class GrnRepo : BaseRepo<GrnModel> , IGrnService
     {
         List<GrnModel> Nothing = new();
 
-        if (MyDbSet.Any())
+        if ((await GetAllGrnsDetailedAsync()).Any())
         {
-            return await MyDbSet
+            return (await GetAllGrnsDetailedAsync())
             .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
             .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
             .OrderBy(x => x.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(e => e.ProductAdjustment)
-                        .ThenInclude(f => f.Adjustment)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(g => g.ProductPrice)
-                        .ThenInclude(h => h.Price)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductOpen)
-            .Include(c => c.Supplier)
-            .Include(d => d.User)
-            .ToListAsync();
+            .ToList();
         }
         else
         {
@@ -158,29 +125,13 @@ public class GrnRepo : BaseRepo<GrnModel> , IGrnService
     {
         List<GrnModel> Nothing = new();
 
-        if (MyDbSet.Any())
+        if ((await GetAllGrnsDetailedAsync()).Any())
         {
-            return await MyDbSet
+            return (await GetAllGrnsDetailedAsync())
             .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
             .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
             .OrderBy(x => x.Id)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(e => e.ProductAdjustment)
-                        .ThenInclude(f => f.Adjustment)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(g => g.ProductPrice)
-                        .ThenInclude(h => h.Price)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductOpen)
-            .Include(c => c.Supplier)
-            .Include(d => d.User)
-            .ToListAsync();
+            .ToList();
         }
         else
         {
@@ -195,99 +146,35 @@ public class GrnRepo : BaseRepo<GrnModel> , IGrnService
         if (MyDbSet.Any())
         {
             if((Uid > 0) && (Sid > 0)){
-                return await MyDbSet
+                return (await GetAllGrnsDetailedAsync())
                 .Where(ge => ge.UserId == Uid)
                 .Where(ss => ss.SupplierId == Sid)
                 .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
                 .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
                 .OrderBy(x => x.Id)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(e => e.ProductAdjustment)
-                            .ThenInclude(f => f.Adjustment)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(g => g.ProductPrice)
-                            .ThenInclude(h => h.Price)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(y => y.Barcode)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(z => z.ProductOpen)
-                .Include(c => c.Supplier)
-                .Include(d => d.User)
-                .ToListAsync();
+                .ToList();
             }
             else if((Uid > 0) && (Sid < 1)){
-                return await MyDbSet
+                return (await GetAllGrnsDetailedAsync())
                 .Where(ge => ge.UserId == Uid)
                 .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
                 .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
                 .OrderBy(x => x.Id)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(e => e.ProductAdjustment)
-                            .ThenInclude(f => f.Adjustment)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(g => g.ProductPrice)
-                            .ThenInclude(h => h.Price)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(y => y.Barcode)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(z => z.ProductOpen)
-                .Include(c => c.Supplier)
-                .Include(d => d.User)
-                .ToListAsync();
+                .ToList();
             }
             else if(Uid < 1 && Sid > 0){
-                return await MyDbSet
+                return (await GetAllGrnsDetailedAsync())
                 .Where(ss => ss.SupplierId == Sid)
                 .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
                 .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
                 .OrderBy(x => x.Id)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(e => e.ProductAdjustment)
-                            .ThenInclude(f => f.Adjustment)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(g => g.ProductPrice)
-                            .ThenInclude(h => h.Price)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(y => y.Barcode)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(z => z.ProductOpen)
-                .Include(c => c.Supplier)
-                .Include(d => d.User)
-                .ToListAsync();
+                .ToList();
             }else{
-                return await MyDbSet
+                return (await GetAllGrnsDetailedAsync())
                 .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
                 .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
                 .OrderBy(x => x.Id)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(e => e.ProductAdjustment)
-                            .ThenInclude(f => f.Adjustment)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(g => g.ProductPrice)
-                            .ThenInclude(h => h.Price)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(y => y.Barcode)
-                .Include(a => a.ProductGrn)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(z => z.ProductOpen)
-                .Include(c => c.Supplier)
-                .Include(d => d.User)
-                .ToListAsync();
+                .ToList();
             }
         }
         else
@@ -302,30 +189,14 @@ public class GrnRepo : BaseRepo<GrnModel> , IGrnService
 
         if (MyDbSet.Any())
         {
-            return await MyDbSet
+            return (await GetAllGrnsDetailedAsync())
             .Where(ge => ge.UserId == Uid)
             .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
             .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
             .OrderBy(x => x.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(e => e.ProductAdjustment)
-                        .ThenInclude(f => f.Adjustment)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(g => g.ProductPrice)
-                        .ThenInclude(h => h.Price)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductGrn)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductOpen)
-            .Include(c => c.Supplier)
-            .Include(d => d.User)
-            .ToListAsync();
+            .ToList();
         }
         else
         {

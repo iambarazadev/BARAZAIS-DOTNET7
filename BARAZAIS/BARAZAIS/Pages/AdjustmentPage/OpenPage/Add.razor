@@ -2,6 +2,8 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
 
 <Header
     Title=@Title
@@ -224,8 +226,11 @@
         
         using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
             if(FxList.Any()){
-                ThisOpen.UserId = ThisPrice.UserId = 1;
-                ThisOpen.CompanyId = ThisPrice.CompanyId = 1;
+
+                var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
+                this.ThisOpen.UserId = ThisPrice.UserId =Tempuser.Id;
+                this.ThisOpen.CompanyId = Tempuser.CompanyId;
+
                 ThisPrice.Code = "POID";
                 ThisPrice.Description = "As Open Stock";
                 

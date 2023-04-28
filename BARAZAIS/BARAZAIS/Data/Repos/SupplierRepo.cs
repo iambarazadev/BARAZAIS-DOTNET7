@@ -13,21 +13,37 @@ namespace BARAZAIS.Data.Repos;
 public class SupplierRepo : BaseRepo<SupplierModel> , ISupplierService
 {
     public SupplierRepo(BarazaContext ctx) : base(ctx) { }
-    
-    public async Task<SupplierModel> GetDetailedSupplierAsync(int sn)
-    {
-        SupplierModel Nothing = new();
 
-        if (sn > 0 && MyDbSet.Any())
+    public async Task<List<SupplierModel>> GetAllSuppliersDetailedAsync()
+    {
+        List<SupplierModel> Nothing = new();
+
+        if (MyDbSet.Any())
         {
             return await MyDbSet
-            .Where(x => x.Id == sn)
+            .OrderBy(x => x.Id)
             .Include(a => a.Grn)
                 .ThenInclude(c => c.User)
             .Include(a => a.Grn)
                 .ThenInclude(d => d.ProductGrn)
             .Include(b => b.User)
-            .SingleOrDefaultAsync();
+            .ToListAsync();
+        }
+        else
+        {
+            return Nothing;
+        }
+    }
+
+    public async Task<SupplierModel> GetDetailedSupplierAsync(int sn)
+    {
+        SupplierModel Nothing = new();
+
+        if (sn > 0 && (await GetAllSuppliersDetailedAsync()).Any())
+        {
+            return (await GetAllSuppliersDetailedAsync())
+            .Where(x => x.Id == sn)
+            .SingleOrDefault();
         }
         else
         {
@@ -41,16 +57,11 @@ public class SupplierRepo : BaseRepo<SupplierModel> , ISupplierService
 
         if (MyDbSet.Any())
         {
-            return await MyDbSet
+            return (await GetAllSuppliersDetailedAsync())
             .OrderBy(x => x.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.Grn)
-                .ThenInclude(c => c.User)
-            .Include(a => a.Grn)
-                .ThenInclude(d => d.ProductGrn)
-            .Include(b => b.User)
-            .ToListAsync();
+            .ToList();
         }
         else
         {

@@ -2,6 +2,8 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
 
 <Header
     Title=@Title
@@ -198,8 +200,10 @@
         if(FxList.LastOrDefault().StockAdjumentsReasons != null || FxList.LastOrDefault().StockAdjumentsReasons != ""){
             Sa.Description = FxList.LastOrDefault().StockAdjumentsReasons;
         }
-        Sa.UserId = 1;
-        Sa.CompanyId = 1;
+
+        var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
+        this.Sa.UserId = Tempuser.Id;
+        this.Sa.CompanyId = Tempuser.CompanyId;
         
         using(var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext())){
             

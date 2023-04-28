@@ -3,6 +3,8 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
 
 <Header Title=@Title
         LineText=@LineText
@@ -122,8 +124,9 @@
                 }
                 else
                 {
-                    ThisTax.UserId = 1;
-                    ThisTax.CompanyId = 1;
+                    var TempUser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity.Name);
+                    ThisTax.UserId = TempUser.Id;
+                    ThisTax.CompanyId = TempUser.CompanyId;
 
                     await repo.Taxes.AddAsync(ThisTax);
                     await repo.CompleteAsync();

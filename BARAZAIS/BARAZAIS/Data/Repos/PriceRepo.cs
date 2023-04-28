@@ -13,24 +13,37 @@ namespace BARAZAIS.Data.Repos;
 public class PriceRepo : BaseRepo<PriceModel> , IPriceService
 {
     public PriceRepo(BarazaContext ctx) : base(ctx) { }
-    
-    public async Task<PriceModel> GetDetailedPriceAsync(int sn){
-        PriceModel Nothing = new();
-        
-        if(sn > 0 && MyDbSet.Any()){
+
+    public async Task<List<PriceModel>> GetAllPricesDetailedAsync()
+    {
+        List<PriceModel> Nothing = new();
+
+        if (MyDbSet.Any())
+        {
             return await MyDbSet
-            .Where(x => x.Id == sn)
+            .OrderBy(x => x.Id)
             .Include(a => a.ProductPrice)
                 .ThenInclude(b => b.Product)
                     .ThenInclude(y => y.Barcode)
             .Include(a => a.ProductPrice)
                 .ThenInclude(b => b.Product)
                     .ThenInclude(z => z.ProductGrn)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(d => d.ProductOpen)
             .Include(n => n.User)
-            .SingleOrDefaultAsync();
+            .ToListAsync();
+        }
+        else
+        {
+            return Nothing;
+        }
+    }
+
+    public async Task<PriceModel> GetDetailedPriceAsync(int sn){
+        PriceModel Nothing = new();
+        
+        if(sn > 0 && (await GetAllPricesDetailedAsync()).Any()){
+            return (await GetAllPricesDetailedAsync())
+            .Where(x => x.Id == sn)
+            .SingleOrDefault();
         }
         else{
             return Nothing;
@@ -41,18 +54,11 @@ public class PriceRepo : BaseRepo<PriceModel> , IPriceService
         List<PriceModel> Nothing = new();
         
         if(MyDbSet.Any()){
-            return await MyDbSet
+            return (await GetAllPricesDetailedAsync())
             .OrderBy(x => x.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductGrn)
-            .Include(n => n.User)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -63,20 +69,13 @@ public class PriceRepo : BaseRepo<PriceModel> , IPriceService
         List<PriceModel> Nothing = new();
         
         if(MyDbSet.Any()){
-            return await MyDbSet
+            return (await GetAllPricesDetailedAsync())
             .OrderBy(x => x.Id)
             .Reverse()
             .Where(f => (f.Code == "PAD"))
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductGrn)
-            .Include(n => n.User)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -88,20 +87,13 @@ public class PriceRepo : BaseRepo<PriceModel> , IPriceService
         List<PriceModel> Nothing = new();
         
         if(MyDbSet.Any()){
-            return await MyDbSet
+            return (await GetAllPricesDetailedAsync())
             .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
             .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
             .OrderBy(x => x.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductGrn)
-            .Include(n => n.User)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -113,21 +105,14 @@ public class PriceRepo : BaseRepo<PriceModel> , IPriceService
         List<PriceModel> Nothing = new();
         
         if(MyDbSet.Any()){
-            return await MyDbSet
+            return (await GetAllPricesDetailedAsync())
             .Where(ge => ge.UserId == Uid)
             .Where(ee => (DateOnly.FromDateTime(ee.DateCreated)) >= FromDate)
             .Where(fe => (DateOnly.FromDateTime(fe.DateCreated)) <= ToDate)
             .OrderBy(x => x.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(y => y.Barcode)
-            .Include(a => a.ProductPrice)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(z => z.ProductGrn)
-            .Include(n => n.User)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;

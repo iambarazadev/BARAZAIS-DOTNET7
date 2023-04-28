@@ -13,21 +13,37 @@ namespace BARAZAIS.Data.Repos;
 public class CategoryRepo : BaseRepo<CategoryModel> , ICategoryService
 {
     public CategoryRepo(BarazaContext ctx) : base(ctx) { }
-    
-      public async Task<CategoryModel> GetDetailedCategoryAsync(int sn){
-        CategoryModel Nothing = new();
-        
-        if(sn > 0 && MyDbSet.Any()){
+
+    public async Task<List<CategoryModel>> GetAllCategoriesDetailedAsync()
+    {
+        List<CategoryModel> Nothing = new();
+
+        if (MyDbSet.Any())
+        {
             return await MyDbSet
-            .Where(x => x.Id == sn)
+            .OrderBy(x => x.Id)
             .Include(g => g.User)
             .Include(a => a.Product)
                 .ThenInclude(c => c.Brand)
             .Include(a => a.Product)
                 .ThenInclude(c => c.Barcode)
             .Include(a => a.Product)
-                .ThenInclude(d => d.ProductPrice) 
-            .SingleOrDefaultAsync();
+                .ThenInclude(d => d.ProductPrice)
+            .ToListAsync();
+        }
+        else
+        {
+            return Nothing;
+        }
+    }
+
+    public async Task<CategoryModel> GetDetailedCategoryAsync(int sn){
+        CategoryModel Nothing = new();
+        
+        if(sn > 0 && (await GetAllCategoriesDetailedAsync()).Any()){
+            return (await GetAllCategoriesDetailedAsync())
+            .Where(x => x.Id == sn) 
+            .SingleOrDefault();
         }
         else{
             return Nothing;
@@ -37,19 +53,11 @@ public class CategoryRepo : BaseRepo<CategoryModel> , ICategoryService
     public async Task<List<CategoryModel>> GetAllCategoriesDetailedAsync(int CurrentPage, int PageSize){
         List<CategoryModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
-            .OrderBy(x => x.Id)
+        if((await GetAllCategoriesDetailedAsync()).Any()){
+            return (await GetAllCategoriesDetailedAsync())
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(g => g.User)
-            .Include(a => a.Product)
-                .ThenInclude(c => c.Brand)
-            .Include(a => a.Product)
-                .ThenInclude(c => c.Barcode)
-            .Include(a => a.Product)
-                .ThenInclude(d => d.ProductPrice)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;

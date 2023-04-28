@@ -13,13 +13,14 @@ namespace BARAZAIS.Data.Repos;
 public class BillRepo : BaseRepo<BillModel> , IBillService
 {
     public BillRepo(BarazaContext ctx) : base(ctx) { }
-    
-    public async Task<BillModel> GetDetailedBillAsync(int sn){
-        BillModel Nothing = new();
-        
-        if(sn > 0 && MyDbSet.Any()){
+
+    public async Task<List<BillModel>> GetAllBillsDetailedAsync()
+    {
+        List<BillModel> Nothing = new();
+
+        if (MyDbSet.Any())
+        {
             return await MyDbSet
-            .Where(x => x.Id == sn)
             .Include(a => a.ProductBill)
                 .ThenInclude(b => b.Product)
                     .ThenInclude(b => b.ProductPrice)
@@ -27,8 +28,22 @@ public class BillRepo : BaseRepo<BillModel> , IBillService
                 .ThenInclude(b => b.Product)
                     .ThenInclude(c => c.ProductGrn)
             .Include(d => d.User)
+            .OrderBy(x => x.Id)
+            .ToListAsync();
+        }
+        else
+        {
+            return Nothing;
+        }
+    }
+
+    public async Task<BillModel> GetDetailedBillAsync(int sn){
+        BillModel Nothing = new();
         
-            .SingleOrDefaultAsync();
+        if(sn > 0 && (await GetAllBillsDetailedAsync()).Any()){
+            return (await GetAllBillsDetailedAsync())
+            .Where(x => x.Id == sn)
+            .SingleOrDefault();
         }
         else{
             return Nothing;
@@ -38,20 +53,12 @@ public class BillRepo : BaseRepo<BillModel> , IBillService
     public async Task<List<BillModel>> GetAllBillsDetailedAsync(int CurrentPage, int PageSize){
         List<BillModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
+        if((await GetAllBillsDetailedAsync()).Any()){
+            return (await GetAllBillsDetailedAsync())
+            .OrderBy(x => x.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductBill)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(b => b.ProductPrice)
-            .Include(a => a.ProductBill)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(c => c.ProductGrn)
-            .Include(d => d.User)
-        
-            .OrderBy(x => x.Id)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -61,20 +68,12 @@ public class BillRepo : BaseRepo<BillModel> , IBillService
     public async Task<List<BillModel>> GetAllBillsDetailedAsync(DateOnly FromDate, DateOnly ToDate){
         List<BillModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
+        if((await GetAllBillsDetailedAsync()).Any()){
+            return (await GetAllBillsDetailedAsync())
             .Where(e => (DateOnly.FromDateTime(e.DateCreated)) >= FromDate)
             .Where(f => (DateOnly.FromDateTime(f.DateCreated)) <= ToDate)
-            .Include(a => a.ProductBill)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(b => b.ProductPrice)
-            .Include(a => a.ProductBill)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(c => c.ProductGrn)
-            .Include(d => d.User)
-        
             .OrderBy(x => x.Id)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -84,22 +83,14 @@ public class BillRepo : BaseRepo<BillModel> , IBillService
     public async Task<List<BillModel>> GetAllBillsDetailedAsync(DateOnly FromDate, DateOnly ToDate, int CurrentPage, int PageSize){
         List<BillModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
+        if((await GetAllBillsDetailedAsync()).Any()){
+            return (await GetAllBillsDetailedAsync())
             .Where(e => (DateOnly.FromDateTime(e.DateCreated)) >= FromDate)
             .Where(f => (DateOnly.FromDateTime(f.DateCreated)) <= ToDate)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductBill)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(b => b.ProductPrice)
-            .Include(a => a.ProductBill)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(c => c.ProductGrn)
-            .Include(d => d.User)
-        
             .OrderBy(x => x.Id)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -109,35 +100,21 @@ public class BillRepo : BaseRepo<BillModel> , IBillService
     public async Task<List<BillModel>> GetAllBillsDetailedAsync(DateOnly FromDate, DateOnly ToDate, int Uid){
         List<BillModel> Nothing = new();
         
-        if(MyDbSet.Any()){
+        if((await GetAllBillsDetailedAsync()).Any()){
             
             if(Uid > 0){
-                return await MyDbSet
+                return (await GetAllBillsDetailedAsync())
                 .Where(g => g.UserId == Uid)
                 .Where(e => (DateOnly.FromDateTime(e.DateCreated)) >= FromDate)
                 .Where(f => (DateOnly.FromDateTime(f.DateCreated)) <= ToDate)
-                .Include(a => a.ProductBill)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(b => b.ProductPrice)
-                .Include(a => a.ProductBill)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(c => c.ProductGrn)
-                .Include(d => d.User)
                 .OrderBy(x => x.Id)
-                .ToListAsync();
+                .ToList();
             }else{
-                return await MyDbSet
+                return (await GetAllBillsDetailedAsync())
                 .Where(e => (DateOnly.FromDateTime(e.DateCreated)) >= FromDate)
                 .Where(f => (DateOnly.FromDateTime(f.DateCreated)) <= ToDate)
-                .Include(a => a.ProductBill)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(b => b.ProductPrice)
-                .Include(a => a.ProductBill)
-                    .ThenInclude(b => b.Product)
-                        .ThenInclude(c => c.ProductGrn)
-                .Include(d => d.User)
                 .OrderBy(x => x.Id)
-                .ToListAsync();
+                .ToList();
             }
             
         }
@@ -150,21 +127,14 @@ public class BillRepo : BaseRepo<BillModel> , IBillService
         List<BillModel> Nothing = new();
         
         if(MyDbSet.Any() && Uid > 0){
-            return await MyDbSet
+            return (await GetAllBillsDetailedAsync())
             .Where(g => g.UserId == Uid)
             .Where(e => (DateOnly.FromDateTime(e.DateCreated)) >= FromDate)
             .Where(f => (DateOnly.FromDateTime(f.DateCreated)) <= ToDate)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.ProductBill)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(b => b.ProductPrice)
-            .Include(a => a.ProductBill)
-                .ThenInclude(b => b.Product)
-                    .ThenInclude(c => c.ProductGrn)
-            .Include(d => d.User)
             .OrderBy(x => x.Id)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;

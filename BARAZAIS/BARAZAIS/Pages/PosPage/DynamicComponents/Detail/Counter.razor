@@ -2,6 +2,8 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
 
 <PageTitle>Point of Sale</PageTitle>
 
@@ -302,8 +304,9 @@
         Pb = new();
         PbList = new();
 
-        ApprovedBill.UserId = 1;
-        ApprovedBill.CompanyId = 1;
+        var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
+        this.ApprovedBill.UserId = Tempuser.Id;
+        this.ApprovedBill.CompanyId = Tempuser.CompanyId;
 
         if (TheseBills.Count > 0)
         {
@@ -373,8 +376,9 @@
         Ph = new();
         PhList = new();
 
-        ApprovedHold.UserId = 2;
-        ApprovedHold.CompanyId = 1;
+        var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
+        this.ApprovedHold.UserId = Tempuser.Id;
+        this.ApprovedHold.CompanyId = Tempuser.CompanyId;
 
         if (TheseBills.Count > 0)
         {

@@ -14,14 +14,14 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
 {
     public UserRepo(BarazaContext ctx) : base(ctx) { }
 
-    public async Task<UserModel> CheckUserAsync(string mail, string pwd)
+    public async Task<List<UserModel>> GetAllUsersDetailedAsync()
     {
-        UserModel Nothing = new();
+        List<UserModel> Nothing = new();
 
-        if (mail != null && pwd != null && MyDbSet.Any())
+        if (MyDbSet.Any())
         {
             return await MyDbSet
-            .Where(x => x.Email == mail && x.Password == pwd)
+            .OrderBy(o => o.Id)
             .Include(a => a.Product)
             .Include(b => b.Grn)
             .Include(c => c.Supplier)
@@ -33,7 +33,24 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
             .Include(j => j.Bill)
             .Include(k => k.Open)
             .Include(l => l.Hold)
-            .SingleOrDefaultAsync();
+            .Include(m => m.AccessLevel)
+            .ToListAsync();
+        }
+        else
+        {
+            return Nothing;
+        }
+    }
+
+    public async Task<UserModel> CheckUserAsync(string mail, string pwd)
+    {
+        UserModel Nothing = new();
+
+        if (mail != null && pwd != null && (await GetAllUsersDetailedAsync()).Any())
+        {
+            return (await GetAllUsersDetailedAsync())
+            .Where(x => x.Email == mail && x.Password == pwd)
+            .SingleOrDefault();
         }
         else
         {
@@ -45,21 +62,10 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
         UserModel Nothing = new();
         
         if(sn > 0 && MyDbSet.Any()){
-            return (UserModel)await MyDbSet
+            return (UserModel)(await GetAllUsersDetailedAsync())
             .OrderBy(o => o.Id)
             .Where(x => x.Id == sn)
-            .Include(a => a.Product)
-            .Include(b => b.Grn)
-            .Include(c => c.Supplier)
-            .Include(d => d.Category)
-            .Include(e => e.Brand)
-            .Include(f => f.Price)
-            .Include(g => g.Adjustment)
-            .Include(i => i.Tax)
-            .Include(j => j.Bill)
-            .Include(k => k.Open)
-            .Include(l => l.Hold)
-            .SingleOrDefaultAsync();
+            .SingleOrDefault();
         }
         else{
             return Nothing;
@@ -72,21 +78,10 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
 
 		if ( (UserName != "" || UserName != null) && MyDbSet.Any())
 		{
-			return (UserModel)await MyDbSet
+			return (UserModel)(await GetAllUsersDetailedAsync())
 			.OrderBy(o => o.Id)
 			.Where(x => x.UserName == UserName)
-			.Include(a => a.Product)
-			.Include(b => b.Grn)
-			.Include(c => c.Supplier)
-			.Include(d => d.Category)
-			.Include(e => e.Brand)
-			.Include(f => f.Price)
-			.Include(g => g.Adjustment)
-			.Include(i => i.Tax)
-			.Include(j => j.Bill)
-			.Include(k => k.Open)
-			.Include(l => l.Hold)
-			.SingleOrDefaultAsync();
+            .SingleOrDefault();
 		}
 		else
 		{
@@ -97,23 +92,12 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
 	public async Task<List<UserModel>> GetAllUsersDetailedAsync(int CurrentPage, int PageSize){
         List<UserModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
+        if((await GetAllUsersDetailedAsync()).Any()){
+            return (await GetAllUsersDetailedAsync())
             .OrderBy(o => o.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .Include(a => a.Product)
-            .Include(b => b.Grn)
-            .Include(c => c.Supplier)
-            .Include(d => d.Category)
-            .Include(e => e.Brand)
-            .Include(f => f.Price)
-            .Include(g => g.Adjustment)
-            .Include(i => i.Tax)
-            .Include(j => j.Bill)
-            .Include(k => k.Open)
-            .Include(l => l.Hold)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -123,12 +107,12 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
     public async Task<List<UserModel>> GetAllUsersAsync(int CurrentPage, int PageSize){
         List<UserModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
+        if((await GetAllUsersDetailedAsync()).Any()){
+            return (await GetAllUsersDetailedAsync())
             .OrderBy(o => o.Id)
             .Skip((CurrentPage - 1) * PageSize)
             .Take(PageSize)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;
@@ -138,10 +122,10 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
     public async Task<List<UserModel>> GetAllUsersAsync(){
         List<UserModel> Nothing = new();
         
-        if(MyDbSet.Any()){
-            return await MyDbSet
+        if((await GetAllUsersDetailedAsync()).Any()){
+            return (await GetAllUsersDetailedAsync())
             .OrderBy(o => o.Id)
-            .ToListAsync();
+            .ToList();
         }
         else{
             return Nothing;

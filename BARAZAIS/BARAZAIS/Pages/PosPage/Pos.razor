@@ -3,6 +3,9 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
 
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
+
 <div class="row rounded-3 bg-white mt-md-1 mt-2 shadow-sm">
     <div class="col-12 opacity-75 p-0 m-0">
         <ul class="nav nav-pills nav-fill gap-2 p-0 small bg-xs rounded" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-dark); --bs-nav-pills-link-active-bg: var(--bs-white);">

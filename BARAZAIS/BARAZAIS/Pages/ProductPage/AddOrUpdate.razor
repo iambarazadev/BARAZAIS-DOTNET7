@@ -3,6 +3,8 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
 
 @{
     if(OnFly != null){         
@@ -337,8 +339,9 @@
                 }
                 else
                 {
-                    this.ThisProduct.UserId = 1;
-                    this.ThisProduct.CompanyId = 1;
+                    var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
+                    this.ThisProduct.UserId = Tempuser.Id;
+                    this.ThisProduct.CompanyId = Tempuser.CompanyId;
 
                     this.ThisProduct.Barcode = TheseBarcodes;
                     await repo.Products.AddAsync(ThisProduct);
