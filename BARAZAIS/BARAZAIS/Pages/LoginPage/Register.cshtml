@@ -13,7 +13,7 @@
                     <h2 class="UniqueText">BARAZA IS</h2>
                 </li>
                 <li>
-                    <p class="UniqueText"><span class="bi-person-fill me-2"></span> User Registration <span class="opacity-75">(New Business Owner)</span></p>
+                    <p class="UniqueText"><span class="bi-person-fill me-2"></span> User Registration <span class="opacity-75 text-primary">(New Business Owner)</span></p>
                 </li>
             </ul>
             <hr />
@@ -27,35 +27,35 @@
                     <div class="col-md-6 col-12 ">
                         <div class=" rounded-3 py-3">
                             <div class="form-floating rounded-3">
-                                <input type="text" asp-for="Input.FirstName" class="form-control UniqueText border-0 bg-blue rounded-0 " id="FirstName" placeholder="User name" />
+                                <input type="text" asp-for="Input.FirstName" class="form-control UniqueText border-0 bg-blue rounded " id="FirstName" placeholder="User name" />
                                 <label for="FirstName" class="">
                                     <span class="bi-person me-2"></span> First Name
                                 </label>
                                 <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="text" asp-for="Input.LastName" class="form-control UniqueText border-0 bg-blue rounded-0 " id="LastName" placeholder="User name" />
+                                <input type="text" asp-for="Input.LastName" class="form-control UniqueText border-0 bg-blue rounded " id="LastName" placeholder="User name" />
                                 <label for="LastName" class="">
                                     <span class="bi-person me-2"></span> Last Name
                                 </label>
                                 <span asp-validation-for="Input.LastName" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="email" asp-for="Input.Email" class="form-control UniqueText border-0 bg-blue rounded-0 " id="Email" placeholder="User name" />
+                                <input type="email" asp-for="Input.Email" class="form-control UniqueText border-0 bg-blue rounded " id="Email" placeholder="User name" />
                                 <label for="Email" class="">
                                     <span class="bi-at me-2"></span> Email
                                 </label>
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="password" asp-for="Input.Password" class="form-control UniqueText border-0 bg-blue rounded-0 " id="Password" placeholder="Password" />
+                                <input type="password" asp-for="Input.Password" class="form-control UniqueText border-0 bg-blue rounded " id="Password" placeholder="Password" />
                                 <label for="Password" class="">
                                     <span class="bi-lock me-2"></span> Password
                                 </label>
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <input type="password" asp-for="Input.ConfirmPassword" class="form-control UniqueText border-0 bg-blue rounded-0 " id="ConfirmPassword" placeholder="ConfirmPassword" />
+                                <input type="password" asp-for="Input.ConfirmPassword" class="form-control UniqueText border-0 bg-blue rounded " id="ConfirmPassword" placeholder="ConfirmPassword" />
                                 <label for="ConfirmPassword" class="">
                                     <span class="bi-lock me-2"></span> Confirm Password
                                 </label>
@@ -66,14 +66,14 @@
                     <div class="col-md-6 col-12">
                         <div class=" rounded-3 py-3">
                             <div class="form-floating rounded-3">
-                                <input type="text" asp-for="Input.BussinesName" class="form-control UniqueText border-0 bg-blue rounded-0 " id="BussinesName" placeholder="Bussines Name" />
+                                <input type="text" asp-for="Input.BussinesName" class="form-control UniqueText border-0 bg-blue rounded " id="BussinesName" placeholder="Bussines Name" />
                                 <label for="BussinesName" class="">
                                     <span class="bi-briefcase me-2"></span> Business Name
                                 </label>
                                 <span asp-validation-for="Input.BussinesName" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
-                                <textarea asp-for="Input.Location" rows="3" class="form-control UniqueText border-0 bg-blue rounded-0 h-50" id="Location" placeholder="Location" > </textarea>
+                                <textarea asp-for="Input.Location" rows="3" class="form-control UniqueText border-0 bg-blue rounded h-50" id="Location" placeholder="Location" > </textarea>
                                 <label for="Location" class="">
                                     <span class="bi-pin-map me-2"></span> Location
                                 </label>
@@ -81,7 +81,7 @@
                             </div>
                             <ul class="d-flex flex-row m-0 p-0 justify-content-between list-unstyled">
                                 <li class="p-0 m-0">
-                                    <button type="submit" class="btn btn-md btn-primary rounded-0 mt-2 border-0">
+                                    <button type="submit" class="btn btn-md btn-primary rounded mt-2 border-0">
                                         Register
                                     </button>
                                 </li>

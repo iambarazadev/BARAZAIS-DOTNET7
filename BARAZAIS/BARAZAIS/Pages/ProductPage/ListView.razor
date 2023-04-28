@@ -18,7 +18,7 @@
     </div>
     <div class="col-md-2 col-4 " style="font-size:0.8rem !important">
         <div class="form-floating rounded-0 py-0">
-            <select @bind=@CategoryFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+            <select @bind=@CategoryFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
                     if(TheseCategories != null && TheseCategories.Count > 0)
@@ -34,7 +34,7 @@
     </div>
     <div class="col-md-2 col-4  " style="font-size:0.8rem !important">
         <div class="form-floating rounded-0 py-0">
-           <select @bind=@BrandFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+           <select @bind=@BrandFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
                     if(TheseBrands != null && TheseBrands.Count > 0)
@@ -50,7 +50,7 @@
     </div>
     <div class="col-md-2 col-4 " style="font-size:0.8rem !important">
         <div class="form-floating rounded-0 py-0">
-            <select @bind=@UserFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+            <select @bind=@UserFiltered @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
                     if(TheseUsers != null && TheseUsers.Count > 0)
@@ -66,7 +66,7 @@
     </div>
     <div class="col-md-2 col-4  mt-md-0 mt-2 " style="font-size:0.8rem !important">
         <div class="form-floating rounded-3">
-            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
             <label for="floatingInput" class="">
                 From Date
             </label>
@@ -74,7 +74,7 @@
     </div>
     <div class="col-md-2 col-4  mt-md-0 mt-2" style="font-size:0.8rem !important">
         <div class="form-floating rounded-3">
-            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
             <label for="floatingInput" class="">
                 To Date
             </label>
@@ -92,7 +92,7 @@
     </div>
     <div class="col-md-1 col-8 mt-md-0 mt-2" style="font-size:0.8rem !important">
         <div class="form-floating rounded-0">
-            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-xss border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
+            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-blue border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
             <label for="floatingInput">
                 <i class="bi bi-search txtshadow fs-6 me-2 "></i> <span class="text-muted opacity-75">PID#</span>
             </label>
@@ -102,11 +102,11 @@
 <div class="row mt-3 bg-white rounded shadow-sm" style="font-size:0.8rem !important">
     <div class="col-md-4 col-12 rounded-3 p-3">
         <ul class="p-2 m-0 text-start bg-xss rounded">
-            <li class="p-2 m-0 text-unique" >
+            <li class="p-2 m-0 text-unique bg-primary bg-opacity-50 rounded" style="font-size:0.7rem; width:fit-content;" >
                 TOTAL RETAIL
             </li>
-            <li class="p-2 py-0 m-0 text-primary" >
-                &sum; @((TotalRetail).ToString("n0"))
+            <li class="p-2 py-0 m-0 fs-4 fw-normal" >
+                @((TotalRetail).ToString("n0"))
             </li>
             <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                 @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
@@ -115,11 +115,11 @@
     </div>
     <div class="col-md-4 col-12 mt-md-0 p-3">
         <ul class="p-2 m-0 text-start bg-xss rounded">
-            <li class="p-2 m-0 text-unique" >
+            <li class="p-2 m-0 text-unique bg-danger bg-opacity-50 rounded" style="font-size:0.7rem; width:fit-content;">
                 TOTAL COST
             </li>
-            <li class="p-2 py-0 m-0 text-danger opacity-75" >
-                &sum; @((TotalCost).ToString("n0"))
+            <li class="p-2 py-0 m-0 fs-4 fw-normal" >
+                @((TotalCost).ToString("n0"))
             </li>
             <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                 @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
@@ -128,11 +128,11 @@
     </div>
     <div class="col-md-4 col-12 mt-md-0 rounded-3 p-3 ">
         <ul class="p-2 bg-xss rounded m-0 text-start">
-            <li class="p-2  m-0 text-unique" >
+            <li class="p-2 m-0 text-unique bg-green rounded" style="font-size:0.7rem; width:fit-content;">
                 TOTAL EXPECTED RETURN
             </li>
-            <li class="p-2 py-0 m-0 text-success" >
-                &sum; @((TotalReturn).ToString("n0"))
+            <li class="p-2 py-0 m-0 fs-4 fw-normal" >
+                @((TotalReturn).ToString("n0"))
             </li>
             <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                 @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )

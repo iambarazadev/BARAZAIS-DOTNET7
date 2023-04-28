@@ -32,7 +32,7 @@
         <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
             <li class="p-0 m-0 me-2">
                 <div class="form-floating mt-2 rounded-3">
-                    <input @bind=@FromDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="From Date" />
+                    <input @bind=@FromDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-blue border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="From Date" />
                     <label for="floatingInput" class="text-unique">
                         From Date
                     </label>
@@ -40,7 +40,7 @@
             </li>
             <li class="p-0 m-0 me-2">
                 <div class="form-floating mt-2 rounded-3">
-                    <input @bind=@ToDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-xss border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="To Date" />
+                    <input @bind=@ToDate @bind:event="onchange" type="date" style="font-size:0.8rem !important" class="form-control bg-blue border-0 text-unique fw-bolder rounded " id="floatingInput" placeholder="To Date" />
                     <label for="floatingInput" class="text-unique">
                         To Date
                     </label>
@@ -62,11 +62,11 @@
         <div class="row mt-3 mb-4" style="font-size:0.7rem !important">
             <div class="col-md-4 col-12 rounded-3 px-0">
                 <ul class="p-2 m-0 text-start bg-xss rounded">
-                    <li class="p-2 m-0 text-unique" >
+                    <li class="p-2 m-0 text-unique bg-primary bg-opacity-50 rounded" style="font-size:0.6rem !important; width:fit-content;">
                         TOTAL SALES
                     </li>
-                    <li class="p-2 py-0 m-0 text-primary" >
-                        &sum; @((TotalBillSales).ToString("n0"))
+                    <li class="p-2 py-0 m-0 fs-5 fw-normal">
+                        @((TotalBillSales).ToString("n0"))
                     </li>
                     <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                         @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
@@ -75,11 +75,11 @@
             </div>
             <div class="col-md-4 col-12 mt-md-0 mt-3 px-md-3 px-0">
                 <ul class="p-2 bg-xss rounded m-0 text-start">
-                    <li class="p-2  m-0 text-unique" >
+                    <li class="p-2 m-0 text-unique bg-green rounded" style="font-size:0.6rem !important; width:fit-content;">
                         TOTAL RETURN
                     </li>
-                    <li class="p-2 py-0 m-0 text-success" >
-                        &sum; @((TotalBillReturn).ToString("n0"))
+                    <li class="p-2 py-0 m-0 fs-5 fw-normal">
+                        @((TotalBillReturn).ToString("n0"))
                     </li>
                     <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                         @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )
@@ -88,11 +88,11 @@
             </div>
             <div class="col-md-4 col-12 mt-md-0 mt-3 rounded-3 px-0">
                 <ul class="p-2 m-0 text-start bg-xss rounded">
-                    <li class="p-2 m-0 text-unique" >
+                    <li class="p-2 m-0 text-unique bg-danger bg-opacity-50 rounded" style="font-size:0.6rem !important; width:fit-content;">
                         TOTAL COST
                     </li>
-                    <li class="p-2 py-0 m-0 text-danger opacity-75" >
-                        &sum; @((TotalBillCosts).ToString("n0"))
+                    <li class="p-2 py-0 m-0 fs-5 fw-normal">
+                        @((TotalBillCosts).ToString("n0"))
                     </li>
                     <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                         @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc" )

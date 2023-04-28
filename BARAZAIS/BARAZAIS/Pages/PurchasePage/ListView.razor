@@ -16,7 +16,7 @@
     </div>
     <div class="col-md-2 col-6  mt-md-0 mt-3">
         <div class="form-floating rounded-3">
-            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
             <label for="floatingInput" class="">
                 From Date
             </label>
@@ -24,7 +24,7 @@
     </div>
     <div class="col-md-2 col-6 mt-md-0 mt-3 ">
         <div class="form-floating rounded-3">
-            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
             <label for="floatingInput" class="">
                 To Date
             </label>
@@ -32,7 +32,7 @@
     </div>
     <div class="col-md-2 col-6 mt-md-0 mt-2 ">
         <div class="form-floating rounded-0 py-0">
-            <select @bind=@SupplierId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+            <select @bind=@SupplierId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
                     if(TheseSuppliers != null && TheseSuppliers.Count > 0)
@@ -49,7 +49,7 @@
     </div>
     <div class="col-md-2 col-6 mt-md-0 mt-2">
         <div class="form-floating rounded-0 py-0">
-           <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+           <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
                     if(TheseUsers != null && TheseUsers.Count > 0)
@@ -76,7 +76,7 @@
     </div>
     <div class="col-md-3 col-12 mt-md-0 mt-2">
         <div class="form-floating rounded-0">
-            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-xss border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
+            <input type="search" @bind="SearchId" onfocusout=@(()=> InnerSearch()) class="form-control bg-blue border-0 text-unique fw-bolder rounded-3 text-capitalize " id="floatingInput" placeholder="Search" />
             <label for="floatingInput">
                 <i class="bi bi-search txtshadow fs-6 me-2 "></i> <span class="text-muted opacity-75">GRN#</span>
             </label>
@@ -86,11 +86,11 @@
 <div class="row mt-3 bg-white rounded shadow-sm" style="font-size:0.8rem !important">
     <div class="col-md-6 col-12 rounded-3 p-3">
         <ul class="p-2 m-0 text-start bg-xss rounded">
-            <li class="p-2 m-0 text-unique" >
+            <li class="p-2 m-0 text-unique bg-primary bg-opacity-50 rounded" style="font-size:0.7rem !important; width:fit-content;">
                 TOTAL PURCHASES
             </li>
-            <li class="p-2 py-0 m-0 text-primary" >
-                &sum; @((TotalPurchases).ToString("n0"))
+            <li class="p-2 py-0 m-0 fs-4 fw-normal">
+                @((TotalPurchases).ToString("n0"))
             </li>
             <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                 @(NumOfPurchases) <i class="bi bi-dot txtshadow "></i> @(NumOfPurchases > 1 ? "Purchases" : "Purchase")

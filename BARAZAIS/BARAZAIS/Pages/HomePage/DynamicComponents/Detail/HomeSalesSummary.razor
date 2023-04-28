@@ -5,7 +5,7 @@
 <div class="row bg-white rounded shadow-sm py-3" style="font-size:0.8rem !important">
     <div class="col-md-3 col-5">
         <div class="form-floating rounded-0 py-0">
-            <select @bind=@Selection @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+            <select @bind=@Selection @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="billwise" class="text-unique">Bill Wise</option>
                 <option value="itemwise" class="text-unique">Item Wise</option>
                 <option value="summary" class="text-unique">Summary</option>
@@ -15,7 +15,7 @@
     </div>
     <div class="col-md-4 col-7 ">
         <div class="form-floating rounded-0 py-0 @DisplayCashier">
-            <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
+            <select @bind=@UserId @bind:event="onchange" style="font-size:0.8rem !important"  class="form-select text-capitalize border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingSelect" aria-label="Floating label select example">
                 <option value="0" class="text-unique">All</option>
                 @{
                     if(TheseUsers != null && TheseUsers.Count > 0)
@@ -32,7 +32,7 @@
     </div>
     <div class="col-md-2 col-4  mt-md-0 mt-2">
         <div class="form-floating rounded-3">
-            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
+            <input type="date" @bind=@FromDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingInput" placeholder="From Date" />
             <label for="floatingInput" class="">
                 From Date
             </label>
@@ -40,7 +40,7 @@
     </div>
     <div class="col-md-2 col-4 mt-md-0 mt-2">
         <div class="form-floating rounded-3">
-            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-xss text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
+            <input  type="date" @bind=@ToDate @bind:event="onchange" style="font-size:0.8rem !important" class="form-control border-0 border-secondary rounded bg-blue text-unique fw-bolder " id="floatingInput" placeholder="To Date" />
             <label for="floatingInput" class="">
                 To Date
             </label>

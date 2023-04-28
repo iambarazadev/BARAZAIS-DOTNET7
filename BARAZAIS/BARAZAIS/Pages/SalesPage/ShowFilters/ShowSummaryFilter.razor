@@ -1,14 +1,14 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
 
-<div class="row my-3 bg-white rounded shadow-sm" style="font-size:0.8rem !important">
+<div class="row my-3 rounded bg-white shadow-sm" style="font-size:0.8rem !important">
     <div class=" col-md-4 col-12 rounded-3 p-3">
         <ul class="p-2 m-0 text-start bg-xss rounded">
-            <li class="p-2 m-0 text-unique">
+            <li class="p-2 m-0 text-unique bg-primary bg-opacity-50 rounded" style="font-size:0.7rem !important; width:fit-content;">
                 TOTAL SALES
             </li>
-            <li class="p-2 py-0 m-0 text-primary">
-                &sum; @((TotalSales).ToString("n0"))
+            <li class="p-2 py-0 m-0 fs-4 fw-normal">
+                 @((TotalSales).ToString("n0"))
             </li>
             <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                 @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc")
@@ -17,11 +17,11 @@
     </div>
     <div class="col-md-4 col-12 rounded-3 p-3">
         <ul class="p-2 bg-xss rounded m-0 text-start">
-            <li class="p-2  m-0 text-unique">
+            <li class="p-2 m-0 text-unique bg-green rounded" style="font-size:0.7rem !important; width:fit-content;">
                 TOTAL RETURN
             </li>
-            <li class="p-2 py-0 m-0 text-success">
-                &sum; @((TotalReturn).ToString("n0"))
+            <li class="p-2 py-0 m-0 fs-4 fw-normal">
+                 @((TotalReturn).ToString("n0"))
             </li>
             <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                 @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc")
@@ -30,11 +30,11 @@
     </div>
     <div class="col-md-4 col-12 p-3">
         <ul class="p-2 m-0 text-start bg-xss rounded">
-            <li class="p-2 m-0 text-unique">
+            <li class="p-2 m-0 text-unique bg-danger bg-opacity-50 rounded" style="font-size:0.7rem !important; width:fit-content;">
                 TOTAL COST
             </li>
-            <li class="p-2 py-0 m-0 text-danger opacity-75">
-                &sum; @((TotalCost).ToString("n0"))
+            <li class="p-2 py-0 m-0 fs-4 fw-normal">
+                 @((TotalCost).ToString("n0"))
             </li>
             <li class="p-2 m-0 text-muted border-top mt-2" style="font-size:0.8rem !important">
                 @(NumOfBills) @(NumOfBills > 1 ? "Bills" : "Bill") <span class="bi bi-dot"></span> @(NumOfItems) @(NumOfItems > 1 ? "Items" : "Item") <span class="bi bi-dot"></span> @(NumOfPcs) @(NumOfPcs > 1 ? "pcs" : "pc")
