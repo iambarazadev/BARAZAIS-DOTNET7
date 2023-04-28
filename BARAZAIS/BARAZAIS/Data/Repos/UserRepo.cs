@@ -61,11 +61,11 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
     public async Task<UserModel> GetDetailedUserAsync(int sn){
         UserModel Nothing = new();
         
-        if(sn > 0 && MyDbSet.Any()){
-            return (UserModel)(await GetAllUsersDetailedAsync())
+        if(sn > 0 && (await GetAllUsersDetailedAsync()).Any()){
+            return (await GetAllUsersDetailedAsync())
             .OrderBy(o => o.Id)
             .Where(x => x.Id == sn)
-            .SingleOrDefault();
+            .FirstOrDefault();
         }
         else{
             return Nothing;
@@ -78,10 +78,10 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
 
 		if ( (UserName != "" || UserName != null) && MyDbSet.Any())
 		{
-			return (UserModel)(await GetAllUsersDetailedAsync())
+			return (await GetAllUsersDetailedAsync())
 			.OrderBy(o => o.Id)
 			.Where(x => x.UserName == UserName)
-            .SingleOrDefault();
+            .FirstOrDefault();
 		}
 		else
 		{

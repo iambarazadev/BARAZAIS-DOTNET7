@@ -1,5 +1,7 @@
 ﻿@inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@inject IHttpContextAccessor Accessor
+@inject UserManager<UserModel> UserManager
 
 <AuthorizeView>
     <Authorized>
@@ -10,25 +12,21 @@
 				</li>
 				<li class="m-0 p-0  ms-3">
 					@{
-						if(ThisUser != null)
-						{
-							<ul class="p-0 m-0">
-								<li class="p-0 m-0 text-white text-capitalize">
-									<ul class="p-0 m-0 d-flex flex-row justify-content-start">
-										<li class="m-0 me-2">
-											@(ThisUser.FirstName)
-										</li>
-										<li class="m-0">
-											@(ThisUser.LastName)
-										</li>
-									</ul>
-								</li>
-								<li class="p-0 m-0 text-white-50 text-capitalize" style="font-size:0.8rem;">
-									@(ThisUser.AccessLevel?.Name)
-								</li>
-							</ul>
-						}
-						
+						<ul class="p-0 m-0">
+							<li class="p-0 m-0 text-white text-capitalize">
+								<ul class="p-0 m-0 d-flex flex-row justify-content-start">
+									<li class="m-0 me-2">
+										@(TempUser?.FirstName)
+									</li>
+									<li class="m-0">
+										@(TempUser?.LastName)
+									</li>
+								</ul>
+							</li>
+							<li class="p-0 m-0 text-white-50 text-capitalize" style="font-size:0.8rem;">
+								@(TempUser.AccessLevel != null ? TempUser.AccessLevel.Name : "--:--")
+							</li>
+						</ul>
 					}
 				</li>
 			</ul>
@@ -51,12 +49,18 @@
 
 @code{
 
-	[Parameter]
-	public UserModel ThisUser { get; set; }
+	private UserModel TempUser = new();
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 
+		using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+		{
+			TempUser = await repo.Users.GetDetailedUserAsync(Accessor.HttpContext.User.Identity.Name);
+
+			await repo.CompleteAsync();
+			repo.Dispose();
+		}
 	}
 }

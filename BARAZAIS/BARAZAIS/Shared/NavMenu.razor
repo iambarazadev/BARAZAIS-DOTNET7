@@ -8,16 +8,7 @@
     <Authorized>
 		<div class=" navbar navbar-dark UserData">
 			<div class="container-fluid py-2">
-				@{
-					if (AuthorisedUser != null)
-					{
-						<LoginDisplay ThisUser=AuthorisedUser />
-					}
-					else
-					{
-						<p>--:--</p>
-					}
-				}
+				<LoginDisplay />
 				<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
 					<span class="navbar-toggler-icon"></span>
 				</button>
@@ -93,7 +84,6 @@
 </AuthorizeView>
 @code {
 
-	private UserModel AuthorisedUser = new();
 	private bool collapseNavMenu = false;
 
 	private string SwitchString = "d-inline";
@@ -101,7 +91,6 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-		await GetThisUser(HttpContextAccessor.HttpContext?.User.Identity?.Name);
 	}
 
 
@@ -121,27 +110,6 @@
 		else
 		{
 			SwitchString = "d-inline";
-		}
-	}
-
-	private async Task<bool> GetThisUser(string? UserName)
-	{
-		if (UserName != null)
-		{
-			using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
-			{
-				AuthorisedUser = await repo.Users.GetDetailedUserAsync(UserName);
-
-				await repo.CompleteAsync();
-				repo.Dispose();
-			}
-
-			return true;
-		}
-		else
-		{
-			AuthorisedUser = new();
-			return false;
 		}
 	}
 }
