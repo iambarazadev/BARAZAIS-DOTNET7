@@ -6,7 +6,6 @@
 @inject IHttpContextAccessor Accessor
 @inject UserManager<UserModel> UserManager
 
-
 <div class="container py-3">
     <div class="row">
         <div class="col-12">
@@ -106,4 +105,10 @@
 @code {
     [Parameter]
     public int Sn{ get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+
+    }
 }
