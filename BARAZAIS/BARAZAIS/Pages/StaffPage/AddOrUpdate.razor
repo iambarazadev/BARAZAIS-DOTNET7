@@ -1,13 +1,109 @@
 ﻿@page "/Staffs/New"
-@page "/Staffs/Edit/{Sn:int}"
+@*page "/Staffs/Edit/{Sn:int}"*@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
 @inject IHttpContextAccessor Accessor
 @inject UserManager<UserModel> UserManager
 
-<h3>Staff Management</h3>
+
+<div class="container py-3">
+    <div class="row">
+        <div class="col-12">
+            <ul class="list-unstyled">
+                <li>
+                    <h2 class="UniqueText">BARAZA IS</h2>
+                </li>
+                <li>
+                    <p class="UniqueText"><span class="bi-person-fill me-2"></span> User Registration </p>
+                </li>
+            </ul>
+            <hr />
+        </div>
+        <div class="col-12">
+            <form method="post" autocomplete="off">
+                <div class="row">
+                    <div class="col-12 pt-2">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    </div>
+                    <div class="col-md-6 col-12 ">
+                        <div class=" rounded-3 py-3">
+                            <div class="form-floating rounded-3">
+                                <input type="text" asp-for="Input.FirstName" class="form-control UniqueText border-0 bg-blue rounded " id="FirstName" placeholder="User name" />
+                                <label for="FirstName" class="">
+                                    <span class="bi-person me-2"></span> First Name
+                                </label>
+                                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mt-2 rounded-3">
+                                <input type="text" asp-for="Input.LastName" class="form-control UniqueText border-0 bg-blue rounded " id="LastName" placeholder="User name" />
+                                <label for="LastName" class="">
+                                    <span class="bi-person me-2"></span> Last Name
+                                </label>
+                                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mt-2 rounded-3">
+                                <input type="email" asp-for="Input.Email" class="form-control UniqueText border-0 bg-blue rounded " id="Email" placeholder="User name" />
+                                <label for="Email" class="">
+                                    <span class="bi-at me-2"></span> Email
+                                </label>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mt-2 rounded-3">
+                                <input type="text" asp-for="Input.Password" class="form-control UniqueText border-0 bg-blue rounded " id="PhoneNumber" placeholder="PhoneNumber" />
+                                <label for="PhoneNumber" class="">
+                                    <span class="bi-lock me-2"></span> Phone Number
+                                </label>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mt-2 rounded-3">
+                                <input type="text" asp-for="Input.ConfirmPassword" class="form-control UniqueText border-0 bg-blue rounded " id="NIDA" placeholder="NIDA" />
+                                <label for="NIDA" class="">
+                                    <span class="bi-lock me-2"></span> NIDA
+                                </label>
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class=" rounded-3 py-3">
+                            <div class="form-floating rounded-0 py-0">
+                                <select required class="form-select text-capitalize border-0 bg-blue text-unique fw-bolder rounded " id="floatingSelect" aria-label="Floating label select example">
+                                    <option>--:--</option>
+                                </select>
+                                <label for="floatingSelect">Access Level</label>
+                            </div>
+                            <div class="form-floating mt-2 rounded-3">
+                                <textarea asp-for="Input.Location" rows="3" class="form-control UniqueText border-0 bg-blue rounded h-50" id="Address" placeholder="Address"> </textarea>
+                                <label for="Address" class="">
+                                    <span class="bi-pin-map me-2"></span> Home Address
+                                </label>
+                                <span asp-validation-for="Input.Location" class="text-danger"></span>
+                            </div>
+                            <ul class="d-flex flex-row m-0 p-0 justify-content-between list-unstyled">
+                                <li class="p-0 m-0">
+                                    <button type="submit" class="btn btn-md btn-primary rounded mt-2 border-0">
+                                        Register
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="py-4"></div>
+                            <ul class=" m-0 p-0 list-unstyled d-flex flex-row justify-content-start border-top">
+                                <li class="p-0 m-0 pt-3">
+                                    <a class="text-muted btn btn-md border rounded" href="Login" style="width:fit-content">
+                                        .. Already have an Account?, <span class="text-primary">Login</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @code {
-
+    [Parameter]
+    public int Sn{ get; set; }
 }
