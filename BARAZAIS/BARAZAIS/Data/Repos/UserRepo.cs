@@ -34,6 +34,7 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
             .Include(k => k.Open)
             .Include(l => l.Hold)
             .Include(m => m.AccessLevel)
+            .Include(n => n.Company)
             .ToListAsync();
         }
         else

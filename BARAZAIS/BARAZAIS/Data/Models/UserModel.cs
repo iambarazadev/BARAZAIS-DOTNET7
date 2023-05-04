@@ -37,6 +37,8 @@ public class UserModel : IdentityUser<int>
 
     [Required]
     public string? Phone { get; set; }
+    [Required]
+    public string? NIDA { get; set; }
 
     //FOREIGN KEYS
     [ForeignKey("CompanyModel")]
