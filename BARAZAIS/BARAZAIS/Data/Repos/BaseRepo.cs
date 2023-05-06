@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace BARAZAIS.Data.Repos;
 
@@ -24,11 +25,12 @@ public class BaseRepo<T> : IBaseService<T> where T : class
         this.MyDbSet = _Context.Set<T>();
     }
 
-    public async Task AddAsync(T entity)
+    public async Task<bool> AddAsync(T entity)
     {
-       
-        await MyDbSet
-        .AddAsync(entity);
+        await MyDbSet.AddAsync(entity);
+        var EntityType = MyDbSet?.GetType();
+
+        return true;
     }
 
     public async Task AddRangeAsync(IEnumerable<T> entities)

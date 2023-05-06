@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.VisualBasic;
+using System.Linq.Expressions;
 
 namespace BARAZAIS.Data.Database;
 
-public class BarazaContext : IdentityDbContext<UserModel, AccessLevelModel, int>
+public class BarazaContext : IdentityDbContext<UserModel, IdentityRole<int>, int>
 {
     public BarazaContext(DbContextOptions<BarazaContext> options)
         : base(options)
@@ -22,14 +23,6 @@ public class BarazaContext : IdentityDbContext<UserModel, AccessLevelModel, int>
         .Property(u => u.Id)
         .ValueGeneratedOnAdd()
         .UseMySqlIdentityColumn();
-		//.UseIdentityColumn();
-
-		// Configuring AccessLevelModel to override auto key increment as primary key
-		modelBuilder.Entity<AccessLevelModel>()
-		.Property(a => a.Id)
-		.ValueGeneratedOnAdd()
-		.UseMySqlIdentityColumn();
-		//.UseIdentityColumn();
 
 		//Many To Many Product To Grn Via ProductGrns  
 		modelBuilder.Entity<ProductGrn>()
@@ -114,11 +107,6 @@ public class BarazaContext : IdentityDbContext<UserModel, AccessLevelModel, int>
         .HasOne<HoldModel>(sc => sc.Hold)
         .WithMany(s => s.ProductHold)
         .HasForeignKey(sc => sc.HoldId);
-
-		// One User must have One AccessLevel, while One AccessLevel can have more than one User to Many
-		modelBuilder.Entity<UserModel>()
-		.HasOne(c => c.AccessLevel)
-		.WithMany(p => p.Users);
 
 		// One Product must have one category, while one category can have more than one product to Many
 		modelBuilder.Entity<ProductModel>()
@@ -260,10 +248,33 @@ public class BarazaContext : IdentityDbContext<UserModel, AccessLevelModel, int>
         .HasOne(c => c.Company)
         .WithMany(p => p.User);
 
+        /*/Automatically include all related dbset
+        foreach(var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            var method = typeof(EntityFrameworkQueryableExtensions)
+                .GetMethod(nameof(EntityFrameworkQueryableExtensions.Include), new Type[] {
+                typeof(IQueryable<>), typeof(string)});
+
+            foreach(var navigation in entityType.GetAnnotations())
+            {
+                var property = entityType.FindProperty(navigation.Name);
+                if(property?.IsForeignKey() == true)
+                {
+                    var parameter = Expression.Parameter(entityType.ClrType, "x");
+                    var body = Expression.Property(parameter,navigation.Name);
+                    var lamda = Expression.Lambda(body, parameter);
+                    var genericMethod = method.MakeGenericMethod(entityType.ClrType, navigation.GetType());
+                    var include = genericMethod.Invoke(null, new object[] { null, lamda }) as IQueryable;
+                    
+                    modelBuilder.Query(include);
+                }
+            }
+        }
+        */
+
     }
 
     public DbSet<UserModel> AppUsers { get; set; }
-	public DbSet<AccessLevelModel> AccessLevels { get; set; }
 	public virtual DbSet<CompanyModel> Companies { get; set; }
     public virtual DbSet<ProductModel> Products { get; set; }
     public virtual DbSet<CategoryModel> Categories { get; set; }

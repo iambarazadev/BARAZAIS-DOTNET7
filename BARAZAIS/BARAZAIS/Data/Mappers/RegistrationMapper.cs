@@ -30,6 +30,14 @@ public class RegistrationMapper
     [DataType(DataType.Text)]
     public string? Location { get; set; }
 
+    public string? ImageUrl { get; set; }
+
+    public string? NIDA { get; set; }
+
+    public string? PhoneNumber { get; set; }
+
+    public string? AccessLevel { get; set; }
+
     public RegistrationMapper() 
     {
         this.Email = null;
@@ -39,5 +47,9 @@ public class RegistrationMapper
         this.ConfirmPassword = null;
         this.Location = null;
         this.BussinesName = null;
+        this.AccessLevel = null;
+        this.PhoneNumber = null;
+        this.NIDA = null;
+        this.ImageUrl = null;
     }
 }

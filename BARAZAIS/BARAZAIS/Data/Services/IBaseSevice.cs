@@ -10,7 +10,7 @@ namespace BARAZAIS.Data.Services;
 
 public interface IBaseService<T> where T : class
 {
-    Task AddAsync(T entity);
+    Task<bool> AddAsync(T entity);
     Task AddRangeAsync(IEnumerable<T> entities);
     void Update(T entity);
     void UpdateRange(List<T> entities);

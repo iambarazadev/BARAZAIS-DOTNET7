@@ -5,6 +5,7 @@ using BARAZAIS.Data.Models;
 using BARAZAIS.Data.Repos;
 using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,9 +20,9 @@ public class RegisterModel : PageModel
 {
     private readonly SignInManager<UserModel> SignInManager;
     private readonly UserManager<UserModel> UserManager;
-    private readonly RoleManager<AccessLevelModel> RoleManager;
+    private readonly RoleManager<IdentityRole<int>> RoleManager;
     private readonly IDbContextFactory<BarazaContext> MyFactory;
-    public RegisterModel(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, RoleManager<AccessLevelModel> roleManager,IDbContextFactory<BarazaContext> myFactoy)
+    public RegisterModel(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, RoleManager<IdentityRole<int>> roleManager,IDbContextFactory<BarazaContext> myFactoy)
     {
         SignInManager = signInManager;
         UserManager = userManager;
@@ -30,7 +31,7 @@ public class RegisterModel : PageModel
     }
 
     [BindProperty]
-    public RegistrationMapper Input { get; set; }
+    public RegistrationMapper? Input { get; set; }
     public string? ReturnUrl { get; set; }
 
     public void OnGet()
@@ -41,96 +42,87 @@ public class RegisterModel : PageModel
     public async Task<IActionResult> OnPostAsync()
     {
         ReturnUrl = Url.Content("~/");
-        if(ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             var ThisUserBusiness = new CompanyModel
             {
-                CompanyName = Input.BussinesName,
+                CompanyName = Input?.BussinesName,
                 DateCreated = DateTime.Now,
                 LogoUrl = "",
-                Email = Input.Email,
+                Email = "",
                 Phone = "",
-                Address = Input.Location,
+                Address = Input?.Location,
                 TIN = "",
             };
 
-            var ThisUserRole = new AccessLevelModel
-            {
+            var ThisUserRole = new IdentityRole<int> {
                 Name = "Owner",
                 NormalizedName = "OWNER",
-                DateCreated = DateTime.Now,
-                Description = "Main Business Owner",
             };
 
             var ThisUser = new UserModel {
-                UserName = Input.Email,
-                FirstName = Input.FirstName,
-                LastName = Input.LastName,
-                Email = Input.Email,
-                Password = Input.Password,
+                UserName = Input?.Email,
+                FirstName = Input?.FirstName,
+                LastName = Input?.LastName,
+                Email = Input?.Email,
+                Password = Input?.Password,
                 DateCreated = DateTime.Now,
                 Address = "",
-                Phone = "",
+                NIDA = "",
+                ImageUrl = "",
+                Company = ThisUserBusiness,
+
             };
 
-            
-            async Task CreateRoleAsync()
+
+            async Task<string?> CreateRoleAsync()
             {
-                List<AccessLevelModel> TheseRoles = new();
-
-                TheseRoles = await RoleManager.Roles.ToListAsync();
-
-                if(TheseRoles.Any() && TheseRoles.Count > 0)
+                bool Checked = await RoleManager.RoleExistsAsync(ThisUserRole.Name);
+                if (!Checked)
                 {
-                    foreach(var ARole in TheseRoles)
+                    var Done = await RoleManager.CreateAsync(ThisUserRole);
+
+                    await RoleManager.CreateAsync(new IdentityRole<int> { Name = "Admin", NormalizedName = "ADMIN" });
+                    await RoleManager.CreateAsync(new IdentityRole<int> { Name = "Manager", NormalizedName = "MANAGER" });
+                    await RoleManager.CreateAsync(new IdentityRole<int> { Name = "Supervisor", NormalizedName = "SUPERVISOR" });
+                    await RoleManager.CreateAsync(new IdentityRole<int> { Name = "Cashier", NormalizedName = "CASHIER" });
+
+                    if (Done.Succeeded)
                     {
-                        if(ARole.Name == ThisUserRole.Name)
-                        {
-                            ThisUser.AccessLevel = ARole;
-                        }
+                        return ThisUserRole.Name;
+                    }
+                    else
+                    {
+                        return null;
                     }
                 }
                 else
                 {
-                    var RoleCreateResult = await RoleManager.CreateAsync(ThisUserRole);
-                    if (RoleCreateResult.Succeeded)
+                    return ThisUserRole.Name;
+                }
+            }
+
+            // Created Role
+            var CreatedRole = await CreateRoleAsync();
+            if (CreatedRole != null)
+            {
+                //Create User
+                var UserResult = await UserManager.CreateAsync(ThisUser, Input.Password);
+
+                if (UserResult.Succeeded)
+                {
+                    // Assign Role Created User
+                    var AssignRole = await UserManager.AddToRoleAsync(ThisUser, CreatedRole);
+
+                    if (AssignRole.Succeeded)
                     {
-                        var Fetched = await RoleManager.FindByNameAsync(ThisUserRole.Name);
-                        ThisUser.AccessLevel = Fetched;
+                        await SignInManager.SignInAsync(ThisUser, false);
+                        return LocalRedirect(ReturnUrl); 
                     }
                 }
             }
-
-            async Task CreateCompanyAsync()
-            {
-                using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
-                {
-                    await repo.Companies.AddAsync(ThisUserBusiness);
-                    ThisUser.Company = ThisUserBusiness;
-
-                    await repo.CompleteAsync();
-                    repo.Dispose();
-                }
-            }
-
-            // Log user in if successfully created
-            var UserResult = await UserManager.CreateAsync(ThisUser, Input.Password);
-
-            if (UserResult.Succeeded)
-            {
-                await CreateCompanyAsync();
-                await CreateRoleAsync();
-                var UserUpdateResult = await UserManager.UpdateAsync(ThisUser);
-
-                if (UserUpdateResult.Succeeded)
-                {
-                    await SignInManager.SignInAsync(ThisUser, false);
-                    return LocalRedirect(ReturnUrl);
-                } 
-            }
-            
+           
         }
-
         return Page();
     }
 }

@@ -36,8 +36,6 @@ public class UserModel : IdentityUser<int>
     public string? ImageUrl { get; set; }
 
     [Required]
-    public string? Phone { get; set; }
-    [Required]
     public string? NIDA { get; set; }
 
     //FOREIGN KEYS
@@ -45,9 +43,6 @@ public class UserModel : IdentityUser<int>
     public int? CompanyId { get; set; }
     public CompanyModel? Company { get; set; }
 
-	[ForeignKey("AccessLevelModel")]
-	public int? AccessLevelId { get; set; }
-	public virtual AccessLevelModel? AccessLevel { get; set; }
 
 	//COLLECTIONS
 	public virtual List<PriceModel>? Price { get; set; }
@@ -71,5 +66,6 @@ public class UserModel : IdentityUser<int>
         this.Address = null;
         this.Code = "EMP";
         this.ImageUrl = null;
+        this.NIDA = null;
     }
 }

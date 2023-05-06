@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "qtG/RS5DvXQEWmF7nVSakbqEiGktSCINmOz7dM48SXg=",
+  "Hash": "xeS/nycbMXZyZNQWBnYyd3QAGS4yvG1B32T0G9hLEuM=",
   "Source": "BARAZAIS",
   "BasePath": "_content/BARAZAIS",
   "Mode": "Default",
@@ -61538,6 +61538,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\img\\sketch.png"
+    },
+    {
+      "Identity": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\Scripts\\Main.js",
+      "SourceId": "BARAZAIS",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\",
+      "BasePath": "_content/BARAZAIS",
+      "RelativePath": "Scripts/Main.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Scripts\\Main.js"
     }
   ]
 }

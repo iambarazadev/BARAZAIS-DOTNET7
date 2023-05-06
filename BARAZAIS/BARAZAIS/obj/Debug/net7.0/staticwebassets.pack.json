@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets\\BARAZAIS.bundle.scp.css"
     },
     {
+      "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\Scripts\\Main.js",
+      "PackagePath": "staticwebassets\\Scripts\\Main.js"
+    },
+    {
       "Id": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\wwwroot\\css\\Custom.css",
       "PackagePath": "staticwebassets\\css\\Custom.css"
     },

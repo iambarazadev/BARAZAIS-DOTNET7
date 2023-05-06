@@ -30,9 +30,9 @@ public class CompanyModel
     [Required(ErrorMessage = "Tax identification Number is required"), MaxLength(100), MinLength(2)]
     public string? TIN { get; set; }
 
-    [Required(ErrorMessage = "Please, enter e-mail"), MaxLength(30), MinLength(3), DataType(DataType.EmailAddress)]
-    [RegularExpression(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$", ErrorMessage = "Please, enter valid e-mail")]
-    public string? Email { get; set; }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
 
     [Required]
     public string? Phone { get; set; }

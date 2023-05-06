@@ -17,7 +17,6 @@ public class UnitOfWorkRepo : IUnitOfWorkService
     public UnitOfWorkRepo(BarazaContext ctx)
     {
         this._Context = ctx;
-		this.AccessLevels = new AccessLevelRepo(_Context);
 		this.Companies = new CompanyRepo(_Context);
         this.Categories = new CategoryRepo(_Context);
         this.Brands = new BrandRepo(_Context);
@@ -40,7 +39,6 @@ public class UnitOfWorkRepo : IUnitOfWorkService
         this.ProductHolds = new ProductHoldRepo(_Context);
     }
 
-	public IAccessLevelService AccessLevels { get; private set; }
 	public ICompanyService Companies { get; private set; }
     public ICategoryService Categories { get; private set; }
     public IBrandService Brands { get; private set; }

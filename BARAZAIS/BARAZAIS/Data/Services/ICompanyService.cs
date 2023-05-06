@@ -7,4 +7,6 @@ using System.Threading.Tasks;
 
 namespace BARAZAIS.Data.Services;
 public interface ICompanyService : IBaseService<CompanyModel>
-{}
+{
+    Task<CompanyModel> GetCompanyDetailed(string Email);
+}
