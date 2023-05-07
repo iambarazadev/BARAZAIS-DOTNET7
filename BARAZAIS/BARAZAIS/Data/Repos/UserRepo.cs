@@ -23,16 +23,22 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
             return await MyDbSet
             .OrderBy(o => o.Id)
             .Include(a => a.Product)
+                .ThenInclude(ab => ab.ProductBill)
             .Include(b => b.Grn)
+                .ThenInclude(ba => ba.ProductGrn)
             .Include(c => c.Supplier)
             .Include(d => d.Category)
             .Include(e => e.Brand)
             .Include(f => f.Price)
             .Include(g => g.Adjustment)
+                .ThenInclude(ga => ga.ProductAdjustment)
             .Include(i => i.Tax)
             .Include(j => j.Bill)
+                .ThenInclude(bp => bp.ProductBill)
             .Include(k => k.Open)
+                .ThenInclude(ka => ka.ProductOpen)
             .Include(l => l.Hold)
+                .ThenInclude(la => la.ProductHold)
             .Include(m => m.Company)
             .ToListAsync();
         }

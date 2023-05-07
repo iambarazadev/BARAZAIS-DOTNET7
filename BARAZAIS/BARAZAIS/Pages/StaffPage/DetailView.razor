@@ -3,15 +3,8 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@inject UserManager<UserModel> UserManager
 @attribute [Authorize]
-
-<Header Title=@Title
-        LineText=@LineText
-        NewUrl=@NewUrl
-        EditUrl=@EditUrl
-        ViewUrl=@ViewUrl
-        ViewUrlIcon=@ViewUrlIcon />
-
 
 @{
     if (ThisUser.Id < 1)
@@ -23,15 +16,27 @@
         </div>
     }
     else
-    {   
-        <div class="row mt-lg-2 mt-3">
-            <div class="col-lg-6 col-md-12 p-0">
+    {
+        <div class="row mt-2 bg-white shadow-sm rounded">
+            <div class="col-12">
+                <Header Title=@Title
+                LineText=@LineText
+                NewUrl=@NewUrl
+                EditUrl=@EditUrl
+                ViewUrl=@ViewUrl
+                ViewUrlIcon=@ViewUrlIcon />
+            </div>
+            <div class="col-12">
+                <hr class="text-muted" />
+            </div>
+
+            <div class="col-lg-7 col-md-12">
                 <ul class="d-flex flex-column p-0 m-0">
                     <li>
                         <h3 class="txtshadow text-capitalize fw-bold fs-4">@(ThisUser.FirstName + " " + ThisUser.LastName)</h3>
                     </li>
                     <li>
-                        <ul class="m-0 p-0 d-flex flex-row justify-content-start">
+                        <ul class="m-0 p-0 d-flex flex-row justify-content-md-start justify-content-center">
                             <li class="me-2">
                                 <p>Code : @(ThisUser.Code + ThisUser.Id)</p>
                             </li>
@@ -39,7 +44,7 @@
                                 <p><i class=" bi-dot"></i> </p>
                             </li>
                             <li class="me-2 text-capitalize">
-                                <p><i class="bi bi-person-fill txtshadow me-2 "></i>@("AccessLevel")</p>
+                                <p><i class="bi bi-person-fill txtshadow me-2 "></i>@(AccessLevel ?? "-- : --")</p>
                             </li>
                             <li class="me-2">
                                 <p> <i class=" bi-dot"></i></p>
@@ -57,7 +62,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-lg-6 col-md-12">
+            <div class="col-lg-5 col-md-12">
                 <Pagination FirstPage=@FirstPage
                     LastPage=@LastPage
                     NextPage=@NextPage
@@ -80,7 +85,7 @@
                                         Address [Note]
                                     </li>
                                     <li class="text-muted text-capitalize">
-                                        <p>@(ThisUser.Address != null ? ThisUser.Address : "--:--") </p>
+                                        <p>@(ThisUser.Address ?? "--:--") </p>
                                     </li>
                                 </ul>
                             </div>
@@ -96,34 +101,44 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12">
-                <div class="row text-start mt-3">
-                    <div class="col-12  bg-xs shadow-sm py-3">
-                        Associated Data
+            <div class="col-12 pb-3">
+                <div class="row text-start mt-3 rounded bg-white shadow-sm">
+                    <div class="col-12 bg-xs shadow-sm py-3 rounded-top">
+                        Associated Data <span class="d-lg-none d-inline"> | <i class=" @TabIcon text-white opacity-75"></i> @TabCaption</span>
                     </div>
                     <div class="col-12">
                         <ul class="m-0 p-0">
-                            <li class=" m-0 p-0">
-                                <div class="row text-start text-unique border-bottom border-2">
-                                    <div class="col-6 py-3 fs-6">
-                                        <i class=" @TabIcon "></i> @TabCaption
+                            <li class=" m-0 p-2">
+                                <div class="row text-start">
+                                    <div class="col-lg-3 d-lg-block d-none py-2 fs-6 text-unique pe-md-2 pe-0">
+                                        <i class=" @TabIcon text-primary opacity-75"></i> @TabCaption
                                     </div>
-                                    <div class="col-6">
-                                        <ul class="d-flex flex-row justify-content-end p-0 m-0">
-                                            <li @onclick=@(()=> SwitchToOpenTab()) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-layers"></i></li>
-                                            <li @onclick=@(()=> SwitchToPurchaseTab(FromDate, ToDate)) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-cart4"></i></li>
-                                            <li @onclick=@(()=> SwitchToAdjustTab()) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-toggles2"></i></li>
-                                            <li @onclick=@(()=> SwitchToSoldTab()) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-cart"></i></li>
-                                            <li @onclick=@(()=> SwitchToPriceTab()) class="btn py-3  mx-lg-2 mx-1 text-white-50"><i class="fs-6 bi-cash-coin"></i></li>
+                                    <div class="col-lg-9 col-12 p-0">
+                                        <ul class="nav nav-pills nav-fill gap-2 p-1 mx-0 small bg-xss rounded fw-bolder" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-unique); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); font-size:0.85rem !important;">
+                                            <li class="nav-item" role="presentation" @onclick=@(()=> SwitchToSoldTab())>
+                                                <button class="nav-link active rounded" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true"><span class="bi-cart-check-fill me-lg-1"></span><span class="d-md-inline d-none">Sales</span></button>
+                                            </li>
+                                            <li class="nav-item" role="presentation" @onclick=@(()=> SwitchToPurchaseTab(FromDate, ToDate))>
+                                                <button class="nav-link rounded" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-cart4 me-lg-1"></span><span class="d-md-inline d-none">Purchases</span></button>
+                                            </li>
+                                            <li class="nav-item" role="presentation" @onclick=@(()=> SwitchToAdjustTab())>
+                                                <button class="nav-link rounded" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-toggles2 me-lg-1"></span><span class="d-md-inline d-none">Stck Adj</span></button>
+                                            </li>
+                                            <li class="nav-item" role="presentation" @onclick=@(()=> SwitchToPriceTab())>
+                                                <button class="nav-link rounded" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-cash-coin me-lg-1"></span><span class="d-md-inline d-none">Prices</span></button>
+                                            </li>
+                                            <li class="nav-item" role="presentation" @onclick=@(()=> SwitchToOpenTab())>
+                                                <button class="nav-link rounded" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><span class="bi-layers me-lg-1"></span><span class="d-md-inline d-none">As Open</span></button>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
                             </li>
                         </ul>
                     </div>
-                    <div class="col-12 bg-xss">
+                    <div class="col-12">
                         <ul class="m-0 p-0">
-                            <li class=" m-0 p-0">
+                            <li class=" m-0 px-2 py-0 ">
                                 @*Start Dynamic Pages Purchase, Adjustments and Sales*@
                                     @{
                                         if (PurchaseTab)
@@ -131,7 +146,6 @@
                                             if (this.ThisUser.Grn != null && this.ThisUser.Grn.Count > 0)
                                             {
                                                 <StaffPurchase UserToCheck=@(ThisUser) />
-                                                
                                             }
                                             else
                                             {
@@ -233,11 +247,12 @@
     private UserModel ThisUser = new();
     private DateOnly FromDate = new();
     private DateOnly ToDate = new();
-    
+    private string? AccessLevel = null;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        Start((int)Sn);
+        await Start((int)Sn);
     }
 
     private async Task Start(int Pid)
@@ -250,12 +265,14 @@
             if (Pid < 1 && TotalPages > 0)
             {
                 ThisUser = (await repo.Users.GetAllUsersDetailedAsync(1,1)).SingleOrDefault();
+                await GetRoleAsync(ThisUser);
                 CurrentPage = ((repo.Users.GetIndexOf(ThisUser)) + 1);
                 EditUrl = "Users/Edit/" + ThisUser.Id;
             }
             else if (Pid > 0 && Pid <= TotalPages)
             {
                 ThisUser = await repo.Users.GetDetailedUserAsync(Pid);
+                await GetRoleAsync(ThisUser);
                 CurrentPage = ((repo.Users.GetIndexOf(ThisUser)) + 1);
                 EditUrl = "Users/Edit/" + ThisUser.Id;
             }
@@ -283,6 +300,7 @@
             }
 
             ThisUser = (await repo.Users. GetAllUsersDetailedAsync(CurrentPage, 1)).SingleOrDefault();
+            await GetRoleAsync(ThisUser);
 
             await repo.CompleteAsync();
             EditUrl = "Users/Edit/" + ThisUser.Id;
@@ -308,6 +326,7 @@
             }
 
             ThisUser = (await repo.Users. GetAllUsersDetailedAsync(CurrentPage, 1)).SingleOrDefault();
+            await GetRoleAsync(ThisUser);
 
             await repo.CompleteAsync();
             EditUrl = "Users/Edit/" + ThisUser.Id;
@@ -324,6 +343,7 @@
             TotalPages = repo.Users.GetNoRecords();
             CurrentPage = 1;
             ThisUser = (await repo.Users. GetAllUsersDetailedAsync(CurrentPage, 1)).SingleOrDefault();
+            await GetRoleAsync(ThisUser);
 
             await repo.CompleteAsync();
             EditUrl = "Users/Edit/" + ThisUser.Id;
@@ -341,12 +361,20 @@
             TotalPages = repo.Users.GetNoRecords();
             CurrentPage = TotalPages;
             ThisUser = (await repo.Users. GetAllUsersDetailedAsync(CurrentPage, 1)).SingleOrDefault();
+            await GetRoleAsync(ThisUser);
 
             await repo.CompleteAsync();
             EditUrl = "Users/Edit/" + ThisUser.Id;
             repo.Dispose();
         }
         StateHasChanged();
+    }
+
+    private async Task GetRoleAsync(UserModel TempUser)
+    {
+        AccessLevel = (await UserManager.GetRolesAsync(TempUser))
+            .ToList()
+            .FirstOrDefault();
     }
 
     private void Refresh()

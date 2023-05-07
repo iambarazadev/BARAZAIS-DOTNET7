@@ -256,7 +256,7 @@
         FromDate = DateOnly.FromDateTime(ProductToCheck.DateCreated);
         ToDate = DateOnly.FromDateTime(DateTime.Now);
         
-        Reset();
+        await Reset();
         StateHasChanged();
     }
     

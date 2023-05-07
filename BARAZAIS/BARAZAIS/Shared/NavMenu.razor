@@ -73,12 +73,22 @@
 					</a>
 					<div class="collapse p-0 m-0 text-start pt-2" id="CollapseStaff">
 						<ul class="p-0 m-0 rounded p-2 bg-xss border p-2">
-							<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Staffs/ListView"><span class="bi bi-people fs-6 "> Employee</span> </NavLink></li>
+							<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Staffs/ListView"><span class="bi bi-people fs-6 "> Employees</span> </NavLink></li>
 							<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Staffs/Roles/ListView"><span class="bi bi-tag fs-6 "> Roles</span></NavLink></li>
 						</ul>
 					</div>
 				</div>
-
+				<div class="nav-item px-3  mb-2 ">
+					<a data-bs-toggle="collapse" href="#CollapseSettings" role="button" aria-expanded="false" aria-controls="CollapseSettings" class="a text-white rounded-0 px-3">
+						<span class="bi-gear fs-4 text-white opacity-75" aria-bs-hidden="true"></span> <span class="fs-6 bi-dot mx-1 @SwitchString"></span><span class="fs-6 @SwitchString">Settings</span> <i class="bi bi-caret-down-fill ms-2 text-white "></i>
+					</a>
+					<div class="collapse p-0 m-0 text-start pt-2" id="CollapseSettings">
+						<ul class="p-0 m-0 rounded p-2 bg-xss border p-2">
+							<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Staffs/ListView"><span class="bi bi-printer fs-6 "> Printers</span> </NavLink></li>
+							<li class="mb-2 px-1"><NavLink class="nav-link text-white rounded-0 ps-2 pe-1" href="Staffs/Roles/ListView"><span class="bi bi-tag fs-6 "> Roles</span></NavLink></li>
+						</ul>
+					</div>
+				</div>
 				<div class="nav-item px-3  mt-3 mb-2 d-none">
 					<button class="btn btn-md text-white-50 w-100 border-0" @onclick=@(()=>SwitchToggle())>
 						<span class="bi bi-arrow-left-right text-white opacity-75 fs-4" aria-hidden="true"></span>

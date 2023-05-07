@@ -2,6 +2,8 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+
+@inject UserManager<UserModel> UserManager 
 @attribute [Authorize]
 
 <div class="row pb-3 mt-2 rounded bg-white shadow-sm">
@@ -62,7 +64,7 @@
     </div>
     <div class="col-12 px-3 pt-2">
         @{
-            if (!TheseUsers.Any())
+            if (!TheseTempUsers.Any())
             {
                 <div class="container text-center">
                     <p class="p-3  fs-4 text-unique fw-lighter opacity-75 text-capitalize">-- : --</p>
@@ -70,7 +72,7 @@
             }
             else
             {
-                foreach (var User in TheseUsers)
+                foreach (var User in TheseTempUsers)
                 {
                     <div class="row border-bottom bg-xss" style="font-size:0.8rem !important">
                         <div class="col-1 text-center py-1">
@@ -91,17 +93,17 @@
                         <div class="col-md-2 col-4 text-start py-1">
                             <ul class="p-0 m-0 text-start">
                                 <li class="p-0 m-0" style="font-size:0.8rem !important">
-                                    @(User.PhoneNumber)
+                                    @(User.PhoneNumber ?? "-- : --")
                                 </li>
                                 <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
-                                    @(User.Email)
+                                    @(User.Email ?? "-- : --")
                                 </li>
                             </ul>
                         </div>
                         <div class="col-md-2 col-3 text-start py-1">
                             <ul class="p-0 m-0 text-start">
                                 <li class="p-0 m-0 text-capitalize" style="font-size:0.8rem !important">
-                                    --
+                                    @(AccessLevel ?? "-- : --")
                                 </li>
                                 <li class="p-0 m-0 text-primary" style="font-size:0.8rem !important">
                                     @((User.DateCreated).ToString("dd MMM yy"))
@@ -141,12 +143,14 @@
 
     //UserModel Variables
     private List<UserModel> TheseUsers = new();
+    private List<UserModel> TheseTempUsers = new();
+    private string? AccessLevel = null;
 
     // Search
     private int? SearchId = null;
 
     //Pagination Variables
-    private int PageSize = 50;
+    private int PageSize = 20;
     private int TotalPages = 1;
     private int CurrentPage = 0;
 
@@ -154,6 +158,7 @@
     protected override async Task OnInitializedAsync(){
         await base.OnInitializedAsync();
         TheseUsers = new();
+        TheseTempUsers = new();
         await NextPage();
     }
 
@@ -173,7 +178,12 @@
                 CurrentPage = TotalPages;
             }
 
-            TheseUsers = await repo.Users. GetAllUsersAsync(CurrentPage, PageSize);
+            TheseUsers = await repo.Users. GetAllUsersAsync();
+            TheseTempUsers = TheseUsers
+            .OrderBy(a => a.Id)
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
 
             await repo.CompleteAsync();
             repo.Dispose();
@@ -198,7 +208,12 @@
                 CurrentPage = 1;
             }
 
-            TheseUsers = await repo.Users. GetAllUsersAsync(CurrentPage, PageSize);
+            TheseUsers = await repo.Users. GetAllUsersAsync();
+            TheseTempUsers = TheseUsers
+            .OrderBy(a => a.Id)
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
 
             await repo.CompleteAsync();
             repo.Dispose();
@@ -215,7 +230,12 @@
             TotalPages = (int)(Math.Ceiling(Num));
             CurrentPage = 1;
 
-            TheseUsers = await repo.Users. GetAllUsersAsync(CurrentPage, PageSize);
+            TheseUsers = await repo.Users. GetAllUsersAsync();
+            TheseTempUsers = TheseUsers
+            .OrderBy(a => a.Id)
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
 
             await repo.CompleteAsync();
             repo.Dispose();
@@ -232,7 +252,12 @@
             TotalPages = (int)(Math.Ceiling(Num));
             CurrentPage = TotalPages;
 
-            TheseUsers = await repo.Users. GetAllUsersAsync(CurrentPage, PageSize);
+            TheseUsers = await repo.Users. GetAllUsersAsync();
+            TheseTempUsers = TheseUsers
+            .OrderBy(a => a.Id)
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
 
             await repo.CompleteAsync();
             repo.Dispose();
@@ -273,7 +298,14 @@
         }
 
         wb.SaveAs("Employees.xlsx");
-        
+
+    }
+
+    private async Task GetRoleAsync(UserModel TempUser)
+    {
+        AccessLevel = (await UserManager.GetRolesAsync(TempUser))
+            .ToList()
+            .FirstOrDefault();
     }
 
     private async Task InnerSearch()
@@ -282,9 +314,11 @@
         {
             using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
             {
-                TheseUsers = (await repo.Users.GetAllUsersAsync(1, repo.Users.GetNoRecords()))
-                .OrderBy(x => x.Id)
+                TheseUsers = await repo.Users.GetAllUsersAsync();
+                TheseTempUsers = TheseUsers
+                .OrderBy(a => a.Id)
                 .Where(x => (x.Id == (int)SearchId))
+                .Take(PageSize)
                 .ToList();
 
                 SearchId = null;
