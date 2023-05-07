@@ -21,8 +21,11 @@
         <div class="col-12">
             <form method="post" autocomplete="off">
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-12 pt-2">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <span class="text-danger rounded bg-light-danger p-3 fw-normal @(ViewData["DError"])">
+                            @(ViewData["Failed"])
+                        </span>
                     </div>
                     <div class="col-md-6 col-12 ">
                         <div class=" rounded-3 py-3">

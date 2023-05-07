@@ -41,11 +41,19 @@
                                 <span asp-validation-for="Input.LastName" class="text-danger"></span>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
+                                <input type="text" asp-for="Input.PhoneNumber" class="form-control UniqueText border-0 bg-blue rounded " id="PhoneNumber" placeholder="User name" />
+                                <label for="PhoneNumber" class="">
+                                    <span class="bi-phone me-2"></span> Phone Number
+                                </label>
+                                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mt-2 rounded-3">
                                 <input type="email" asp-for="Input.Email" class="form-control UniqueText border-0 bg-blue rounded " id="Email" placeholder="User name" />
                                 <label for="Email" class="">
                                     <span class="bi-at me-2"></span> Email
                                 </label>
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                <div class="text-danger p-2 rounded bg-light-danger mt-2 @(ViewData["DError"])" style="font-size:0.8rem;">@(ViewData["UserAvailable"])</div>
                             </div>
                             <div class="form-floating mt-2 rounded-3">
                                 <input type="password" asp-for="Input.Password" class="form-control UniqueText border-0 bg-blue rounded " id="Password" placeholder="Password" />

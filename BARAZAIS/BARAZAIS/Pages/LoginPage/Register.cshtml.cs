@@ -36,6 +36,7 @@ public class RegisterModel : PageModel
 
     public void OnGet()
     {
+        ViewData["DError"] = "d-none";
         ReturnUrl = Url.Content("~/");
     }
 
@@ -64,6 +65,7 @@ public class RegisterModel : PageModel
                 UserName = Input?.Email,
                 FirstName = Input?.FirstName,
                 LastName = Input?.LastName,
+                PhoneNumber = Input.PhoneNumber,
                 Email = Input?.Email,
                 Password = Input?.Password,
                 DateCreated = DateTime.Now,
@@ -102,26 +104,36 @@ public class RegisterModel : PageModel
                 }
             }
 
-            // Created Role
-            var CreatedRole = await CreateRoleAsync();
-            if (CreatedRole != null)
+            //INITIAL : 
+
+            var UserAvailable = await UserManager.FindByEmailAsync(Input.Email);
+            if(UserAvailable == null)
             {
-                //Create User
-                var UserResult = await UserManager.CreateAsync(ThisUser, Input.Password);
-
-                if (UserResult.Succeeded)
+                //Created Role
+                var CreatedRole = await CreateRoleAsync();
+                if (CreatedRole != null)
                 {
-                    // Assign Role Created User
-                    var AssignRole = await UserManager.AddToRoleAsync(ThisUser, CreatedRole);
+                    //Create User
+                    var UserResult = await UserManager.CreateAsync(ThisUser, Input.Password);
 
-                    if (AssignRole.Succeeded)
+                    if (UserResult.Succeeded)
                     {
-                        await SignInManager.SignInAsync(ThisUser, false);
-                        return LocalRedirect(ReturnUrl); 
+                        // Assign Role Created User
+                        var AssignRole = await UserManager.AddToRoleAsync(ThisUser, CreatedRole);
+
+                        if (AssignRole.Succeeded)
+                        {
+                            await SignInManager.SignInAsync(ThisUser, false);
+                            return LocalRedirect(ReturnUrl);
+                        }
                     }
                 }
             }
-           
+            else
+            {
+                ViewData["DError"] = "d-block";
+                ViewData["UserAvailable"] = "User with this Email exist, please Login";
+            }
         }
         return Page();
     }

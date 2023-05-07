@@ -24,6 +24,10 @@
     background-color: #b9dcf12c;
 }
 
+.bg-light-danger{
+    background-color:#f6c3c830;
+}
+
 .BgImg {
     background: url(../img/gallery.svg);
     background-position: center;
