@@ -6,7 +6,7 @@
 @inject IHttpContextAccessor Accessor
 @inject UserManager<UserModel> UserManager
 @inject RoleManager<IdentityRole<int>> RoleManager
-
+@attribute [Authorize]
 
 <div class="container py-3">
     <div class="row">

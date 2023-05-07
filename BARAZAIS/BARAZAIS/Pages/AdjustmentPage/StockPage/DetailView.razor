@@ -3,6 +3,7 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
 @{
     if (ThisStockAdjustment.Id < 1)

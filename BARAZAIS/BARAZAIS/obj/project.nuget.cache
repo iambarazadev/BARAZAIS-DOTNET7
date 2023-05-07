@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ZZTvPyKYyCwQ3RCkBXV1NLWWuKn5yKf/6UD0zFLaBoDL9o5qkvv9n+FbJtn001FgyBOKc5mPE5RhpGgn+jzYJg==",
+  "dgSpecHash": "qjYAU2ET9vuvRQ3EOLSio0eRxtQeu4OQ2pBCVMb/vPNNfuYzpUjqhNlB6FW3Ga5x3hT+52HdvJjM0HwiMQLrBg==",
   "success": true,
   "projectFilePath": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\BARAZAIS.csproj",
   "expectedPackageFiles": [
@@ -14,7 +14,6 @@
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\7.0.5\\microsoft.aspnetcore.cryptography.keyderivation.7.0.5.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.aspnetcore.diagnostics.entityframeworkcore\\7.0.5\\microsoft.aspnetcore.diagnostics.entityframeworkcore.7.0.5.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\7.0.5\\microsoft.aspnetcore.identity.entityframeworkcore.7.0.5.nupkg.sha512",
-    "C:\\Users\\razack\\.nuget\\packages\\microsoft.aspnetcore.identity.ui\\7.0.5\\microsoft.aspnetcore.identity.ui.7.0.5.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.entityframeworkcore\\7.0.5\\microsoft.entityframeworkcore.7.0.5.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\7.0.5\\microsoft.entityframeworkcore.abstractions.7.0.5.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\7.0.5\\microsoft.entityframeworkcore.analyzers.7.0.5.nupkg.sha512",
@@ -27,8 +26,6 @@
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\7.0.0\\microsoft.extensions.dependencyinjection.7.0.0.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.extensions.dependencymodel\\7.0.0\\microsoft.extensions.dependencymodel.7.0.0.nupkg.sha512",
-    "C:\\Users\\razack\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\7.0.0\\microsoft.extensions.fileproviders.abstractions.7.0.0.nupkg.sha512",
-    "C:\\Users\\razack\\.nuget\\packages\\microsoft.extensions.fileproviders.embedded\\7.0.5\\microsoft.extensions.fileproviders.embedded.7.0.5.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.extensions.identity.core\\7.0.5\\microsoft.extensions.identity.core.7.0.5.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.extensions.identity.stores\\7.0.5\\microsoft.extensions.identity.stores.7.0.5.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\microsoft.extensions.logging\\7.0.0\\microsoft.extensions.logging.7.0.0.nupkg.sha512",

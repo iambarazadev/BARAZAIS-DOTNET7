@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject IHttpContextAccessor Accessor
 @inject UserManager<UserModel> UserManager
+@attribute [Authorize]
 
 @{
     if(OnFly != null){         

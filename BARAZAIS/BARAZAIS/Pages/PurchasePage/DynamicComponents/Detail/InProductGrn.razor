@@ -1,4 +1,6 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
+@attribute [Authorize]
+
     @{  
         foreach(var item in TheseProductGrns){
             AtStock = item.OldStock;

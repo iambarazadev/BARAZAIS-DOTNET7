@@ -1,5 +1,6 @@
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<BarazaContext> MyFactory
+@attribute [Authorize]
 
 @{
     if(ViewPrice){         

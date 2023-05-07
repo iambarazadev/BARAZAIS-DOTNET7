@@ -5,7 +5,7 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
 
 <AuthorizeView>
-    <Authorized>
+	<Authorized>
 		<div class=" navbar navbar-dark UserData">
 			<div class="container-fluid py-2">
 				<LoginDisplay />
@@ -14,7 +14,6 @@
 				</button>
 			</div>
 		</div>
-
 		<div id="Alone" class="@NavMenuCssClass fw-bold opacity-75  h-100" >
 			<nav class="flex-column px-3">
 				<div class="nav-item px-3 mb-2" >
@@ -82,6 +81,8 @@
 		</div>
 	</Authorized>
 </AuthorizeView>
+
+
 @code {
 
 	private bool collapseNavMenu = false;

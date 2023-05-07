@@ -3,7 +3,7 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
-
+@attribute [Authorize]
 
 @{
     if (ThisGrn.Id < 1)

@@ -1,5 +1,6 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
 <EditForm Model="ThisTax" OnValidSubmit="ProcessAndSave" autocomplete="off">
     <div class="row text-unique mb-3 p-3 bg-white">

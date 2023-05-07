@@ -1,5 +1,6 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
 @{
     if(ViewBill){ 

@@ -6,6 +6,7 @@
 
 @inject IHttpContextAccessor Accessor
 @inject UserManager<UserModel> UserManager
+@attribute [Authorize]
 
 <Header
     Title=@Title

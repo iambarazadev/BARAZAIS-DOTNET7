@@ -20,7 +20,7 @@ public class LoginModel : PageModel
     [BindProperty]
     public RegistrationMapper Input { get; set; }
     private string ReturnUrl { get; set; }
-    private string? ReturnFailed = "Either yor UserName(s) or Password(s) are not correct!.";
+    private string? ReturnFailed = "Either yor Credentials are not correct!, or Go to your email inbox and Verify your Email address";
     private string? DisplayError = "d-none";
 
     public void OnGet()
@@ -33,7 +33,6 @@ public class LoginModel : PageModel
     public async Task<IActionResult> OnPostAsync()
     {
         ReturnUrl = Url.Content("~/");
-
         var Result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, false, false);
         if (Result.Succeeded)
         {
@@ -46,6 +45,7 @@ public class LoginModel : PageModel
 
             ViewData["Failed"] = ReturnFailed;
             ViewData["DError"] = DisplayError ;
+            
         }
 
         return Page();

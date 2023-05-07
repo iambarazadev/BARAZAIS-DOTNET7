@@ -1,5 +1,5 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
-
+@attribute [Authorize]
 
     @{  
         foreach(var item in TheseProductBills){

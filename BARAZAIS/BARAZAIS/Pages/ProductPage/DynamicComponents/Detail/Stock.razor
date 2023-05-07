@@ -1,6 +1,7 @@
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
 @{
     if(ViewAdjustment){         

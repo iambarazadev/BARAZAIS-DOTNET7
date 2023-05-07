@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
+using System.Net.Mail;
 
 
 namespace BARAZAIS.Pages.LoginPage;
@@ -24,10 +25,10 @@ public class RegisterModel : PageModel
     private readonly IDbContextFactory<BarazaContext> MyFactory;
     public RegisterModel(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, RoleManager<IdentityRole<int>> roleManager,IDbContextFactory<BarazaContext> myFactoy)
     {
-        SignInManager = signInManager;
-        UserManager = userManager;
-        RoleManager = roleManager;
-        MyFactory = myFactoy;
+        this.SignInManager = signInManager;
+        this.UserManager = userManager;
+        this.RoleManager = roleManager;
+        this.MyFactory = myFactoy;
     }
 
     [BindProperty]
@@ -62,12 +63,12 @@ public class RegisterModel : PageModel
             };
 
             var ThisUser = new UserModel {
-                UserName = Input?.Email,
-                FirstName = Input?.FirstName,
-                LastName = Input?.LastName,
+                UserName = Input.Email,
+                FirstName = Input.FirstName,
+                LastName = Input.LastName,
                 PhoneNumber = Input.PhoneNumber,
-                Email = Input?.Email,
-                Password = Input?.Password,
+                Email = Input.Email,
+                Password = Input.Password,
                 DateCreated = DateTime.Now,
                 Address = "",
                 NIDA = "",
@@ -104,6 +105,30 @@ public class RegisterModel : PageModel
                 }
             }
 
+            async Task SendEmailVerificationAsync(UserModel NewUser)
+            {
+                var user = NewUser;
+                var token = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+                var callbackUrl = Url.Page(
+                    "/Pages/LoginPage/Login",
+                    pageHandler: null,
+                    values: new { userId = user.Id, token = token },
+                    protocol: Request.Scheme);
+
+                //Mail preparations, and Sms Sending
+                MailAddress From = new MailAddress("razackdotnet@gmail.com");
+                MailAddress To = new MailAddress(user.Email);
+
+                MailMessage Sms = new MailMessage(From,To);
+                Sms.Subject = "Email Address verification";
+                Sms.Body = callbackUrl;
+
+                SmtpClient Client = new SmtpClient("127.0.0.1");
+
+                Client.Send(Sms);
+            }
+
+
             //INITIAL : 
 
             var UserAvailable = await UserManager.FindByEmailAsync(Input.Email);
@@ -123,8 +148,8 @@ public class RegisterModel : PageModel
 
                         if (AssignRole.Succeeded)
                         {
-                            await SignInManager.SignInAsync(ThisUser, false);
-                            return LocalRedirect(ReturnUrl);
+                            await SendEmailVerificationAsync(ThisUser);
+                            //return LocalRedirect(ReturnUrl);
                         }
                     }
                 }

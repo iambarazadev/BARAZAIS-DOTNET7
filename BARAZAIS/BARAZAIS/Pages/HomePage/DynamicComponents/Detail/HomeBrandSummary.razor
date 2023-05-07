@@ -1,18 +1,19 @@
 
 @inject IDbContextFactory<BarazaContext> MyFactory
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
-    <div class="row py-3 bg-white rounded shadow-sm" style="font-size:0.8rem !important">
-        <div class="col-md-7 mt-md-0 mt-2">
-            @{
-                if(TheseBrands.Any()){
-                    <p class="p-3 m-0 bg-xss fs-6 rounded-3" style="width:fit-content;"><span class="text-muted">Total Brands : </span> <span class="text-unique"> @(TheseBrands.Count) </span></p>
-                }else{
-                    <p class="p-3 m-0 bg-xss fs-6 rounded-3" style="width:fit-content;"><span class="text-muted">--:--</span></p>
-                }
+<div class="row py-3 bg-white rounded shadow-sm" style="font-size:0.8rem !important">
+    <div class="col-md-7 mt-md-0 mt-2">
+        @{
+            if(TheseBrands.Any()){
+                <p class="p-3 m-0 bg-xss fs-6 rounded-3" style="width:fit-content;"><span class="text-muted">Total Brands : </span> <span class="text-unique"> @(TheseBrands.Count) </span></p>
+            }else{
+                <p class="p-3 m-0 bg-xss fs-6 rounded-3" style="width:fit-content;"><span class="text-muted">--:--</span></p>
             }
-        </div>
+        }
     </div>
+</div>
 <div class="row bg-white my-3 rounded shadow-sm">
     <div class="col-12 px-3 bg-xs rounded-top shadow-sm">
         <div class="row bg-xs">

@@ -1,12 +1,14 @@
 using BARAZAIS.Data.Database;
 using BARAZAIS.Data.Models;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+// Connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContextFactory<BarazaContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
@@ -16,8 +18,7 @@ builder.Services.AddIdentity<UserModel, IdentityRole<int>>(options =>
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
-    options.SignIn.RequireConfirmedEmail = false;
-
+    options.SignIn.RequireConfirmedEmail = true;
 })
     .AddEntityFrameworkStores<BarazaContext>()
     .AddDefaultTokenProviders();
