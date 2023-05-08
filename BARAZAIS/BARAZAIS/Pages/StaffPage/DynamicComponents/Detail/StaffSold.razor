@@ -1,6 +1,115 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
 @attribute [Authorize]
 
+@{
+    if (ViewBill)
+    {
+        GetFullCostRetail(SendBill);
+        <div class="modal fade " style="width:100vw !important;" id="Search" tabindex="-1" aria-labelledby="SearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog modal-dialog-scrollable modal-xl rounded-0">
+                <div class="modal-content border-0 bg-xss rounded-0">
+                    <div class="modal-header border-0 px-1 py-0 pb-1 my-0 mb-3 text-capitalize">
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class="p-0" style="font-size:1.14rem !important; width:fit-content;"><p class="bg-xs py-1 px-2 fw-bolder"> @(SendBill.Code + SendBill.Id)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;">
+                                <ul class="bg-light p-2">
+                                    <li class="p-0 m-0">Total Sale : @FullRetail.ToString("n0")</li>
+                                    <li class="p-0 m-0">Total Cost : @FullCost.ToString("n0")</li>
+                                </ul>
+                            </li>
+                            <li class=" p-0 opacity-75 " style="font-size:0.8rem !important; width:fit-content;">
+                                <p class="bg-light p-2  m-0"><i class="bi bi-dot txtshadow me-1"></i></p>
+                                <p class="bg-light py-0 px-2 m-0"><i class="bi bi-dot txtshadow me-1"></i></p>
+                            </li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;">
+                                <ul class="bg-light p-2">
+                                    <li class="p-0 m-0">Total Returns</li>
+                                    <li class="p-0 m-0">@(((FullRetail) - (FullCost)).ToString("n0"))</li>
+                                </ul>
+                            </li>
+                            <li class=" p-0 opacity-75 " style="font-size:0.8rem !important; width:fit-content;">
+                                <p class="bg-light p-2 m-0"><i class="bi bi-dot txtshadow me-1"></i></p>
+                                <p class="bg-light py-0 px-2 m-0"><i class="bi bi-dot txtshadow me-1"></i></p>
+                            </li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;">
+                                <ul class="bg-light p-2">
+                                    <li class="p-0 m-0">@(SendBill.User.FirstName + " " + SendBill.User.LastName)</li>
+                                    <li class="p-0 m-0">@((SendBill.DateCreated).ToString("MMM, dd yyyy"))</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75 rounded-circle" style="font-size:1rem !important; width:fit-content; cursor:pointer;"> <p class=" text-white rounded-circle"><i class="bi-printer text-white fw-bolder me-1"></i></p></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body py-0">
+                        <div class="row">
+                            <div class="col-12 shadow-lg bg-light border border-5 rounded-3">
+                                <div class="row text-white  shadow-sm txtshadow bg-xs">
+                                    <div class="col-1 text-center py-3 fw-bolder">#</div>
+                                    <div class="col-lg-2 col-4 py-3 text-start">Product</div>
+                                    <div class="col-lg-1 col-3 py-3 text-center ">Sold</div>
+                                    <div class="col-lg-2 col-4 py-3 text-start ">Retail Price</div>
+                                    <div class="col-2 d-none d-lg-block py-3 text-md-start text-center ">AtCostOf</div>
+                                    <div class="col-2 d-none d-lg-block py-3 text-md-start text-center ">Return</div>
+                                    <div class="col-1 d-none d-lg-block py-3 text-center ">Before</div>
+                                    <div class="col-1 d-none d-lg-block py-3 text-center">After</div>
+                                </div>
+                                @{
+                                    foreach (var item in (SendBill.ProductBill))
+                                    {
+                                        <div class="row text-unique bg-xss border-bottom border-1" style="font-size:0.8rem !important">
+                                            <div class="col-1 text-center py-1 fw-bolder">
+                                                @(SendBill.ProductBill.IndexOf(item) + 1)
+                                            </div>
+                                            <div class="col-lg-2 col-4 py-1 text-start">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0 text-capitalize">
+                                                    <li class="text-primary d-none d-lg-block">@(item.Product.Caption.Length > 20 ? item.Product.Caption.Substring(0, 16) + " .." : item.Product.Caption)</li>
+                                                    <li class="text-primary d-lg-none">@(item.Product.Caption.Length > 11 ? item.Product.Caption.Substring(0, 10) + " .." : item.Product.Caption)</li>
+                                                    <li class=" m-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">@(item.Product.Code + item.Product.Id)</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-1 col-3 py-1 text-center text-success">
+                                                @item.Qty
+                                            </div>
+                                            <div class=" col-lg-2 col-4 py-1 text-start px-0 ps-2 opacity-75">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0 text-success">
+                                                    <li>&#64; @((item.Price).ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">
+                                                        &sum; @((item.Price * (item.Qty)).ToString("n0"))
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-2 d-none d-lg-block py-1 text-md-start text-center">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                                                    <li>&#64; @(item.Cost.ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">&sum; @((item.Cost * item.Qty).ToString("n0"))</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-2 d-none d-lg-block py-1 text-md-start text-center">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                                                    <li>&#64; @((item.Price - item.Cost).ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">&sum; @(((item.Price - item.Cost) * item.Qty).ToString("n0"))</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-1 d-none d-lg-block py-1 text-center opacity-75 ">
+                                                @(item.OldStock)
+                                            </div>
+                                            <div class="col-1 d-none d-lg-block py-1 text-center opacity-75">
+                                                @(item.OldStock - item.Qty)
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
 <div class="row text-start bg-white">
     <div class="col-lg-4 col-12 px-0 pt-2 d-flex flex-row flex-wrap justify-content-start">
         <ul class="p-0 m-0 d-flex flex-row justify-content-start flex-wrap">
@@ -76,41 +185,43 @@
         </div>
     </div
 </div>
-<div class="row mb-2 text-unique">
-    <div class="col-1 py-2 text-center">#</div>
-    <div class="col-lg-2 col-3 py-1 text-start text-unique">
-        <NavLink class="p-0 m-0 text-unique" href="" >
-            <ul class="d-flex flex-column justify-content-start m-0 p-0">
-                <li>BILL</li>
-                <li class=" p-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">Receipt</li>
-            </ul>
-        </NavLink>
-    </div>
-    <div class="col-lg-2 col-3 py-1 text-start text-unique">
-        <ul class=" m-0 p-0 text-start">
-            <li class="text-start">Total</li>
-            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Bill Sale</li>
+
+<div class="row rounded py-2 border-bottom text-unique bg-xss">
+    <div class="col-md-1 d-none d-md-block py-2 text-center">#</div>
+    <div class="col-md-2 col-3 py-1 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Bill</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Receipt</li>
         </ul>
     </div>
-    <div class=" col-lg-1 py-1 text-center text-unique d-none d-lg-block">
-        Items
-    </div>
-    <div class=" col-2 py-1 text-center text-unique">
-        <ul class=" m-0 p-0 text-start">
-            <li class="text-center">Qty</li>
-            <li class="opacity-75 text-center" style="font-size:0.7rem !important;">Pcs</li>
+    <div class="col-2 py-1 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Sold</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">&sum; Qty</li>
         </ul>
     </div>
-    <div class="col-lg-2 col-3 py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
-        <ul class=" m-0 p-0 text-start">
-            <li class="text-start">Date</li>
-            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Day & Time</li>
+    <div class="col-md-2 ps-0 col-4 py-1 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Retail</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">&sum; Retail</li>
         </ul>
     </div>
-    <div class="col-lg-2 d-none d-lg-block py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
-        <ul class=" m-0 p-0 text-start">
-            <li class="text-start">Responsible</li>
-            <li class="opacity-75 text-start" style="font-size:0.7rem !important;">Code</li>
+    <div class="col-md-2 d-none d-md-block py-1 ps-0 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Cost</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">&sum; Cost</li>
+        </ul>
+    </div>
+    <div class=" col-md-2 col-3 py-1 px-0 text-start ">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Profit</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">&sum; Profit</li>
+        </ul>
+    </div>
+    <div class="col-md-1 ps-0 d-md-block d-none py-1 text-start " style="font-size:0.8rem !important;">
+        <ul class="d-flex flex-column justify-content-start m-0 p-0">
+            <li>Date</li>
+            <li class=" p-0 opacity-75" style="font-size:0.7rem !important;">Day & Time</li>
         </ul>
     </div>
 </div>
@@ -122,35 +233,43 @@
     }
     else{
         foreach(var item in TheseTempBills){
-            <div class="row bg-xss border-bottom text-unique" style="font-size:0.8rem !important;">
-                <div class="col-1 py-1 text-center">@(TheseTempBills.IndexOf(item)+1)</div>
-                <div class="col-lg-2 col-3 py-1 text-start text-unique">
-                    <a href="Purchases/Details/@item.Id" class="p-0 m-0 text-unique"  style="font-size:0.8rem !important;">
-                        <ul class="d-flex flex-column justify-content-start m-0 p-0">
-                            <li class="fw-bolder text-primary opacity-75 txtshadow">@(item.Code + item.Id)</li>
-                            <li class=" opacity-75 fw-bolder" style="font-size:0.7rem !important; width:fit-content;">--</li>
+            Profit = ((item.ProductBill.Sum(x => (x.Qty * x.Price))) - ((item.ProductBill.Sum(x => (x.Qty * x.Cost)))));
+            ProfitColor = (Profit) > 0 ? "text-success" : "text-danger";
+
+            <div class="row bg-xss border-bottom py-0 text-unique" style="font-size:0.8rem !important">
+                <div class="col-md-1 d-none d-md-block py-1 text-center">@(TheseBills.IndexOf(item) + 1)</div>
+                <div class="col-md-2 col-3 py-1 text-start text-unique">
+                    @*<a class="p-0 m-0" href="Sales/Details/@(item.Id)">*@
+                        <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" onclick=@(()=>ViewBillAsap(item)) class="d-flex flex-column justify-content-start p-0 m-0 text-unique" style="font-size:0.8rem !important; cursor:pointer;">
+                            <li class="fw-bolder text-primary opacity-75 txtshadow" style="font-size:0.8rem !important;">@(item.Code + item.Id)</li>
+                            <li class=" opacity-75 fw-bolder" style="font-size:0.7rem !important;">---</li>
                         </ul>
-                    </a>
+                    @*</a>*@
                 </div>
-                <div class="col-lg-2 col-3 py-1 pe-0 text-start text-unique">
-                    &sum; @((item.ProductBill.Sum(x => (x.Qty * x.Price))).ToString("n0"))
-                </div>
-                <div class=" col-lg-1 py-1 text-center text-primary d-none d-lg-block">
-                    @(item.ProductBill.Count)
-                </div>
-                <div class="col-2 py-1 text-center txtshadow">
+                <div class="col-2 py-1 text-start txtshadow">
                     @(item.ProductBill.Sum(x => x.Qty))
                 </div>
-                <div class="col-lg-2 col-3 py-1 ps-0  text-start text-unique" style="font-size:0.75rem !important; ">
-                    <ul class=" m-0 p-0">
-                        <li class="p-0 m-0 text-primary">@(item.DateCreated.ToString("dd MMM yy"))</li>
-                        <li class=" opacity-75 d-none d-sm-block p-0 m-0" style="font-size:0.7rem !important;">@(item.DateCreated.ToString("ddd hh : mm"))</li>
+                <div class="col-md-2 col-4 py-1 ps-0 text-start text-unique">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                        <li class="fw-bolder text-primary">&sum; @((item.ProductBill.Sum(x=> (x.Qty * x.Price))).ToString("n0"))</li>
                     </ul>
                 </div>
-                <div class="col-lg-2 d-none d-lg-block py-1 ps-0 text-center text-unique" style="font-size:0.8rem !important;">
-                    <ul class=" m-0 p-0 text-start">
-                        <li class="text-start">@(item.User.Code + item.User.Id)</li>
-                        <li class="opacity-75 text-start text-capitalize" style="font-size:0.7rem !important;">@(item.User.FirstName + " " + item.User.LastName)</li>
+                <div class="col-md-2 d-none d-md-block py-1 ps-0 text-start text-unique">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                        <li class="fw-bolder opacity-75">&sum; @((item.ProductBill.Sum(x=> (x.Qty * x.Cost))).ToString("n0"))</li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-3 py-1 ps-0 text-start text-unique">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                        <li class=" @ProfitColor fw-bolder"style="font-size:0.8rem !important;">
+                            &sum; @(Profit.ToString("n0"))
+                        </li>
+                    </ul>
+                </div>
+                <div class="ps-0 col-md-1 d-md-block d-none py-1 text-start text-unique" style="font-size:0.75rem !important; ">
+                    <ul class="d-flex flex-column justify-content-start m-0 p-0">
+                        <li style="font-size:0.8rem !important;">@(item.DateCreated.ToString("dd MMM yy"))</li>
+                        <li class=" opacity-75 d-none d-sm-block" style="font-size:0.7rem !important;">@(item.DateCreated.ToString("ddd hh : mm"))</li>
                     </ul>
                 </div>
             </div>
@@ -173,6 +292,14 @@
     private DateOnly FromDate;
     private DateOnly ToDate;
 
+    private decimal Profit = 0;
+    private string ProfitColor = "";
+    private decimal FullCost = 0;
+    private decimal FullRetail = 0;
+
+    private BillModel SendBill = new();
+    private bool ViewBill = false;
+
     //For Sales info fx
     private int NumOfBills = 0;
     private int NumOfPcs = 0;
@@ -180,7 +307,6 @@
     private decimal TotalBillSales = 0;
     private decimal TotalBillCosts = 0;
     private decimal TotalBillReturn = 0;
-
 
     //  Inner Pagination 
     private int InnerTotalPages = 1;
@@ -240,7 +366,7 @@
             .Take(InnerPageSize)
             .ToList();
 
-            await SalesInfo();
+            SalesInfo();
         }
 
         StateHasChanged();
@@ -273,13 +399,13 @@
             .Take(InnerPageSize)
             .ToList();
 
-            await SalesInfo();
+            SalesInfo();
         }
 
         StateHasChanged();
     }
 
-    private async Task SalesInfo()
+    private void SalesInfo()
     {
         NumOfBills = 0;
         NumOfPcs = 0;
@@ -321,5 +447,26 @@
     {
         InnerCurrentPage = 0;
         await InnerNextPage();
+    }
+
+    private void GetFullCostRetail(BillModel ThisData)
+    {
+        FullCost = 0;
+        FullRetail = 0;
+
+        if (ThisData != null)
+        {
+            foreach (var xitem in ThisData.ProductBill)
+            {
+                FullCost += (decimal)((xitem.Qty) * (xitem.Cost));
+                FullRetail += (decimal)((xitem.Qty) * (xitem.Price));
+            }
+        }
+    }
+
+    private void ViewBillAsap(BillModel G){
+        ViewBill = true;
+        SendBill = G;
+        StateHasChanged();
     }
 }

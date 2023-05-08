@@ -8,75 +8,76 @@
 @inject RoleManager<IdentityRole<int>> RoleManager
 @attribute [Authorize]
 
-<div class="container py-3">
-    <div class="row">
-        <div class="col-12">
-            <ul class="list-unstyled">
-                <li>
-                    <h2 class="UniqueText">BARAZA IS</h2>
-                </li>
-                <li>
-                    <p class="UniqueText"><span class="bi-person-fill me-2"></span> User Registration </p>
-                </li>
-            </ul>
-            <hr />
-        </div>
-        <div class="col-12">
-            <EditForm Model="ThisMapper" OnValidSubmit="SaveAsync">
-                <div class="row">
-                    <div class="col-12 pt-2">
-                        <div class="text-danger"></div>
-                    </div>
-                    <div class="col-md-6 col-12 ">
-                        <div class=" rounded-3 py-3">
+<div class="row pb-3 mt-2 rounded bg-white shadow-sm">
+    <div class="col-12">
+        <Header Title=@Title
+                LineText=@LineText
+                ViewUrl=@ViewUrl
+                ViewUrlIcon=@ViewUrlIcon />
+    </div>
+</div>
+<div class="row mt-2 rounded bg-white shadow-sm">
+    <div class="col-12 pb-3">
+        <EditForm Model="ThisMapper" OnValidSubmit="SaveAsync">
+            <div class="row">
+                <div class="col-md-6 col-12 ">
+                    <div class="row mt-2">
+                        <div class="col-md-6 col-12 ">
                             <div class="form-floating rounded-3">
                                 <input type="text" @bind="ThisMapper.FirstName" class="form-control UniqueText border-0 bg-blue rounded " id="FirstName" placeholder="User name" />
                                 <label for="FirstName" class="">
                                     <span class="bi-person me-2"></span> First Name
                                 </label>
-                                
                             </div>
-                            <div class="form-floating mt-2 rounded-3">
+                        </div>
+                        <div class="col-md-6 col-12 mt-md-0 mt-2">
+                            <div class="form-floating rounded-3">
                                 <input type="text" @bind="ThisMapper.LastName" class="form-control UniqueText border-0 bg-blue rounded " id="LastName" placeholder="User name" />
                                 <label for="LastName" class="">
                                     <span class="bi-person me-2"></span> Last Name
                                 </label>
-                                
+
                             </div>
-                            <div class="form-floating mt-2 rounded-3">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6 col-12 ">
+                            <div class="form-floating rounded-3">
                                 <input type="email" @bind="ThisMapper.Email" class="form-control UniqueText border-0 bg-blue rounded " id="Email" placeholder="User name" />
                                 <label for="Email" class="">
                                     <span class="bi-at me-2"></span> Email
                                 </label>
                                 <span class="text-danger">@Exist</span>
                             </div>
-                            <div class="form-floating mt-2 rounded-3">
+                        </div>
+                        <div class="col-md-6 col-12 mt-md-0 mt-2">
+                            <div class="form-floating rounded-3">
                                 <input type="text" @bind="ThisMapper.PhoneNumber" class="form-control UniqueText border-0 bg-blue rounded " id="PhoneNumber" placeholder="PhoneNumber" />
                                 <label for="PhoneNumber" class="">
                                     <span class="bi-lock me-2"></span> Phone Number
                                 </label>
-                                
                             </div>
-                            <div class="form-floating mt-2 rounded-3">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6 col-12 ">
+                            <div class="form-floating rounded-3">
                                 <input type="text" @bind="ThisMapper.NIDA" class="form-control UniqueText border-0 bg-blue rounded " id="NIDA" placeholder="NIDA" />
                                 <label for="NIDA" class="">
                                     <span class="bi-lock me-2"></span> NIDA
                                 </label>
-                                
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-12">
-                        <div class=" rounded-3 py-3">
+                        <div class="col-md-6 col-12 mt-md-0 mt-2">
                             <div class="form-floating rounded-0 py-0">
                                 <select @bind="ThisMapper.AccessLevel" @bind:event="onchange" required class="form-select text-capitalize border-0 bg-blue text-unique fw-bolder rounded " id="floatingSelect" aria-label="Floating label select example">
                                     <option>--:--</option>
                                     @{
-                                        if(TheseAccessLevels != null && TheseAccessLevels.Count > 0)
+                                        if (TheseAccessLevels != null && TheseAccessLevels.Count > 0)
                                         {
-                                            foreach(var Access in TheseAccessLevels)
+                                            foreach (var Access in TheseAccessLevels)
                                             {
-                                                if(Access.Name != "Owner")
+                                                if (Access.Name != "Owner")
                                                 {
                                                     <option value="@Access.Name">@Access.Name</option>
                                                 }
@@ -86,13 +87,20 @@
                                 </select>
                                 <label for="floatingSelect">Access Level</label>
                             </div>
-                            <div class="form-floating mt-2 rounded-3">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12 ">
+                            <div class="form-floating rounded-3">
                                 <textarea @bind="ThisMapper.Location" rows="3" class="form-control UniqueText border-0 bg-blue rounded h-50" id="Address" placeholder="Address"> </textarea>
                                 <label for="Address" class="">
                                     <span class="bi-pin-map me-2"></span> Home Address
                                 </label>
-                                
                             </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12 ">
                             <ul class="d-flex flex-row m-0 p-0 justify-content-between list-unstyled">
                                 <li class="p-0 m-0">
                                     <button type="submit" class="btn btn-md btn-primary rounded mt-2 border-0">
@@ -101,23 +109,36 @@
                                 </li>
                             </ul>
                             <div class="py-4"></div>
-                            <ul class=" m-0 p-0 list-unstyled d-flex flex-row justify-content-start border-top">
-                                <li class="p-0 m-0 pt-3">
-                                    <a class="text-muted btn btn-md border rounded" href="Login" style="width:fit-content">
-                                        .. Already have an Account?, <span class="text-primary">Login</span>
-                                    </a>
-                                </li>
-                            </ul>
+                            
                         </div>
                     </div>
                 </div>
-            </EditForm>
-        </div>
+                <div class="col-md-6 col-12 pt-md-2 pt-3">
+                   <hr class="text-muted d-md-none d-block"/>
+                   <p class="fw-bold p-2 rounded bg-info" style="width:fit-content;">NOTE</p>
+                    <ul class=" m-0 p-0 list-unstyled d-flex flex-row justify-content-start">
+                        <li class="p-0 m-0 text-start">
+                            <p class="text-muted btn btn-md border rounded text-start" style="width:fit-content">
+                                Default Password for new user "<span class="text-primary">12345678900</span>", recommended to change immediate after use logged in
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </EditForm>
     </div>
 </div>
 
 
+
 @code {
+    //Header Component
+    private string Title = "Official Staffs";
+    private string LineText = "User Registration";
+    private string NewUrl = "Staffs/New";
+    private string ViewUrl = "Staffs/ListView";
+    private string ViewUrlIcon = "bi-view-stacked";
+
     [Parameter]
     public int Sn{ get; set; }
     private string Exist = "";

@@ -1,7 +1,96 @@
 @inject IDbContextFactory<BarazaContext> MyFactory
 @attribute [Authorize]
 
-    @{  
+
+@{
+    if (BillToCheck != null)
+    {
+        GetFullCostRetail(BillToCheck);
+        <div class="modal fade " style="width:100vw !important;" id="Search" tabindex="-1" aria-labelledby="SearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog modal-dialog-scrollable modal-xl rounded-0">
+                <div class="modal-content border-0 bg-xss rounded-0">
+                    <div class="modal-header border-0 px-1 py-0 pb-1 my-0 text-capitalize">
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class="p-0" style="font-size:1.14rem !important; width:fit-content;"><p class="bg-xs py-1 px-2 fw-bolder"> @(BillToCheck.Code + BillToCheck.Id)</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2">Total Sale : @FullRetail.ToString("n0")</p></li>
+                            <li class=" p-0 opacity-75 d-none d-md-block" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi bi-dot d-none d-md-inline  txtshadow me-1"></i> @((BillToCheck.DateCreated).ToString("MMM dd yy, ddd HH:mm"))</p></li>
+                            <li class=" p-0 opacity-75 d-md-none" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi bi-dot d-none d-md-inline  txtshadow me-1"></i> @((BillToCheck.DateCreated).ToString("MMM dd yyyy"))</p></li>
+                            <li class=" p-0 opacity-75" style="font-size:0.8rem !important; width:fit-content;"> <p class="bg-light p-2"><i class="bi-person-fill me-1"></i> @(BillToCheck.User.FirstName + " " + BillToCheck.User.LastName)</p></li>
+                        </ul>
+                        <ul class=" m-0 p-0 d-flex flex-row">
+                            <li class=" p-0 opacity-75 rounded-circle" style="font-size:1rem !important; width:fit-content; cursor:pointer;"> <p class=" text-white rounded-circle"><i class="bi-printer text-white fw-bolder me-1"></i></p></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body py-0">
+                        <div class="row">
+                            <div class="col-12 shadow-lg bg-light border border-5 rounded-3">
+                                <div class="row text-white  shadow-sm txtshadow bg-xs">
+                                    <div class="col-1 text-center py-3 fw-bolder">#</div>
+                                    <div class="col-lg-2 col-4 py-3 text-start">Product</div>
+                                    <div class="col-lg-1 col-3 py-3 text-center ">Sold</div>
+                                    <div class="col-lg-2 col-4 py-3 text-start ">Retail Price</div>
+                                    <div class="col-2 d-none d-lg-block py-3 text-md-start text-center ">AtCostOf</div>
+                                    <div class="col-2 d-none d-lg-block py-3 text-md-start text-center ">Return</div>
+                                    <div class="col-1 d-none d-lg-block py-3 text-center ">Before</div>
+                                    <div class="col-1 d-none d-lg-block py-3 text-center">After</div>
+                                </div>
+                                @{
+                                    foreach (var item in (BillToCheck.ProductBill))
+                                    {
+                                        <div class="row text-unique bg-xss border-bottom border-1" style="font-size:0.8rem !important">
+                                            <div class="col-1 text-center py-1 fw-bolder">
+                                                @(BillToCheck.ProductBill.IndexOf(item) + 1)
+                                            </div>
+                                            <div class="col-lg-2 col-4 py-1 text-start">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0 text-capitalize">
+                                                    <li class="text-primary d-none d-lg-block">@(item.Product.Caption.Length > 20 ? item.Product.Caption.Substring(0, 16) + " .." : item.Product.Caption)</li>
+                                                    <li class="text-primary d-lg-none">@(item.Product.Caption.Length > 11 ? item.Product.Caption.Substring(0, 10) + " .." : item.Product.Caption)</li>
+                                                    <li class=" m-0 opacity-75" style="font-size:0.7rem !important; width:fit-content;">@(item.Product.Code + item.Product.Id)</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-1 col-3 py-1 text-center text-success">
+                                                @item.Qty
+                                            </div>
+                                            <div class=" col-lg-2 col-4 py-1 text-start px-0 ps-2 opacity-75">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0 text-success">
+                                                    <li>&#64; @((item.Price).ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">
+                                                        &sum; @((item.Price * (item.Qty)).ToString("n0"))
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-2 d-none d-lg-block py-1 text-md-start text-center">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                                                    <li>&#64; @(item.Cost.ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">&sum; @((item.Cost * item.Qty).ToString("n0"))</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-2 d-none d-lg-block py-1 text-md-start text-center">
+                                                <ul class="d-flex flex-column justify-content-start p-0 m-0">
+                                                    <li>&#64; @((item.Price - item.Cost).ToString("n0"))</li>
+                                                    <li class=" m-0 opacity-75 " style="font-size:0.7rem !important; width:fit-content;">&sum; @(((item.Price - item.Cost) * item.Qty).ToString("n0"))</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-1 d-none d-lg-block py-1 text-center opacity-75 ">
+                                                @(item.OldStock)
+                                            </div>
+                                            <div class="col-1 d-none d-lg-block py-1 text-center opacity-75">
+                                                @(item.OldStock - item.Qty)
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    if(TheseProductBills != null && TheseProductBills.Count > 0)
+    {
+        
         foreach(var item in TheseProductBills){
             MoreVisual = (item.ProductId == MoreId) ? "bg-white border border-warning rounded-3" : "bg-xss";
             <div class="row text-unique @MoreVisual border-bottom border-1" style="font-size:0.8rem !important">
@@ -49,6 +138,7 @@
             </div>
         }
     }
+}
 
 <InnerPagination 
     InnerNextPage=@InnerNextPage
@@ -56,8 +146,6 @@
     InnerCurrentPage=@InnerCurrentPage
     InnerTotalPages=@InnerTotalPages 
     />
-
-
 
 @code{
     
@@ -74,6 +162,8 @@
     public int MoreId {get;set;}
     
     private string MoreVisual = "";
+    private decimal FullCost = 0;
+    private decimal FullRetail = 0;
     
     private List<ProductBill> TheseProductBills = new();
     private int OldStock = 0;
@@ -129,5 +219,17 @@
             BillToCheck.ProductBill = new();
         }
         StateHasChanged();
+    }
+
+    private void GetFullCostRetail(BillModel ThisData)
+    {
+        if (ThisData != null)
+        {
+            foreach (var xitem in ThisData.ProductBill)
+            {
+                FullCost += (decimal)((xitem.Qty) * (xitem.Cost));
+                FullRetail += (decimal)((xitem.Qty) * (xitem.Price));
+            }
+        }
     }
 }

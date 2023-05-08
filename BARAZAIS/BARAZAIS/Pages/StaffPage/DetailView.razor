@@ -71,13 +71,13 @@
                     TotalPages=@TotalPages />
             </div>
         </div>
-        <div class="row mt-2 border-top">
-            <div class="col-12">
+        <div class="row my-2 bg-white shadow-sm rounded">
+            <div class="col-12 mb-3">
                 <div class="row text-start">
-                    <div class="col-md-5 col-12 text-md-start text-center pt-4">
+                    <div class="col-md-4 col-12 text-md-start text-center pt-4">
                         <img src="img/sketch.png" class="StaffImg border rounded-circle" />
                     </div>
-                    <div class="col-md-7 col-12 py-0">
+                    <div class="col-md-8 col-12 py-0">
                         <div class="row text-start">
                             <div class="col-md-5 col-12 text-md-start text-center py-3">
                                 <ul class="p-0 m-0">
@@ -102,7 +102,7 @@
                 </div>
             </div>
             <div class="col-12 pb-3">
-                <div class="row text-start mt-3 rounded bg-white shadow-sm">
+                <div class="row text-start mt-3 rounded bg-white">
                     <div class="col-12 bg-xs shadow-sm py-3 rounded-top">
                         Associated Data <span class="d-lg-none d-inline"> | <i class=" @TabIcon text-white opacity-75"></i> @TabCaption</span>
                     </div>
@@ -235,13 +235,13 @@
     private int PageSize = 1;
 
     //  Tabs Variables
-    private bool PurchaseTab = true;
+    private bool PurchaseTab = false;
     private bool AdjustTab = false;
     private bool PriceTab = false;
     private bool OpenTab = false;
-    private bool SoldTab = false;
-    private string TabCaption = "Purchases";
-    private string TabIcon = "bi-cart4";
+    private bool SoldTab = true;
+    private string TabCaption = "Sales";
+    private string TabIcon = "bi-cart";
 
     //Data
     private UserModel ThisUser = new();
