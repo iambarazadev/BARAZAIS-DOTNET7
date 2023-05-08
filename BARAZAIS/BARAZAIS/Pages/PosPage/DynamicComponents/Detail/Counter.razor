@@ -60,28 +60,37 @@
                     <div class="col-12 mb-3">
                         <ul class="nav nav-pills nav-fill gap-2 p-1 mx-0 small bg-xss rounded fw-bolder" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-unique); --bs-nav-pills-link-active-color: var(--bs-white); --bs-nav-pills-link-active-bg: var(--bs-primary); font-size:0.85rem !important;">
                             @{
-                                foreach (var Prod in TheseProducts)
+                                if(TheseProducts.Count > 0)
                                 {
-                                    if (Prod.ProductPrice.Any())
+                                    foreach (var Prod in TheseProducts)
                                     {
-                                        if(TheseProducts.IndexOf(Prod) == 0)
+                                        if (Prod.ProductPrice.Any())
                                         {
-                                            <li class="nav-item rounded bg-white" role="presentation" @onclick=@(()=> FetchThisProduct(Prod.Id)) style="width:150px !important; font-size:1.2rem;">
-                                                <button class="nav-link active rounded py-3" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">
-                                                    @(Prod.Caption.Length > 15 ? Prod.Caption.Substring(0, 13) + ".." : Prod.Caption)
-                                                </button>
-                                            </li>
+                                            if (TheseProducts.IndexOf(Prod) == 0)
+                                            {
+                                                <li class="nav-item rounded bg-white" role="presentation" @onclick=@(()=> FetchThisProduct(Prod.Id)) style="width:150px !important; font-size:1.2rem;">
+                                                    <button class="nav-link active rounded py-3" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">
+                                                        @(Prod.Caption.Length > 15 ? Prod.Caption.Substring(0, 13) + ".." : Prod.Caption)
+                                                    </button>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="nav-item rounded bg-white shadow-sm" role="presentation" @onclick=@(()=> FetchThisProduct(Prod.Id)) style="width:150px !important; font-size:1.2rem;">
+                                                    <button class="nav-link rounded py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false">
+                                                        @(Prod.Caption.Length > 15 ? Prod.Caption.Substring(0, 13) + ".." : Prod.Caption)
+                                                    </button>
+                                                </li>
+                                            }
+
                                         }
-                                        else{
-                                            <li class="nav-item rounded bg-white shadow-sm" role="presentation" @onclick=@(()=> FetchThisProduct(Prod.Id)) style="width:150px !important; font-size:1.2rem;">
-                                                <button class="nav-link rounded py-3" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false">
-                                                    @(Prod.Caption.Length > 15 ? Prod.Caption.Substring(0, 13) + ".." : Prod.Caption)
-                                                </button>
-                                            </li>
-                                        }
-                                        
                                     }
                                 }
+                                else
+                                {
+                                    <p class="p-3 fs-5 text-unique fw-bolder rounded m-0"> -- : -- </p>
+                                }
+                                
                             }
                         </ul>
                     </div>
@@ -99,7 +108,7 @@
                                     <p class="p-3 fs-6 rounded fw-bolder text-unique border text-capitalize" style="width:fit-content;">
                                         @(Cat.Caption)
                                     </p>
-                                    <ul class="nav nav-pills nav-fill gap-2 p-1 mx-0 mb-4 small bg-xss rounded fw-bolder" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-unique); --bs-nav-pills-link-active-color: var(--bs-white); --bs-nav-pills-link-active-bg: var(--bs-xs); font-size:0.85rem !important;">
+                                    <ul class="nav nav-pills nav-fill gap-2 p-1 mx-0 mb-4 small bg-xss rounded fw-bolder" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-unique); --bs-nav-pills-link-active-color: var(--bs-white); --bs-nav-pills-link-active-bg: var(--bs-primary); font-size:0.85rem !important;">
                                         @if (Cat.Product.Any())
                                         {
                                             foreach (var CatProduct in Cat.Product)
