@@ -43,14 +43,14 @@
                     <ValidationMessage For=" () => ThisSupplier.TIN " />
                 </div>
                 <div class="form-floating my-2 rounded-0">
-                    <input type="text" required @bind="ThisSupplier.Phone" class="form-control bg-xss border-0 text-unique fw-bolder rounded-0 text-capitalize " id="floatingInput" placeholder="Supplier Phone" />
+                    <input type="text" required @bind="ThisSupplier.Phone" class="form-control bg-xss border-0 text-unique fw-bolder rounded-0  " id="floatingInput" placeholder="Supplier Phone" />
                     <label for="floatingInput">
                         Supplier Phone
                     </label>
                     <ValidationMessage For=" () => ThisSupplier.Phone " />
                 </div>
                 <div class="form-floating my-2 rounded-0">
-                    <input type="text" required @bind="ThisSupplier.Email" class="form-control bg-xss border-0 text-unique fw-bolder rounded-0 text-capitalize " id="floatingInput" placeholder="Supplier Email" />
+                    <input type="text" required @bind="ThisSupplier.Email" class="form-control bg-xss border-0 text-unique fw-bolder rounded-0 " id="floatingInput" placeholder="Supplier Email" />
                     <label for="floatingInput">
                         Supplier Email
                     </label>
@@ -154,6 +154,10 @@
                     var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
                     ThisSupplier.UserId = Tempuser.Id;
                     ThisSupplier.CompanyId = Tempuser.CompanyId;
+
+                    ThisSupplier.Caption = (ThisSupplier.Caption).ToLower();
+                    ThisSupplier.Address = (ThisSupplier.Address).ToLower();
+                    ThisSupplier.Description = (ThisSupplier.Description).ToLower();
 
                     await repo.Suppliers.AddAsync(ThisSupplier);
                     await repo.CompleteAsync();

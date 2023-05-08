@@ -94,14 +94,14 @@
             using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
             {
                 ThisBrand = await repo.Brands.GetDetailedBrandAsync(TheKey);
-                
+
                 await repo.CompleteAsync();
                 repo.Dispose();
             }
             LineText = "Edit Brand";
         }
     }
-    
+
     private async Task ProcessAndSave()
     {
         if (ThisBrand != null)
@@ -122,6 +122,9 @@
                     var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
                     this.ThisBrand.UserId = Tempuser.Id;
                     this.ThisBrand.CompanyId = Tempuser.CompanyId;
+
+                    ThisBrand.Caption = (ThisBrand.Caption).ToLower();
+                    ThisBrand.Description = (ThisBrand.Description).ToLower();
 
                     await repo.Brands.AddAsync(ThisBrand);
                     await repo.CompleteAsync();

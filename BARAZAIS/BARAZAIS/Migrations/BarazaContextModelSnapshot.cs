@@ -522,8 +522,8 @@ namespace BARAZAIS.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<int?>("TaxId")
                         .HasColumnType("int");

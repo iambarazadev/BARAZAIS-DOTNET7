@@ -129,6 +129,9 @@
                     ThisTax.UserId = TempUser.Id;
                     ThisTax.CompanyId = TempUser.CompanyId;
 
+                    ThisTax.Caption = (ThisTax.Caption).ToLower();
+                    ThisTax.Description = (ThisTax.Description).ToLower();
+
                     await repo.Taxes.AddAsync(ThisTax);
                     await repo.CompleteAsync();
                     repo.Dispose();

@@ -123,6 +123,9 @@
                     this.ThisCategory.UserId = Tempuser.Id;
                     this.ThisCategory.CompanyId = Tempuser.CompanyId;
 
+                    ThisCategory.Caption = (ThisCategory.Caption).ToLower();
+                    ThisCategory.Description = (ThisCategory.Description).ToLower();
+
                     await repo.Categories.AddAsync(ThisCategory);
                     await repo.CompleteAsync();
                     repo.Dispose();

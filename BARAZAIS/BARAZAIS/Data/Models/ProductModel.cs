@@ -14,17 +14,20 @@ public class ProductModel
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
+
     [Required]
     public DateTime DateCreated { set; get; }
+
     public DateTime DateUpdated { get; set; }
+
     [Required]
     public string Code { get; set; }
 
 #nullable enable
-    [Required(ErrorMessage = "Product Caption, Range Characters(2 - 50) characters"), MaxLength(50), MinLength(2), DataType(DataType.Text)]
+    [Required(ErrorMessage = "Required, MaxChars 100"), MaxLength(50), MinLength(2), DataType(DataType.Text)]
     public string? Caption { get; set; }
 
-    [Required(ErrorMessage = "Describe Item, At least by two words."), MaxLength(50), MinLength(2), DataType(DataType.Text)]
+    [Required(ErrorMessage = "Required, MaxChars 1000"), MaxLength(1000), MinLength(2), DataType(DataType.Text)]
     public string? Description { get; set; }
 
     // FOREIGN KEYS

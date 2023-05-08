@@ -344,6 +344,9 @@
                     this.ThisProduct.UserId = Tempuser.Id;
                     this.ThisProduct.CompanyId = Tempuser.CompanyId;
 
+                    ThisProduct.Caption = (ThisProduct.Caption).ToLower();
+                    ThisProduct.Description = (ThisProduct.Description).ToLower();
+
                     this.ThisProduct.Barcode = TheseBarcodes;
                     await repo.Products.AddAsync(ThisProduct);
 

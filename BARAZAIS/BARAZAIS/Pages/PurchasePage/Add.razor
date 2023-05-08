@@ -327,10 +327,12 @@
 
                 if (PurchasePoccoList.LastOrDefault().Description != null || PurchasePoccoList.LastOrDefault().Description != "")
                 {
-                    ThisGrn.Description = PurchasePoccoList.LastOrDefault().Description;
+                    ThisGrn.Description = (PurchasePoccoList.LastOrDefault().Description).ToLower();
                 }
-
-                ThisPrice.Description = "From New purchase";
+                else
+                {
+                    ThisPrice.Description = ("From New purchase").ToLower();
+                }
 
                 var Tempuser = await UserManager.FindByNameAsync(Accessor.HttpContext.User.Identity?.Name);
                 ThisGrn.UserId = ThisPrice.UserId = Tempuser.Id;
