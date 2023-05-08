@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BARAZAIS.Migrations
 {
     [DbContext(typeof(BarazaContext))]
-    [Migration("20230506131806_Init")]
-    partial class Init
+    [Migration("20230508204530_Initial Electonics db set")]
+    partial class InitialElectonicsdbset
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BARAZAIS.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialElectonicsdbset : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
