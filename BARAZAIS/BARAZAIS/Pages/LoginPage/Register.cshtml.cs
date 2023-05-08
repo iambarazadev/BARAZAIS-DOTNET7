@@ -48,12 +48,12 @@ public class RegisterModel : PageModel
         {
             var ThisUserBusiness = new CompanyModel
             {
-                CompanyName = Input?.BussinesName,
+                CompanyName = (Input?.BussinesName).ToLower(),
                 DateCreated = DateTime.Now,
                 LogoUrl = "",
                 Email = "",
                 Phone = "",
-                Address = Input?.Location,
+                Address = (Input?.Location).ToLower(),
                 TIN = "",
             };
 
@@ -64,8 +64,8 @@ public class RegisterModel : PageModel
 
             var ThisUser = new UserModel {
                 UserName = Input.Email,
-                FirstName = Input.FirstName,
-                LastName = Input.LastName,
+                FirstName = (Input.FirstName).ToLower(),
+                LastName = (Input.LastName).ToLower(),
                 PhoneNumber = Input.PhoneNumber,
                 Email = Input.Email,
                 Password = Input.Password,
