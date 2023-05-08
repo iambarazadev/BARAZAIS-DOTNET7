@@ -183,7 +183,7 @@
                 </ul>
             </div>
         </div>
-    </div
+    </div>
 </div>
 
 <div class="row rounded py-2 border-bottom text-unique bg-xss">
@@ -232,6 +232,7 @@
         </div>
     }
     else{
+
         foreach(var item in TheseTempBills){
             Profit = ((item.ProductBill.Sum(x => (x.Qty * x.Price))) - ((item.ProductBill.Sum(x => (x.Qty * x.Cost)))));
             ProfitColor = (Profit) > 0 ? "text-success" : "text-danger";
@@ -239,12 +240,13 @@
             <div class="row bg-xss border-bottom py-0 text-unique" style="font-size:0.8rem !important">
                 <div class="col-md-1 d-none d-md-block py-1 text-center">@(TheseBills.IndexOf(item) + 1)</div>
                 <div class="col-md-2 col-3 py-1 text-start text-unique">
-                    @*<a class="p-0 m-0" href="Sales/Details/@(item.Id)">*@
-                        <ul type="button" data-bs-toggle="modal" data-bs-target="#Search" onclick=@(()=>ViewBillAsap(item)) class="d-flex flex-column justify-content-start p-0 m-0 text-unique" style="font-size:0.8rem !important; cursor:pointer;">
+                    <a class="p-0 m-0" href="Sales/Details/@(item.Id)">
+                    @*type="button" data-bs-toggle="modal" data-bs-target="#Search" onclick=@(()=>ViewBillAsap(item))*@
+                        <ul class="d-flex flex-column justify-content-start p-0 m-0 text-unique" style="font-size:0.8rem !important; cursor:pointer;">
                             <li class="fw-bolder text-primary opacity-75 txtshadow" style="font-size:0.8rem !important;">@(item.Code + item.Id)</li>
                             <li class=" opacity-75 fw-bolder" style="font-size:0.7rem !important;">---</li>
                         </ul>
-                    @*</a>*@
+                    </a>
                 </div>
                 <div class="col-2 py-1 text-start txtshadow">
                     @(item.ProductBill.Sum(x => x.Qty))
