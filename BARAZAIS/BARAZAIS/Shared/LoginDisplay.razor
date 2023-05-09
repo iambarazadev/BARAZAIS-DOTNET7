@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject IHttpContextAccessor Accessor
 @inject UserManager<UserModel> UserManager
+@inject SignInManager<UserModel> SignInManager
 @inject RoleManager<IdentityRole<int>> RoleManager
 
 <AuthorizeView>
@@ -50,22 +51,35 @@
 
 @code{
 
-	private UserModel TempUser = new();
+	private UserModel? TempUser = new();
 	private string AccessLevel = "--";
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-
-		using (var repo = new UnitOfWorkRepo(MyFactory.CreateDbContext()))
+		if (SignInManager.IsSignedIn(Accessor.HttpContext.User))
 		{
-			TempUser = await repo.Users.GetDetailedUserAsync(Accessor.HttpContext.User.Identity.Name);
+			var HoldContext = Accessor.HttpContext.User.Identity.Name;
+			if (HoldContext != null)
+			{
+				TempUser = await UserManager.FindByNameAsync(HoldContext);
+				if (TempUser?.Id > 0)
+				{
+					AccessLevel = (await UserManager.GetRolesAsync(TempUser))
+					.ToList()
+					.FirstOrDefault();
+				}
+				else
+				{
+					Console.WriteLine("its Null Bro");
+				}
 
-			await repo.CompleteAsync();
-			repo.Dispose();
+			}
+		}
+		else
+		{
+			await SignInManager.SignOutAsync();
 		}
 
-		AccessLevel = (await UserManager.GetRolesAsync(TempUser))
-			.ToList()
-			.FirstOrDefault();
+			
 	}
 }
