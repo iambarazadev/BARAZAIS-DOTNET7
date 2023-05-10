@@ -48,20 +48,22 @@ public class UserRepo : BaseRepo<UserModel> , IUserService
         }
     }
 
-    public async Task<UserModel> CheckUserAsync(string mail, string pwd)
+    public async Task<UserModel> GetUserPartialAsync(string UserName)
     {
         UserModel Nothing = new();
 
-        if (mail != null && pwd != null && (await GetAllUsersDetailedAsync()).Any())
+        if (UserName != null && MyDbSet.Any())
         {
-            return (await GetAllUsersDetailedAsync())
-            .Where(x => x.Email == mail && x.Password == pwd)
-            .SingleOrDefault();
+            Nothing = await MyDbSet
+                .Where(x => x.UserName == UserName)
+                .FirstOrDefaultAsync();
         }
         else
         {
-            return Nothing;
+            Nothing = new();
         }
+
+        return Nothing;
     }
     
     public async Task<UserModel> GetDetailedUserAsync(int sn){

@@ -9,7 +9,7 @@ namespace BARAZAIS.Data.Services;
 
 public interface IUserService : IBaseService<UserModel>
 {
-    Task<UserModel> CheckUserAsync(string mail, string pwd);
+    Task<UserModel> GetUserPartialAsync(string UserName);
     Task<UserModel> GetDetailedUserAsync(int sn);
 	Task<UserModel> GetDetailedUserAsync(string UserName);
 	Task<List<UserModel>> GetAllUsersAsync();
