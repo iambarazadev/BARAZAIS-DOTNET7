@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qjYAU2ET9vuvRQ3EOLSio0eRxtQeu4OQ2pBCVMb/vPNNfuYzpUjqhNlB6FW3Ga5x3hT+52HdvJjM0HwiMQLrBg==",
+  "dgSpecHash": "5c+BGmmvxPr7cdb0Ec5FkkApGzo2Hopptbx7ku5t7/stk1x2LSK6YgqNIk5EtltDOQF44vQazyS0/9dXCiviNg==",
   "success": true,
-  "projectFilePath": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\BARAZAIS.csproj",
+  "projectFilePath": "E:\\PROJECTS\\_REPOS\\_PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\BARAZAIS.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\razack\\.nuget\\packages\\closedxml\\0.101.0\\closedxml.0.101.0.nupkg.sha512",
     "C:\\Users\\razack\\.nuget\\packages\\closedxml.report\\0.2.6\\closedxml.report.0.2.6.nupkg.sha512",

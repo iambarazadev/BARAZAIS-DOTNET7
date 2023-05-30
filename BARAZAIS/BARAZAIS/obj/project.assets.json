@@ -6151,11 +6151,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\BARAZAIS.csproj",
+      "projectUniqueName": "E:\\PROJECTS\\_REPOS\\_PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\BARAZAIS.csproj",
       "projectName": "BARAZAIS",
-      "projectPath": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\BARAZAIS.csproj",
+      "projectPath": "E:\\PROJECTS\\_REPOS\\_PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\BARAZAIS.csproj",
       "packagesPath": "C:\\Users\\razack\\.nuget\\packages\\",
-      "outputPath": "E:\\PROJECTS\\_REPOS\\BLAZOR PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\obj\\",
+      "outputPath": "E:\\PROJECTS\\_REPOS\\_PROJECTS\\BARAZAIS-NET7-AUTHENTICATION\\BARAZAIS\\BARAZAIS\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
