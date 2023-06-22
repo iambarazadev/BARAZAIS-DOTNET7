@@ -18,7 +18,7 @@ builder.Services.AddIdentity<UserModel, IdentityRole<int>>(options =>
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
-    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
 })
     .AddEntityFrameworkStores<BarazaContext>()
     .AddDefaultTokenProviders();
