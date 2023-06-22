@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'barazais'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1556ED840A1848A7A9683BF687D5195D }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_17A5B1BC7C6D46309CC27D59421013EE }}
           package: .
